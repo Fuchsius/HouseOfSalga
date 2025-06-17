@@ -1,0 +1,314 @@
+.trending-section {
+  padding: 40px 20px;  
+  position: relative;
+  background-color: #F0EADC;
+  z-index: 1;
+}
+
+.trending-section h2 {
+  font-size: 36px;
+  margin-bottom: 30px;
+  font-weight: 400;
+  line-height: 100%;
+  color: #2F2F2F;
+  padding: 0 0 0 20px;
+  font-family: 'Wilkysta', sans-serif;
+  text-align: center;
+}
+
+.trending-section .bold {
+  font-weight: 400;
+  font-size: 64px;
+}
+
+.card-grid {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+}
+
+.product-card {
+  position: relative;
+  max-width: 350px;
+  background-color: #F0EADC;
+  border: 1px solid #4D1727;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease;
+  margin-bottom: 20px;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+}
+
+.product-card h3 {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 600;
+  color: #2F2F2F;
+  font-family: "Playfair Display", serif;
+  margin-top: 15px;
+}
+
+.product-img {
+  width: 100%;
+  height: 543px;
+  border-radius: 8px;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+}
+
+.price {
+  color: #333;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.heart-icon {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 25px;
+  color: #754F23;
+  cursor: pointer;
+  padding: 14px;
+}
+
+.freedom-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #F0EADC; 
+  padding: 40px 20px;
+  font-family: 'Wilkysta', sans-serif;
+  letter-spacing: 1px;
+  font-weight: 500;
+  width: 100%;
+  gap: 20px;
+}
+
+.freedom-text {
+  font-weight: 400;
+  font-size: 48px;
+  line-height: 100%;
+  text-align: center;
+}
+
+.freedom-icon {
+  font-size: 50px;
+  border: 2px solid black;
+  border-radius: 50%;
+  padding: 5px 12px;
+  line-height: 1;
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) {
+  .trending-section h2 {
+    font-size: 28px;
+    padding: 0 0 0 40px;
+    text-align: left;
+  }
+  
+  .trending-section .bold {
+    font-size: 40px;
+  }
+  
+  .freedom-text {
+    font-size: 40px;
+  }
+  
+  .freedom-icon {
+    font-size: 50px;
+  }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+  .trending-section {
+    padding: 30px 40px;
+  }
+  
+  .trending-section h2 {
+    font-size: 36px;
+    padding: 0 0 0 80px;
+  }
+  
+  .trending-section .bold {
+    font-size: 48px;
+  }
+  
+  .card-grid {
+    gap: 30px;
+  }
+  
+  .freedom-banner {
+    padding: 60px 40px;
+    flex-direction: row;
+    justify-content: center;
+  }
+  
+  .freedom-text {
+    font-size: 44px;
+    text-align: left;
+  }
+  
+  .freedom-icon {
+    font-size: 50px;
+  }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 1100px) {
+  .trending-section h2 {
+    font-size: 40px;
+    padding: 0 0 0 100px;
+  }
+  
+  .trending-section .bold {
+    font-size: 64px;
+  }
+  
+  .card-grid {
+    gap: 40px;
+  }
+  
+  .freedom-banner {
+    padding: 70px 60px;
+  }
+  
+  .freedom-text {
+    font-size: 64px;
+  }
+  
+  .freedom-icon {
+    font-size: 70px;
+  }
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1250px) {
+  .trending-section {
+    padding: 40px 100px;
+  }
+  
+  .trending-section h2 {
+    padding: 0 0 0 160px;
+    font-size: 36px;
+  }
+  
+  .card-grid {
+    gap: 63px;
+  }
+  
+  .freedom-banner {
+    padding: 80px 100px;
+    gap: 50px;
+  }
+  
+  .freedom-text {
+    font-size: 96px;
+    letter-spacing: 3px;
+  }
+  
+  .freedom-icon {
+    font-size: 100px;
+  }
+}
+/* Mobile devices (under 576px) */
+@media (max-width: 575px) {
+  .trending-section {
+    padding: 30px 15px;
+  }
+
+  .trending-section h2 {
+    font-size: 24px;
+    padding: 0 10px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .trending-section .bold {
+    font-size: 32px;
+    display: block;
+    margin-top: 5px;
+  }
+
+  .card-grid {
+    gap: 15px;
+    margin-bottom: 30px;
+  }
+
+  .product-card {
+    max-width: 100%;
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+
+  .product-card h3 {
+    font-size: 20px;
+    margin-top: 10px;
+  }
+
+  .product-img {
+    max-height: 350px;
+  }
+
+  .price {
+    font-size: 14px;
+  }
+
+  .heart-icon {
+    font-size: 20px;
+    padding: 10px;
+    top: 8px;
+    right: 8px;
+  }
+
+  .freedom-banner {
+    padding: 30px 15px;
+    gap: 15px;
+  }
+
+  .freedom-text {
+    font-size: 28px;
+    line-height: 1.2;
+  }
+
+  .freedom-icon {
+    font-size: 30px;
+    padding: 5px 10px;
+    border-width: 1px;
+  }
+}
+
+/* Very small devices (under 400px) */
+@media (max-width: 399px) {
+  .trending-section h2 {
+    font-size: 22px;
+  }
+
+  .trending-section .bold {
+    font-size: 28px;
+  }
+
+  .product-card {
+    padding: 12px;
+  }
+
+  .product-card h3 {
+    font-size: 18px;
+  }
+
+  .freedom-text {
+    font-size: 24px;
+  }
+
+  .freedom-icon {
+    font-size: 26px;
+  }
+}
