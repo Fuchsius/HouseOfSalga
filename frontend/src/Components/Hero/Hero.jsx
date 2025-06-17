@@ -1,8 +1,16 @@
 import React from 'react'
 import './Hero.css'
 import heroImage from '../../Assets/heroImage.png';
+import { useNavigate } from 'react-router-dom';
 
 const Hero = () => {
+
+     const navigate = useNavigate();
+
+  const handleExploreClick = () => {
+    navigate('/confirmorder');  // navigate to ConfirmOrder page
+  };
+
   return (
     
         <section className="hero-section">
@@ -16,9 +24,12 @@ const Hero = () => {
                 <p className="hero-description">
                     We provide the largest clothing collection for any season. You can choose trendy or classy design according to your preferences. Our services are super fast and we update within 24 hours.
                 </p>
-                <button className="hero-button">
+                {/* <button className="hero-button">
                     Explore <span className="arrow">→</span>
-                </button>
+                </button> */}
+                 <button className="hero-button" onClick={handleExploreClick}>
+                     Explore <span className="arrow">→</span>
+                 </button>
             </div>
 
             {/* Right Image */}

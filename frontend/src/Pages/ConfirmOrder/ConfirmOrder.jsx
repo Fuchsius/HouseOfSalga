@@ -1,10 +1,18 @@
 import React from 'react'
 import './ConfirmOrder.css'
+import Header from '../../Components/Header/Header'
+import Footer from '../../Components/Footer/Footer'
+
+
 
 const ConfirmOrder = () => {
   return (
+    <div>
+        
+      <Header/>
     
     <div className="order-success-container">
+      
       <div className="order-success-content">
         <div className="success-icon">&#10003;</div>
         <h2>Your order is successfully place</h2>
@@ -18,6 +26,8 @@ const ConfirmOrder = () => {
           <button className="view-order-btn">View Order</button>
         </div>
       </div>
+    </div>
+    <Footer/>
     </div>
       
   
