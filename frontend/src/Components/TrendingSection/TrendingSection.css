@@ -117,7 +117,7 @@
   .trending-section .bold {
     font-size: 40px;
   }
-  
+   
   .freedom-text {
     font-size: 40px;
   }
@@ -239,23 +239,15 @@
   }
 
   .card-grid {
-    gap: 15px;
-    margin-bottom: 30px;
+    gap: 30px;
   }
-
-  .product-card {
-    max-width: 100%;
-    padding: 15px;
-    margin-bottom: 15px;
-  }
-
   .product-card h3 {
     font-size: 20px;
     margin-top: 10px;
   }
 
   .product-img {
-    max-height: 350px;
+    height: 400px;
   }
 
   .price {
