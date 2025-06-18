@@ -1,0 +1,121 @@
+.sidebar-container {
+  background-color: #f3ecdc;
+  padding: 2rem 1.5rem;
+  font-family: 'poppins', serif;
+  width: 100%;
+  max-width: 280px;
+  padding-left: 1.5rem;
+}
+.breadcrumb,
+.sidebar-header,
+.sidebar-subtext {
+  font-family: 'Wiskysta', serif;
+  font-weight: normal;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.breadcrumbs {
+  font-family: 'Wiskysta', serif;
+  font-size: 0.85rem;
+  color: #5f5f5f;
+  margin-bottom: 1.5rem;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #2d2d2d;
+  margin-bottom: 0.2rem;
+  font-family: 'Wiskysta', serif;
+}
+
+.sidebar-header::before {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 24px;
+  background-color: #f2c94c;
+  margin-right: 10px;
+  border-radius: 4px;
+  font-family: 'Wiskysta', serif;
+}
+
+.sidebar-subtext {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 1.5rem;
+  font-family: 'Wiskysta', serif;
+}
+
+.menu-box {
+  border: 1px solid #44000020;
+  border-radius: 12px;
+  padding: 1.5rem;
+  background-color: #fcf7ee;
+  display: flex;
+  flex-direction: column;
+  gap: 2.2rem;
+  height: 380px; 
+  justify-content: center; 
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1rem;
+  color: #2d2d2d;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.menu-item svg {
+  font-size: 1.2rem;
+}
+
+.menu-item.active {
+  background-color: #000;
+  color: #fff;
+  padding: 0.5rem;
+  border-radius: 6px;
+}
+
+.menu-item.active svg {
+  color: #fff;
+}
+
+/* ✅ Responsive */
+@media (max-width: 768px) {
+  .sidebar-container {
+    width: 100%;
+    max-width: none;
+    padding: 1rem;
+    margin: 0 auto;
+  }
+
+  .menu-box {
+    height: auto;
+    padding: 1rem;
+    gap: 1.2rem;
+  }
+
+  .menu-item {
+    font-size: 0.95rem;
+  }
+
+  .sidebar-header {
+    font-size: 1.3rem;
+  }
+
+  .sidebar-subtext {
+    font-size: 0.85rem;
+  }
+
+  .breadcrumbs {
+    font-size: 0.8rem;
+  }
+}

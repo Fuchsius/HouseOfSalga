@@ -1,0 +1,34 @@
+.wishlist-page {
+  display: flex;
+  flex-direction: row;
+  min-height: 100vh;
+}
+
+.wishlist-content {
+  flex: 1;
+  padding: 40px;
+}
+
+.wishlist-content h2 {
+  font-size: 32px;
+  margin-bottom: 20px;
+  font-family: 'wilkysta', serif;
+}
+/* Mobile Responsive  */
+@media (max-width: 768px) {
+  .wishlist-page {
+    flex-direction: column;
+    padding: 1rem;
+  }
+
+  .wishlist-content {
+    width: 100%;
+    padding: 0;
+  }
+
+  .wishlist-content h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+}
