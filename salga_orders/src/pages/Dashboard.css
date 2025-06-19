@@ -1,0 +1,162 @@
+@font-face {
+  font-family: 'Wilkysta';
+  src: url('../fonts/wilkysta.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+.dashboard {
+
+  display: flex;
+  height: 100vh;
+  background-color: #F0EADC;
+  font-family: 'Segoe UI', sans-serif;
+  color: #3C4242;
+  padding: 0 100px;
+  box-sizing: border-box;  
+  
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 110px;
+  margin-right: 110px;
+  padding: 32px;
+}
+
+.orders-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: wilkysta;
+  font-size: 20px;
+  margin-top: 60px;
+  margin-bottom: 20px;
+}
+
+.search-filter {
+  display: flex;
+  gap: 10px;
+}
+
+.order-search {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.filter-btn {
+  padding: 8px 16px;
+  background-color: #4D1727;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+
+/* ------- NEW SEARCH + FILTER STYLES ------- */
+.search-wrapper {
+  position: relative;
+  width: 300px;          /* ⬅︎ was ~260‑300px; widen here */
+  height: 35px;
+}
+
+.search-wrapper input {
+  padding: 8px 14px 8px 36px;
+  border: 1px solid #A4A1AA33;
+  border-radius: 4px;
+  background: #F0EADC
+}
+
+.search-wrapper input::placeholder {
+  color: #999;
+}
+
+
+.search-icon {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.filter-btn {
+  background: #000000;
+  color: #fff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 4px;
+  font-size: 18px;
+  font-weight: 500;
+  padding-left: 28px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 120px; /* ⬅︎ was ~160px; widen here */
+  cursor: pointer;
+}
+
+
+
+@media (max-width: 768px) {
+  .dashboard {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .main-content {
+    padding: 20px;
+  }
+
+  .orders-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .search-filter {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .order-search,
+  .filter-btn {
+    width: 100%;
+  }
+
+  .order-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .product-info {
+    padding: 0;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .product-info img {
+    width: 100%;
+    height: auto;
+  }
+
+  .track-btn {
+    align-self: stretch;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .main-content {
+    margin: 0;
+    padding: 16px;
+  }
+}

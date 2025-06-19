@@ -1,0 +1,41 @@
+@font-face {
+  font-family: 'Wilkysta';
+  src: url('../fonts/wilkysta.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+.breadcrumbs {
+  font-size: 16px;
+  font-family: wilkysta;
+  color: #6d6d6d;
+  margin-bottom: 16px;
+  position: absolute;           /* take it out of flex flow */
+  top: 150px;
+  left:70px;
+  width: 20%;
+  padding: 12px 32px;
+  box-sizing: border-box;
+  z-index: 10;   
+}
+
+.breadcrumbs .sep {
+  margin: 0 6px;
+}
+
+.breadcrumbs span:last-child {
+  font-weight: 600;   /* bold */
+  color: #000; 
+}
+
+
+@media (max-width: 768px) {
+  .breadcrumbs {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+}
