@@ -12,6 +12,7 @@ export default function CartPage() {
       price: 2500.0,
       quantity: 1,
       image: "6.png",
+      color: "blue",
     },
     {
       id: 2,
@@ -20,6 +21,7 @@ export default function CartPage() {
       price: 6900.0,
       quantity: 1,
       image: "5.png",
+      color: "red",
     },
     {
       id: 3,
@@ -28,6 +30,7 @@ export default function CartPage() {
       price: 5100.0,
       quantity: 1,
       image: "2.png",
+      color: "green",
     },
   ]);
 

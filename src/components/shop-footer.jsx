@@ -25,7 +25,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-white border-t border-gray-200 w-[1440px] h-[156px] top-[1785px]">
+    <footer className="bg-white border-t border-gray-200 w-[1440px] h-[100px] top-[1785px]">
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {features.map((feature, index) => (

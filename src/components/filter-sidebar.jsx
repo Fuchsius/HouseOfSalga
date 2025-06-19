@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "../components/ui/button";
 import { Checkbox } from "../components/ui/checkbox";
 import { Slider } from "../components/ui/slider";
-import { AlignJustify } from "lucide-react";
+import { SlidersHorizontal, ChevronUp } from "lucide-react";
 
 export default function FilterSidebar() {
   const [priceRange, setPriceRange] = useState([5000, 8000]);
@@ -22,14 +22,13 @@ export default function FilterSidebar() {
     <div className="w-[428px] h-[1044px] top-[259px] left-[160px] bg-[#F0EADC] p-6 rounded-lg shadow-sm">
       {/* Filters Header */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="font-semibold text-gray-900">FILTERS</h2>
-        <AlignJustify className="w-4 h-4 mr-2" />
-        <span className="text-sm text-gray-500">(3)</span>
+        <h2 className="font-semibold text-gray-900 font-primary">FILTERS</h2>
+        <SlidersHorizontal className="w-4 h-4 mr-5" />
       </div>
 
       {/* Focus Section */}
       <div className="mb-6">
-        <h3 className="font-medium text-gray-900 mb-3">FOCUS</h3>
+        <h3 className="font-primary text-gray-900 mb-3">FOCUS</h3>
         <div className="space-y-2">
           <div className="flex items-center space-x-2">
             <Checkbox id="women" defaultChecked />
@@ -39,7 +38,10 @@ export default function FilterSidebar() {
           </div>
           <div className="flex items-center space-x-2">
             <Checkbox id="ladies" />
-            <label htmlFor="ladies" className="text-sm text-gray-700">
+            <label
+              htmlFor="ladies"
+              className="text-sm text-gray-700 font-primary"
+            >
               Ladies
             </label>
           </div>
@@ -49,8 +51,9 @@ export default function FilterSidebar() {
       {/* Price Range */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-medium text-gray-900">
-            ₹5000 - ₹8000
+          <h1 className="font-primary">Range</h1>
+          <span className="text-sm font-primary text-gray-900">
+            Rs.5000 - Rs.8000
           </span>
         </div>
         <Slider
@@ -65,7 +68,7 @@ export default function FilterSidebar() {
 
       {/* Size Section */}
       <div className="mb-6">
-        <h3 className="font-medium text-gray-900 mb-3">SIZE</h3>
+        <h3 className="font-medium text-gray-900 mb-3 font-primary">SIZE</h3>
         <div className="space-y-2">
           {["Small", "Medium", "Large", "Extra Large"].map((size) => (
             <div key={size} className="flex items-center space-x-2">
@@ -83,7 +86,12 @@ export default function FilterSidebar() {
 
       {/* Colors Section */}
       <div className="mb-6">
-        <h3 className="font-medium text-gray-900 mb-3">Colors</h3>
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="font-medium text-gray-900 mb-3 font-primary">
+            Colors
+          </h3>
+          <ChevronUp className="w-4 h-4 mr-5" />
+        </div>
         <div className="grid grid-cols-4 gap-2">
           {colors.map((color) => (
             <button
@@ -96,8 +104,8 @@ export default function FilterSidebar() {
       </div>
 
       {/* Apply Filter Button */}
-      <Button className="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-medium">
-        Apply filter
+      <Button className="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-primary">
+        <h1 className=" text-black font-primary">Apply filter</h1>
       </Button>
     </div>
   );
