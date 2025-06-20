@@ -3,18 +3,17 @@ import { Trash2 } from "lucide-react";
 
 export default function CartItems({ items, updateQuantity, removeItem }) {
   return (
-    <div className="bg-[#F0EADC] w-[645px] h-[532px] top-[320px] left-[160px] pt-[20px] pr-[24px] pb-[20px] pl-[24px] border-1 rounded-lg shadow-sm overflow-hidden">
+    <div className="bg-[#F0EADC] w-[645px] h-[532px] top-[320px] left-[160px] pt-[20px] pr-[24px] pb-[20px] pl-[24px] ml-40 border-1 rounded-lg shadow-sm overflow-hidden">
       {items.map((item) => (
         <div
           key={item.id}
           className="flex items-center p-6 border-b border-[#6C7275] last:border-b-0"
         >
-          <div className="flex-shrink-0 w-20 h-20 relative">
+          <div className="flex-shrink-0  relative overflow-hidden">
             <img
               src={item.image || "/placeholder.svg"}
               alt={item.name}
-              fill
-              className="object-cover w-[68px] h-[113px] top-[6px] left-[28px]"
+              className="object-contain max-w-[93px] max-h-[123px] max-top-[8px] max-left-[28px] "
             />
           </div>
 

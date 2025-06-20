@@ -1,41 +1,43 @@
-import { Shield, CreditCard, Truck, Headphones } from "lucide-react";
-
 export default function Footer() {
   const features = [
     {
-      icon: Shield,
       title: "High Quality",
       description: "Crafted from top materials",
+      image: "../public/quality.png",
     },
     {
-      icon: CreditCard,
       title: "Safety Payment",
-      description: "Secure payment methods",
+      description: "Secure",
+      image: "../public/safe.png",
     },
     {
-      icon: Truck,
       title: "Fast Delivery",
-      description: "Same day & 2-3 days",
+      description: "deliver in 2-3 days",
+      image: "../public/delivery.png",
     },
     {
-      icon: Headphones,
       title: "24/7 Support",
       description: "Dedicated support",
+      image: "../public/support.png",
     },
   ];
 
   return (
-    <footer className="bg-white border-t border-gray-200 w-[1440px] h-[100px] top-[1785px]">
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <footer className="bg-white border-t border-gray-200 w-full py-6">
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
           {features.map((feature, index) => (
             <div key={index} className="flex items-center gap-3">
-              <div className="p-2 bg-gray-100 rounded-lg">
-                <feature.icon className="w-6 h-6 text-gray-700" />
+              <div>
+                <img src={feature.image} className="w-12 h-12"></img>
               </div>
               <div>
-                <h3 className="font-medium text-gray-900">{feature.title}</h3>
-                <p className="text-sm text-gray-600">{feature.description}</p>
+                <h3 className="font-medium text-gray-900 text-sm md:text-base font-primary">
+                  {feature.title}
+                </h3>
+                <p className="text-xs md:text-sm text-gray-600 font-primary">
+                  {feature.description}
+                </p>
               </div>
             </div>
           ))}

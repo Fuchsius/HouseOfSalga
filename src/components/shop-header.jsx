@@ -16,14 +16,14 @@ export default function Header() {
   return (
     <div className="bg-[#F0EADC] border-b border-[#F0EADC]">
       <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between w-full gap-2">
+        <div className="flex items-center justify-between w-full gap-2 ml-6">
           <Breadcrumb />
-          <div className="flex items-center gap-2">
-            <h1 className="text-lg font-primary text-gray-900 gap-4">
+          <div className="flex items-center gap-2 mr-56">
+            <h1 className="text-lg font-primary text-gray-900 gap-4 ">
               Women's Red Perfection
             </h1>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600 font-primary">
+              <span className="text-sm text-gray-600 font-primary md:hidden">
                 Sort by:
               </span>
               <div className="relative">

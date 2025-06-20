@@ -19,16 +19,35 @@ export default function FilterSidebar() {
   ];
 
   return (
-    <div className="w-[428px] h-[1044px] top-[259px] left-[160px] bg-[#F0EADC] p-6 rounded-lg shadow-sm">
+    <div className="w-[428px] h-[1095px] top-[259px] left-[160px] bg-[#F0EADC] p-6 rounded-lg shadow-sm border-1">
       {/* Filters Header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="font-semibold text-gray-900 font-primary">FILTERS</h2>
         <SlidersHorizontal className="w-4 h-4 mr-5" />
       </div>
 
+      {/* Price Range */}
+      <div className="mb-6">
+        <h3 className="font-primary text-gray-900 mb-3">PRICES</h3>
+        <div className="flex items-center justify-between mb-3">
+          <h1 className="font-primary">Range</h1>
+          <span className="text-sm font-primary text-gray-900">
+            Rs.5000 - Rs.8000
+          </span>
+        </div>
+        <Slider
+          value={priceRange}
+          onValueChange={setPriceRange}
+          max={10000}
+          min={1000}
+          step={500}
+          className="w-full"
+        />
+      </div>
+
       {/* Focus Section */}
       <div className="mb-6">
-        <h3 className="font-primary text-gray-900 mb-3">FOCUS</h3>
+        <h3 className="font-primary text-gray-900 mb-3">FILTERS</h3>
         <div className="space-y-2">
           <div className="flex items-center space-x-2">
             <Checkbox id="women" defaultChecked />
@@ -46,24 +65,6 @@ export default function FilterSidebar() {
             </label>
           </div>
         </div>
-      </div>
-
-      {/* Price Range */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between mb-3">
-          <h1 className="font-primary">Range</h1>
-          <span className="text-sm font-primary text-gray-900">
-            Rs.5000 - Rs.8000
-          </span>
-        </div>
-        <Slider
-          value={priceRange}
-          onValueChange={setPriceRange}
-          max={10000}
-          min={1000}
-          step={500}
-          className="w-full"
-        />
       </div>
 
       {/* Size Section */}
