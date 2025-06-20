@@ -7,12 +7,14 @@ import {
   FaShoppingBag,
   FaRegHeart
 } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import ProductCard from '../../components/ProductCard/ProductCard';
 import RatingStars from '../../components/RatingStars/RatingStars';
 import ProductTabs from '../../components/ProductTabs/ProductTabs';
 import styles from './ProductReturns.module.css';
 
 const ProductReturns = () => {
+  const navigate = useNavigate();
   const [selectedSize, setSelectedSize] = useState('M');
   const [selectedColor, setSelectedColor] = useState('red');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -55,6 +57,32 @@ const ProductReturns = () => {
     setCurrentImageIndex((prev) =>
       prev === 0 ? product.images.length - 1 : prev - 1
     );
+  };
+
+  const handleAddToCart = () => {
+    navigate('/cart', {
+      state: {
+        product: {
+          ...product,
+          selectedSize,
+          selectedColor,
+          quantity
+        }
+      }
+    });
+  };
+
+  const handleBuyNow = () => {
+    navigate('/checkout', {
+      state: {
+        product: {
+          ...product,
+          selectedSize,
+          selectedColor,
+          quantity
+        }
+      }
+    });
   };
 
   return (
@@ -113,7 +141,6 @@ const ProductReturns = () => {
 
             {/* Color Selector */}
             <div className={styles.colorSelector}>
-              
               <div className={styles.colorOptions}>
                 {product.colors.map((color) => (
                   <div
@@ -176,10 +203,10 @@ const ProductReturns = () => {
             </div>
             
             <div className={styles.productActions}>
-              <button className={styles.addToCart}>
+              <button className={styles.addToCart} onClick={handleAddToCart}>
                 <FaShoppingCart /> Add To Cart
               </button>
-              <button className={styles.buyNow}>
+              <button className={styles.buyNow} onClick={handleBuyNow}>
                 <FaShoppingBag className={styles.buyNowBagIcon} /> Buy Now
               </button>
             </div>
@@ -214,7 +241,7 @@ const ProductReturns = () => {
             )}
             {activeTab === 'returns' && (
               <div className={styles.returnsContent}>
-                <h2>RETURN POLICY</h2>
+                <h2>RETURN </h2>
                 <div className={styles.policySection}>
                   <p>
                     Our dispatch head time is 7 working days for orders that include both ready-to-strip 
@@ -230,7 +257,7 @@ const ProductReturns = () => {
                   </p>
                 </div>
 
-                <h2>SHIPPING POLICY</h2>
+                <h2>SHIPPING </h2>
                 <div className={styles.policySection}>
                   <p>Enjoy free shipping on all orders.</p>
                 </div>
@@ -241,7 +268,7 @@ const ProductReturns = () => {
 
         {/* Recommended Products */}
         <div className={styles.recommendedProducts}>
-          <h3>Recommended</h3>
+          <h2>Recommended</h2>
           <p className={styles.subtitle}>You might want to take a look at these.</p>
           <div className={styles.productGrid}>
             {recommendedProducts.map((p) => (

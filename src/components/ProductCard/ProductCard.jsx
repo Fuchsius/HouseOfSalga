@@ -5,6 +5,7 @@ import './ProductCard.css';
 
 const ProductCard = ({ product, variant = 'small' }) => {
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   const toggleFavorite = (e) => {
     e.stopPropagation(); 
@@ -12,15 +13,19 @@ const ProductCard = ({ product, variant = 'small' }) => {
   };
 
   return (
-    <div className={`product-card ${variant}`}>
+    <div 
+      className={`product-card ${variant}`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <div className="product-image-container">
         <img
           src={`/images/product/${product.id}.png`}
           alt={product.name}
-          className="product-img"
+          className={`product-img ${isHovered ? 'hover-scale' : ''}`}
         />
         <button
-          className="favorite-button"
+          className={`favorite-button ${isHovered ? 'button-pop' : ''}`}
           onClick={toggleFavorite}
           aria-label="Toggle favorite"
         >

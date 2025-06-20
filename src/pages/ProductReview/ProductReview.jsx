@@ -10,12 +10,14 @@ import {
   FaReply,
   FaStar
 } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import ProductCard from '../../components/ProductCard/ProductCard';
 import RatingStars from '../../components/RatingStars/RatingStars';
 import ProductTabs from '../../components/ProductTabs/ProductTabs';
 import styles from './ProductReview.module.css';
 
 const ProductReview = () => {
+  const navigate = useNavigate();
   const [selectedSize, setSelectedSize] = useState('M');
   const [selectedColor, setSelectedColor] = useState('red');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -53,14 +55,6 @@ const ProductReview = () => {
       rating: 5,
       date: '0 Days ago',
       comment: 'There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour'
-    },
-    {
-      id: 2,
-      user: 'John Doe',
-      title: 'Great Product',
-      rating: 4,
-      date: '2023-09-28',
-      comment: 'It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.'
     }
   ];
 
@@ -90,6 +84,32 @@ const ProductReview = () => {
     setCurrentImageIndex((prev) =>
       prev === 0 ? product.images.length - 1 : prev - 1
     );
+  };
+
+  const handleAddToCart = () => {
+    navigate('/cart', {
+      state: {
+        product: {
+          ...product,
+          selectedSize,
+          selectedColor,
+          quantity
+        }
+      }
+    });
+  };
+
+  const handleBuyNow = () => {
+    navigate('/checkout', {
+      state: {
+        product: {
+          ...product,
+          selectedSize,
+          selectedColor,
+          quantity
+        }
+      }
+    });
   };
 
   const handleSubmitReview = (e) => {
@@ -228,12 +248,12 @@ const ProductReview = () => {
                 </button>
               </div>
             </div>
-
+            
             <div className={styles.productActions}>
-              <button className={styles.addToCart}>
+              <button className={styles.addToCart} onClick={handleAddToCart}>
                 <FaShoppingCart /> Add To Cart
               </button>
-              <button className={styles.buyNow}>
+              <button className={styles.buyNow} onClick={handleBuyNow}>
                 <FaShoppingBag className={styles.buyNowBagIcon} /> Buy Now
               </button>
             </div>
@@ -315,17 +335,17 @@ const ProductReview = () => {
                             <div className={styles.userInitial}>{review.user.charAt(0)}</div>
                             <div className={styles.userDetails}>
                               <div className={styles.userName}>{review.user}</div>
-                              <div className={styles.reviewDate}>{review.date}</div>
+                              <div className={styles.reviewRating}>
+                                {[...Array(5)].map((_, i) => (
+                                  <FaStar 
+                                    key={i} 
+                                    className={i < review.rating ? `${styles.star} ${styles.filled}` : styles.star} 
+                                  />
+                                ))}
+                              </div>
                             </div>
                           </div>
-                          <div className={styles.reviewRating}>
-                            {[...Array(5)].map((_, i) => (
-                              <FaStar 
-                                key={i} 
-                                className={i < review.rating ? `${styles.star} ${styles.filled}` : styles.star} 
-                              />
-                            ))}
-                          </div>
+                          <div className={styles.reviewDate}>{review.date}</div>
                         </div>
                         
                         <div className={styles.reviewBody}>
@@ -409,7 +429,7 @@ const ProductReview = () => {
 
         {/* Recommended Products */}
         <div className={styles.recommendedProducts}>
-          <h3>Recommended</h3>
+          <h2>Recommended</h2>
           <p className={styles.subtitle}>You might want to take a look at these.</p>
           <div className={styles.productGrid}>
             {recommendedProducts.map((p) => (

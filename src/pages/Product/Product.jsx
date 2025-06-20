@@ -7,7 +7,7 @@ import {
   FaShoppingBag,
   FaRegHeart
 } from 'react-icons/fa';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import ProductCard from '../../components/ProductCard/ProductCard';
 import RatingStars from '../../components/RatingStars/RatingStars';
 import ProductTabs from '../../components/ProductTabs/ProductTabs';
@@ -15,6 +15,7 @@ import styles from './Product.module.css';
 
 const Product = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const defaultProduct = {
     id: 1,
@@ -60,6 +61,33 @@ const Product = () => {
     setCurrentImageIndex((prev) =>
       prev === 0 ? product.images.length - 1 : prev - 1
     );
+  };
+
+  const handleAddToCart = () => {
+    // In a real app, you would add to cart state/context here
+    navigate('/cart', {
+      state: {
+        product: {
+          ...product,
+          selectedSize,
+          selectedColor,
+          quantity
+        }
+      }
+    });
+  };
+
+  const handleBuyNow = () => {
+    navigate('/checkout', {
+      state: {
+        product: {
+          ...product,
+          selectedSize,
+          selectedColor,
+          quantity
+        }
+      }
+    });
   };
 
   return (
@@ -181,10 +209,10 @@ const Product = () => {
             </div>
             
             <div className={styles.productActions}>
-              <button className={styles.addToCart}>
+              <button className={styles.addToCart} onClick={handleAddToCart}>
                 <FaShoppingCart /> Add To Cart
               </button>
-              <button className={styles.buyNow}>
+              <button className={styles.buyNow} onClick={handleBuyNow}>
                 <FaShoppingBag /> Buy Now
               </button>
             </div>
@@ -228,7 +256,7 @@ const Product = () => {
 
         {/* Recommended */}
         <div className={styles.recommendedProducts}>
-          <h3>Recommended</h3>
+          <h2>Recommended</h2>
           <p className={styles.subtitle}>You might want to take a look at these.</p>
           <div className={styles.productGrid}>
             {recommendedProducts.map((p) => (

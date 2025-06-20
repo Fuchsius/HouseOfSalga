@@ -363,7 +363,7 @@
 .returnsContent h2 {
   font-size: 1.5rem;
   margin-bottom: 1.5rem;
-  color: #4D1727;
+  color: #685359;
 }
 
 .policySection {
@@ -373,26 +373,28 @@
 .policySection p {
   margin-bottom: 1rem;
   color: #333;
+  font-family: 'Poppins', sans-serif;
 }
 
 .recommendedProducts {
   margin-top: 3.75rem;
   padding-top: 2.5rem;
-  border-top: 1px solid rgba(77, 23, 39, 0.1);
 }
 
-.recommendedProducts h3 {
+.recommendedProducts h2 {
   font-family: 'Wilkysta', serif;
-  font-weight: 700;
-  font-size: 1.75rem;
+  font-weight: 500;
+  font-size: 2.2rem;
   color: #4D1727;
   margin-bottom: 0.5rem;
 }
 
 .subtitle {
   font-size: 1rem;
-  color: #666;
+  color: #000000;
   margin-bottom: 1.5rem;
+    font-family: 'Poppins', sans-serif;
+
 }
 
 .productGrid {

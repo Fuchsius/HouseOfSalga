@@ -2,17 +2,36 @@
   font-family: 'Wilkysta';
   src: url('../../fonts/wilkysta.ttf') format('truetype');
 }
+
 .product-card {
   border: 1px solid #4D1727;
   border-radius: 8px;
   padding: 16px;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   font-family: 'Wilkysta', sans-serif;
-  width: 100%; 
+  width: 98%;
+  backdrop-filter: blur(5px);
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 50px;
 }
 
-.product-card:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.product-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.product-card:hover::before {
+  border-color: #4D1727;
+  box-shadow: 0 0 10px rgba(77, 23, 39, 0.2);
 }
 
 .product-image-container {
@@ -29,13 +48,18 @@
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.product-img.hover-scale {
+  transform: scale(1.05);
 }
 
 .favorite-button {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  background: white;
+  top: 6px;
+  right: 6px;
+  background: rgba(255, 255, 255, 0.9);
   border: none;
   width: 28px;
   height: 28px;
@@ -46,6 +70,21 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   z-index: 2;
+  transition: all 0.3s ease;
+}
+
+.favorite-button:hover {
+  transform: scale(1.1);
+}
+
+.favorite-button.button-pop {
+  animation: pop 0.3s ease;
+}
+
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
 }
 
 .favorite-button .filled {
@@ -54,14 +93,21 @@
 
 .product-info {
   text-align: left;
+  margin-left: 15px;
 }
 
 .product-name {
-  font-size: 10px;
-  color: #333;
+  font-size: 14px;
+  color: #888;
   white-space: nowrap;
   overflow: hidden;
- 
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+  transition: color 0.3s ease;
+}
+
+.product-card:hover .product-name {
+  color: #666;
 }
 
 .product-price {
@@ -69,6 +115,11 @@
   font-size: 20px;
   color: #4D1727;
   margin-bottom: 8px;
+  transition: color 0.3s ease;
+}
+
+.product-card:hover .product-price {
+  color: #3a101f;
 }
 
 .rating-container {
@@ -83,6 +134,7 @@
   color: #666;
 }
 
+/* Product grid styles remain the same */
 .product-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
