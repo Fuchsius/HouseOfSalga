@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FiSearch, FiFilter } from "react-icons/fi";
-import Breadcrumbs from "../components/Breadcrumbs";
+
 import Sidebar from "../components/Sidebar";
 import OrderTabs from "../components/OrderTabs";
 import OrderList from "../components/OrderList";
@@ -17,8 +17,7 @@ export default function Dashboard() {
 
       <div className="main-content">
         {/* breadcrumb */}
-        <Breadcrumbs paths={["Home", "My Account", "My Info"]} />
-
+        
         <div className="orders-header">
           <h2>My Orders</h2>
 

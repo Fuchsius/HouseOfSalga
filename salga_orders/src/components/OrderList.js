@@ -17,29 +17,30 @@ export default function OrderList({ selectedStatus, searchQuery }) {
         results.map((o) => (
           <div key={o.id}>
             {/* ── White box: Order summary only ── */}
-            <div className="order-card">
-              <div className="order-top-row">
-                <p className="order-id">Order no: #{o.id}</p>
-                <div className="order-dates">
-                  <p>
-  Order Date : {new Date(o.date).toLocaleString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true
-  })}
-</p>
+          { o.status === "In Process" && (
+  <div className="order-card">
+    <div className="order-top-row">
+      <p className="order-id">Order no: #{o.id}</p>
+      <div className={`order-dates ${o.status === "In Process" ? "default-font" : ""}`}>
+        <p>
+          Order Date : {new Date(o.date).toLocaleString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+          })}
+        </p>
+        <p>Estimated Delivery Date : {new Date(o.deliveryDate).toLocaleDateString('en-GB', {
+          day: '2-digit', month: 'short', year: 'numeric'
+        })}</p>
+      </div>
+    </div>
+  </div>
+)}
 
 
-<p>Estimated Delivery Date : {new Date(o.deliveryDate).toLocaleDateString('en-GB', {
-  day: '2-digit', month: 'short', year: 'numeric'
-})}</p>
-
-                </div>
-              </div>
-            </div>
 
             {/* ── Below: No white box ── */}
             <div className="order-details">

@@ -7,34 +7,34 @@
 
 .sidebar {
   width: 300px;
-
   background-color: #F0EADC;
-  border-right:none;
-  padding-top: 80px;
+  border-right: none;
+  padding-top: 40px;
+  padding-left: 3%;
 }
 
 .sidebar h3 {
   position: relative;
-  margin-top: 40px;            /* fixed typo from '2opx' */
+  margin-top: 40px;
   margin-bottom: 15px;
   font-size: 34px;
   font-family: wilkysta;
   color: #3C4242;
   display: flex;
   align-items: center;
-  line-height: 1; 
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .sidebar h3::before {
   content: "";
   display: inline-block;
   width: 7px;
-  height: 1em;                 /* height matches "H" */
-  background-color: #FFC107;  /* yellow */
+  height: 1em;
+  background-color: #FFC107;
   margin-right: 10px;
-  border-radius: 4px;         /* rounded edges */
+  border-radius: 4px;
 }
-
 
 .subtitle {
   color: #000;
@@ -44,139 +44,149 @@
   margin-bottom: 20px;
 }
 
-/* Sidebar.css */
-
 .sidebar .nav-links {
   display: flex;
-  flex-direction: column;   /* stack items one below the other          */
-  gap: 2px;                 /* space between links                      */
+  flex-direction: column;
+  gap: 2px;
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
 .sidebar .nav-links li {
+  width: 100%;
+}
+
+/* Button inside nav item */
+.sidebar-btn {
   display: flex;
   align-items: center;
   gap: 10px;
-  width: 100%;              /* take full width of the card              */
+  width: 100%;
   padding: 12px 16px;
-  border-radius: 8px;
+  border: none;
+  background: transparent;
+  font-family: 'Wilkysta';
+  font-size: 18px;
+  text-align: left;
   cursor: pointer;
   transition: background 0.25s;
+  color: inherit;
+  margin: 0;
+  border-radius: 0;
+  box-sizing: border-box;
 }
 
-
-
-.sidebar.nav-links li:hover {
+.sidebar-btn:hover {
   background-color: #e6ac06;
   color: #fff;
+  width: 119%;
+  margin-left: -20px;
 }
 
-
-.sidebar .nav-links li.active {
+.sidebar .nav-links li.active .sidebar-btn {
   background-color: #000;
-  color: #fff; 
+  color: #fff;
   font-weight: 600;
-  border: none;             /* Remove extra border */
-  border-radius: 0;         /* No curve */
-  margin: 0 -12px;          /* Extend edge-to-edge inside the padded box */
-  padding-left: 28px;  
-  box-sizing:content-box;
+  width: 119%;
+  margin-left: -20px;
+  padding: 12px 16px;
+  box-sizing: border-box;
 }
 
-.sidebar .nav-links li.active svg {
-  background: #000;
+.sidebar .nav-links li.active .sidebar-btn svg {
   color: #fff;
-  border-radius: 50%;
-  padding: 4px;
   width: 20px;
   height: 20px;
 }
 
-/* change the card background to pure white like the design */
-
-
 .nav-box {
-
   border: 2px solid #000;
   border-radius: 12px;
-  padding: 12px;
-  padding-left: 20px;
-  padding-right: 20px;
-  padding-top: 60px;
-  padding-bottom: 60px;
-  background-color: #fff;
+  padding: 60px 20px;
+  background-color: #F0EADC;
   width: 100%;
   box-sizing: border-box;
-  background-color: #F0EADC;
 }
 
+/* ✅ Responsive sidebar fix */
 @media (max-width: 768px) {
   .sidebar {
     width: 100%;
-    padding: 20px;
+    padding: 20px 16px 0 16px;
+    padding-top: 10px;
   }
 
   .sidebar .nav-links {
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: space-around;
+    justify-content: space-between;
+    gap: 12px;
   }
 
   .sidebar .nav-links li {
-    flex: 1 0 40%;
+    flex: 1 0 45%;
     text-align: center;
   }
-}
-@media (max-width: 768px) {
-  .sidebar {
+
+  .sidebar-btn {
+    justify-content: center;
+    padding: 10px;
     width: 100%;
-    padding: 20px;
+    margin-left: 0;
+  }
+
+  .sidebar .nav-links li.active .sidebar-btn,
+  .sidebar-btn:hover {
+    width: 100%;
+    margin-left: 0;
+  }
+}
+
+/* Remove scroll wrapper logic */
+.nav-links-wrapper {
+  overflow: visible;
+}
+/* ... existing styles ... */
+
+@media (max-width: 670px) {
+  .nav-box {
+    width: 100%; /* Changed from 50% to 100% */
+    padding: 30px 20px; /* Reduced padding to save space */
   }
 
   .sidebar .nav-links {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-around;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
   }
 
   .sidebar .nav-links li {
-    flex: 1 0 40%;
-    text-align: center;
+    width: 100%;
+  }
+
+  .sidebar-btn {
+    justify-content: flex-start;
+    width: 100%;
+    padding: 10px 12px; /* Adjusted padding */
+    font-size: 16px; /* Slightly smaller font */
+  }
+
+  .sidebar .nav-links li.active .sidebar-btn,
+  .sidebar-btn:hover {
+    width: 100%;
+    margin-left: 0;
   }
 }
-@media (max-width: 768px) {
-  .sidebar {
-    width: 100%;
-    padding: 20px;
-  }
 
-  .sidebar .nav-links {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-around;
+/* New media query for very small screens */
+@media (max-width: 400px) {
+  .sidebar-btn {
+    font-size: 14px; /* Smaller font for tiny screens */
+    padding: 8px 10px;
   }
-
-  .sidebar .nav-links li {
-    flex: 1 0 40%;
-    text-align: center;
-  }
-}
-@media (max-width: 768px) {
-  .sidebar {
-    width: 100%;
-    padding: 20px;
-  }
-
-  .sidebar .nav-links {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-around;
-  }
-
-  .sidebar .nav-links li {
-    flex: 1 0 40%;
-    text-align: center;
+  
+  .nav-box {
+    padding: 20px 15px; /* Less padding */
   }
 }

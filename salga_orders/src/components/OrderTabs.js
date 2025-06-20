@@ -6,15 +6,18 @@ export default function OrderTabs({ selectedStatus, onChangeStatus }) {
 
   return (
     <div className="order-tabs">
-      {tabs.map((tab) => (
-        <button
-          key={tab}
-          className={`tab-btn ${selectedStatus === tab ? 'active' : ''}`}
-          onClick={() => onChangeStatus(tab)}
-        >
-          {tab}
-        </button>
-      ))}
-    </div>
+  <div className="tab-group">
+    {tabs.map((tab) => (
+      <button
+        key={tab}
+        className={`tab-btn ${selectedStatus === tab ? 'active' : ''}`}
+        onClick={() => onChangeStatus(tab)}
+      >
+        {tab}
+      </button>
+    ))}
+  </div>
+</div>
+
   );
 }
