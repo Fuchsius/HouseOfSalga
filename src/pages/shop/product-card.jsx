@@ -9,11 +9,11 @@ export default function ProductCard({ product }) {
     <div className="bg-[#F0EADC] rounded-lg shadow-sm overflow-hidden group hover:shadow-md transition-shadow max-w-[200px] max-h-[358px]  border-1 border-[#4D1727] auto-fit ">
       {/* Product Image */}
       <div className="relative aspect-[3/4] overflow-hidden">
-        <div>
+        <div className="relative aspect-[3/4] overflow-hidden flex items-center justify-center">
           <img
             src={product.image || "/placeholder.svg"}
             alt={product.name}
-            className="object-contain group-hover:scale-105 transition-transform duration-300 w-full h-full min-w-[159px] min-h-[186px] min-top-[19px] min-left-[21px]  top-full left-full pt-3"
+            className="object-contain group-hover:scale-105 transition-transform duration-300 w-full h-full p-5"
           />
         </div>
 

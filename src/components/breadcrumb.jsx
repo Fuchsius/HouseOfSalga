@@ -1,9 +1,11 @@
 export default function Breadcrumb() {
   return (
-    <nav className="font-primary text-sm text-gray-600 ml-4 lg:ml-20 flex items-center flex-wrap">
-      <span className="hover:text-gray-900 cursor-pointer">Home</span>
-      <span className="mx-2">{">"}</span>
-      <span className="text-gray-900 font-medium">Shop</span>
-    </nav>
+    <div className="w-full max-w-7xl mx-auto px-0">
+      <nav className="font-primary text-sm text-gray-600 flex items-center flex-wrap py-4">
+        <span className="hover:text-gray-900 cursor-pointer">Home</span>
+        <span className="mx-2">{">"}</span>
+        <span className="text-gray-900 font-medium">Shop</span>
+      </nav>
+    </div>
   );
 }

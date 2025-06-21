@@ -68,14 +68,14 @@ export default function CartPage() {
         </h1>
 
         <div className="flex flex-col lg:flex-row gap-8  ">
-          <div className="w-full lg:w-2/3">
+          <div className="w-full lg:w-2/3  ">
             <CartItems
               items={cartItems}
               updateQuantity={updateQuantity}
               removeItem={removeItem}
             />
           </div>
-          <div className="w-full lg:w-1/3 lg:ml-8 ">
+          <div className="w-full lg:w-1/3 lg:ml-8 mr-72">
             <OrderSummary
               subtotal={subtotal}
               tax={tax}
