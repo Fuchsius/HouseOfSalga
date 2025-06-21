@@ -168,6 +168,7 @@ export default function ShopPage() {
             ))}
           </div>
         </div>
+        {/*mobile view*/}
         <div className="xl:hidden mb-4">
           <button
             className="bg-[#F0EADC] text-black px-4 py-2 rounded font-primary"

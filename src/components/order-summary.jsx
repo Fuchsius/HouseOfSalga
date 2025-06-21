@@ -16,7 +16,7 @@ export default function OrderSummary({ subtotal, tax, deliveryFee, total }) {
   };
 
   return (
-    <div className="bg-[#F0EADC] rounded-lg shadow-sm border-1 w-full max-w-[455px] h-full max-h-[532px] p-4 md:p-6 mx-auto space-y-6 ml-0">
+    <div className="bg-[#F0EADC] rounded-lg shadow-sm border-1 w-full max-w-[455px] h-full max-h-[532px] p-4 md:p-6 mx-auto space-y-6 ml-0 ">
       {/* Currency Section */}
       <div className="flex items-center mb-4">
         <Currency />

@@ -60,22 +60,22 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen bg-[#F0EADC] py-8 ">
-      <div className="container mx-auto px-4  ">
+      <div className="container mx-auto px-4 md:px-8 lg:px-12 ">
         <Breadcrumb />
-        <h1 className="text-3xl font-bold mt-6 mb-8 relative inline-block font-primary text-[#3C4242] ml-40">
+        <h1 className="text-3xl font-bold mt-6 mb-8 relative inline-block font-primary text-[#3C4242] ml-4 lg:ml-20">
           My Cart
           <span className="absolute -bottom-2 left-0 w-1/2 h-1 bg-yellow-400"></span>
         </h1>
 
-        <div className="flex flex-col lg:flex-row ">
-          <div className="lg:w-2/3">
+        <div className="flex flex-col lg:flex-row gap-8 ">
+          <div className="w-full lg:w-2/3">
             <CartItems
               items={cartItems}
               updateQuantity={updateQuantity}
               removeItem={removeItem}
             />
           </div>
-          <div className="lg:w-1/3 mr-64 ">
+          <div className="w-full lg:w-1/3 lg:ml-8  ">
             <OrderSummary
               subtotal={subtotal}
               tax={tax}

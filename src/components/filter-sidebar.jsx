@@ -19,7 +19,7 @@ export default function FilterSidebar() {
   ];
 
   return (
-    <div className="w-[428px] h-[1095px] top-[259px] left-[160px] bg-[#F0EADC] p-6 rounded-lg shadow-sm border-1">
+    <div className="w-full max-w-[90%] sm:max-w-[428px] h-auto sm:h-[1095px] top-[259px] left-[160px] bg-[#F0EADC] p-6 rounded-lg shadow-sm border">
       {/* Filters Header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="font-semibold text-gray-900 font-primary">FILTERS</h2>
@@ -51,7 +51,10 @@ export default function FilterSidebar() {
         <div className="space-y-2">
           <div className="flex items-center space-x-2">
             <Checkbox id="women" defaultChecked />
-            <label htmlFor="women" className="text-sm text-gray-700">
+            <label
+              htmlFor="women"
+              className="text-sm text-gray-700 font-primary"
+            >
               Women
             </label>
           </div>
@@ -69,8 +72,10 @@ export default function FilterSidebar() {
 
       {/* Size Section */}
       <div className="mb-6">
-        <h3 className="font-medium text-gray-900 mb-3 font-primary">SIZE</h3>
-        <div className="space-y-2">
+        <h3 className="font-medium text-gray-900 mb-3 font-primary font-primary">
+          SIZE
+        </h3>
+        <div className="space-y-2 font-primary">
           {["Small", "Medium", "Large", "Extra Large"].map((size) => (
             <div key={size} className="flex items-center space-x-2">
               <Checkbox id={size.toLowerCase()} />

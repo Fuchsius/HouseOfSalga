@@ -3,7 +3,7 @@ import { Trash2 } from "lucide-react";
 
 export default function CartItems({ items, updateQuantity, removeItem }) {
   return (
-    <div className="bg-[#F0EADC] w-[645px] h-[532px] top-[320px] left-[160px] pt-[20px] pr-[24px] pb-[20px] pl-[24px] ml-40 border-1 rounded-lg shadow-sm overflow-hidden">
+    <div className="bg-[#F0EADC] w-full lg:max-w-[645px] h-auto p-6 lg:ml-20 border rounded-lg shadow-sm overflow-hidden">
       {items.map((item) => (
         <div
           key={item.id}
