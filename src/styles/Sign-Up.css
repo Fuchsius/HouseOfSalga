@@ -1,0 +1,575 @@
+/* ✅ Set full page background color */
+body {
+  background: #F0EADCED;
+}
+
+/* ✅ Thank You Bag */
+.thank-bag {
+  width: 95px;
+  height: 95px;
+  margin: 0 auto;
+  margin-top: -30px;
+}
+/* ✅ Hover effect on thank-you bag image */
+.thank-bag:hover {
+  transform: scale(1.06);
+  transition: transform 0.3s ease;
+}
+
+.thank-title {
+  font-family: 'Wilkysta', serif;
+  font-size: 36px;
+  line-height: 44px;
+  color: #282828;
+  margin-top: 20px;
+}
+
+.thank-subtitle {
+  font-family: 'Wilkysta', serif;
+  font-size: 20px;
+  line-height: 10px;
+  letter-spacing: 0.5px;
+  font-weight: 600; 
+  color: #282828;
+}
+
+.order-id {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 28px;
+  text-transform: uppercase;
+  margin-top: 30px;
+}
+
+/* ✅ Order Section Layout */
+.order-section {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 32px;
+  margin-bottom: 48px;
+}
+
+/* ✅ Image Box (Position Control) */
+.order-image-box {
+  width: 290px;
+  height: 350px;
+  background-color: #ffffff;
+  border-radius: 8.66px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  position: relative;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-left: 100px;
+}
+
+.order-image {
+  width: auto;
+  height: 400px;
+  object-fit: contain;
+  position: relative;
+  left: -200px;
+  top: 10px; 
+  margin-top: -60px;
+  margin-bottom: 20px;
+}
+
+.order-image:hover {
+  transform: scale(1.08);
+  transition: transform 0.3s ease;
+}
+
+/* ✅ Shared Column Styling */
+.info-column {
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ✅ Individual Column Spacing */
+.column-1 {
+  margin-top: 0px;
+  margin-left: 100px;
+  margin-right: 0;
+  margin-bottom: 0;
+}
+
+.column-2 {
+  margin-top: 0px;
+  margin-left: -220px;
+  margin-right: 0;
+  margin-bottom: 0;
+}
+
+.column-3 {
+  margin-top: 0px;
+  margin-left: -130px;
+  margin-right: 20px;
+  margin-bottom: 0;
+}
+
+/* ✅ Column Content Styling */
+.info-title {
+  font-family: 'Wilkysta', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #282828;
+}
+
+.info-subhead {
+  font-family: 'Wilkysta', serif;
+  font-size: 20px;
+  font-weight: 700;
+  margin-top: 10px;
+  color: black;
+}
+
+.info-body {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  color: #000;
+}
+
+.info-subtext {
+  font-family: 'Wilkysta', serif;
+  font-size: 14px;
+  margin: 5px 0;
+}
+
+.info-subtext .badge {
+  background-color: transparent;
+  color: #000000;
+  font-weight: 700;
+  font-size: 18px;
+  padding: 0;
+  border-radius: 0;
+  margin-right: 4px;
+}
+
+.price {
+  font-family: 'Wilkysta', serif;
+  font-size: 20px;
+  color: #000;
+  margin-top: 10px;
+}
+
+/* ✅ Buttons */
+.cancel-btn,
+.continue-btn {
+  width: 220px;
+  height: 60px;
+  border-radius: 12px;
+  border: 1px solid #000;
+  padding: 16px 54px;
+  font-family: 'Wilkysta', serif;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  white-space: nowrap;
+}
+
+.cancel-btn {
+  background-color: #F0EADC;
+  color: #4D1727;
+  margin-left: -25px;
+}
+
+.cancel-btn:hover {
+  background-color: #e6ddc3;
+  transform: scale(1.02);
+}
+
+.continue-btn {
+  background-color: #FFC107;
+  color: #4D1727;
+  margin-left: -20px;
+  text-align: center;
+  margin-top:16px;
+}
+
+.continue-btn:hover {
+  background-color: #e6ac00;
+  transform: scale(1.02);
+}
+
+/* ✅ Recommendations Section */
+.suggest-title {
+  text-align: center;
+  font-family: 'Wilkysta', serif;
+  font-size: 40px;
+  font-weight: 700;
+  color: #282828;
+  margin-top: 90px;
+}
+
+.item-card {
+  width: 200px;
+  height: 380px;
+  border-radius: 12px;
+  border: 1px solid #4D1727;
+  padding: 10px;
+  position: relative;
+  text-align: center;
+  background-color: #F0EADCED;
+  transition: transform 0.3s ease;
+}
+
+.icon-bg {
+  background-color: #FCFCFD;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  padding: 7px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.icon-img {
+  width: 14px;
+  height: 12px;
+}
+
+.item-img {
+  width: 154px;
+  height: 203px;
+  margin: 0 auto;
+  margin-top: 40px;
+  object-fit: cover;
+}
+
+.item-title {
+  font-family: 'Wilkysta', serif;
+  font-size: 16px;
+  color: #6C7275;
+  margin-top: 10px;
+}
+
+.item-price {
+  font-family: 'Wilkysta', serif;
+  font-size: 18px;
+  color: black;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  color: #6C7275;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+}
+
+.tharuu-container {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Wilkysta', serif;
+  font-size: 16px;
+  color: #282828;
+  font-weight: 600;
+  z-index: 10;
+}
+
+.tharuu-container img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+/* ✅ Center Section Styling */
+.thank-you-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 100px;
+  padding-bottom: 40px;
+  text-align: center;
+}
+
+.thank-text {
+  line-height: 1.1;
+}
+
+.button-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+/* ✅ Reduced line spacing for multi-line texts in address & payment */
+.reduced-line-height {
+  line-height: 18px;
+}
+
+.spacing-tight {
+  margin-top: 4px !important;
+}
+
+.large-text {
+  font-size: 18px !important;
+}
+
+.payment-method {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.column-3 .info-title.spacing-tight {
+  margin-top: 37px !important;
+}
+
+/* ✅ Flex container for recommended cards */
+.recommendations-container {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  flex-wrap: wrap;
+  margin-top: 40px;
+  margin-bottom: 80px;
+}
+
+/* ✅ Hover effect on item-card */
+.item-card:hover {
+  transform: scale(1.06);
+  transition: transform 0.3s ease;
+  z-index: 1;
+}
+/* ✅ Enhanced Responsive Styling */
+
+/* Tablets and small desktops (width <= 1024px) */
+@media screen and (max-width: 1024px) {
+  .order-section {
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    padding: 0 20px;
+  }
+
+  .order-image-box {
+    margin-left: 0;
+    margin-right: 0;
+    align-self: center;
+  }
+
+  .column-1,
+  .column-2,
+  .column-3 {
+    margin: 0 auto;
+    width: 95%;
+    padding: 10px 0;
+    text-align: center; /* ✅ Center content */
+  }
+
+  .recommendations-container {
+    gap: 32px;
+    justify-content: center;
+    padding: 0 20px;
+  }
+
+  .thank-title {
+    font-size: 32px;
+    text-align: center;
+  }
+
+  .thank-subtitle {
+    font-size: 20px;
+    text-align: center;
+  }
+
+  .order-id {
+    text-align: center;
+  }
+
+  .info-body,
+  .info-subhead,
+  .info-title {
+    text-align: center; /* ✅ Align center for tablets */
+  }
+
+  .cancel-btn,
+  .continue-btn {
+    width: 70%; /* ✅ Scaled button width */
+    display: block;
+    margin: 10px auto;
+  }
+}
+
+/* Mobile devices (width <= 768px) */
+@media screen and (max-width: 768px) {
+  .thank-title {
+    font-size: 26px;
+    line-height: 1.3;
+  }
+
+  .thank-subtitle {
+    font-size: 16px;
+    line-height: 1.4;
+  }
+
+  .order-id {
+    font-size: 16px;
+    margin-top: 20px;
+  }
+
+  .order-image-box {
+    width: 90%;
+    height: auto;
+    justify-content: center;
+    padding: 10px;
+  }
+
+  .order-image {
+    width: 100%;
+    height: auto;
+    position: static;
+    margin: 0;
+  }
+
+  .column-1,
+  .column-2,
+  .column-3 {
+    width: 100%;
+    margin: 0;
+    padding: 0 10px;
+    text-align: center; /* ✅ Center alignment */
+  }
+
+  .item-card {
+    width: 160px;
+    height: auto;
+    padding: 10px;
+  }
+
+  .item-img {
+    width: 120px;
+    height: auto;
+  }
+
+  .suggest-title {
+    font-size: 26px;
+    margin-top: 50px;
+    text-align: center;
+  }
+
+  .cancel-btn,
+  .continue-btn {
+    width: 100%; /* ✅ Full-width buttons on mobile */
+    height: 50px;
+    font-size: 16px;
+    margin: 10px auto 0;
+    padding: 12px 0;
+    display: block;
+  }
+
+  .thank-bag {
+    width: 70px;
+    height: 70px;
+  }
+
+  .recommendations-container {
+    gap: 20px;
+    padding: 0 10px;
+  }
+
+  .rating {
+    flex-wrap: wrap;
+    font-size: 13px;
+  }
+
+  .info-body,
+  .info-subhead,
+  .info-title {
+    text-align: center; /* ✅ Mobile center text */
+  }
+}
+
+/* Small mobile devices (width <= 480px) */
+@media screen and (max-width: 480px) {
+  .thank-you-center {
+    padding-top: 60px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .thank-title {
+    font-size: 22px;
+    text-align: center;
+  }
+
+  .thank-subtitle {
+    font-size: 15px;
+    text-align: center;
+  }
+
+  .order-id {
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .item-card {
+    width: 140px;
+    padding: 10px;
+  }
+
+  .item-img {
+    width: 100px;
+    height: 140px;
+  }
+
+  .suggest-title {
+    font-size: 22px;
+    text-align: center;
+  }
+
+  .info-title,
+  .info-subhead,
+  .info-body {
+    font-size: 15px;
+    line-height: 1.4;
+    text-align: center; /* ✅ Full center on small mobile */
+  }
+
+  .price,
+  .payment-method {
+    font-size: 15px;
+    text-align: center;
+  }
+
+  .cancel-btn,
+  .continue-btn {
+    font-size: 15px;
+    width: 100%; /* ✅ Full width buttons on small devices */
+    height: 45px;
+    display: block;
+    margin: 10px auto;
+  }
+
+  .tharuu-container {
+    top: 8px;
+    left: 8px;
+    font-size: 14px;
+    gap: 6px;
+  }
+
+  .tharuu-container img {
+    width: 20px;
+    height: 20px;
+  }
+}

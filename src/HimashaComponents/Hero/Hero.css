@@ -1,0 +1,303 @@
+
+
+.hero-section {
+    background-color: #F0EADC;
+    padding: clamp(15px, 5vw, 80px) clamp(10px, 4vw, 60px);
+    font-family: "Playfair Display", serif;
+    width: 100%;
+}
+
+.hero-container {
+    max-width: 1181px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.hero-text {
+    text-align: center;
+    width: 100%;
+}
+
+.hero-title {
+    font-size: 36px;
+    font-weight: 400;
+    color: #000;
+    line-height: 1.2;
+    margin-bottom: 12px;
+    max-width: 100%;
+    font-family: 'Wilkysta', sans-serif;
+}
+
+.hero-description {
+    font-size: 12px;
+    font-weight: 400;
+    color: #000;
+    margin: 0 auto 12px;
+    max-width: 90%;
+}
+
+.hero-button {
+    margin-top: 12px;
+    background-color: #000;
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 400;
+    border-radius: 10px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background-color 0.3s ease;
+    min-width: 140px;
+    justify-content: center;
+    font-family: 'Wilkysta', sans-serif;
+}
+
+.hero-button:hover {
+    background-color: #222;
+}
+
+.arrow {
+    font-size: 16px;
+}
+
+.hero-image-container {
+    position: relative;
+    width: 100%;
+    max-width: 260px;
+    aspect-ratio: 404/604;
+}
+
+.hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-top-left-radius: 250px;
+    border-top-right-radius: 250px;
+    border: 1px solid #754F23;
+    position: relative;
+    background-color: white;
+     z-index: 1;
+}
+
+.hero-arch {
+    position: absolute;
+    top: -10%;
+    left: -2%;
+    width: 97.3%;
+    height: 108%;
+    border: 2px solid #754F23;
+    border-top-left-radius: 250px;
+    border-top-right-radius: 250px;
+    border-bottom: none;
+    transform: rotate(-3.73deg);
+    transform-origin: center center;
+    z-index: 0;
+    background: transparent;
+    pointer-events: none;
+}
+
+/* Extra small devices (under 336px) */
+@media (max-width: 335px) {
+    .hero-section {
+        padding: 15px 8px;
+    }
+    
+    .hero-title {
+        font-size: 28px;
+        margin-bottom: 8px;
+    }
+    
+    .hero-description {
+        font-size: 11px;
+        max-width: 95%;
+    }
+    
+    .hero-button {
+        padding: 8px 16px;
+        font-size: 12px;
+        min-width: 120px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+    
+    .arrow {
+        font-size: 14px;
+    }
+    
+    .hero-image-container {
+        max-width: 220px;
+        height: auto;
+        
+    }
+    
+    .hero-image,
+    .hero-arch {
+        
+        border-top-left-radius: 100px;
+        border-top-right-radius: 100px;
+    }
+}
+
+/* Small mobile devices (336px to 575px) */
+@media (min-width: 336px) and (max-width: 575px) {
+    .hero-section {
+        padding: 25px 15px;
+    }
+    
+    .hero-title {
+        font-size: 32px;
+    }
+    
+    .hero-description {
+        font-size: 13px;
+    }
+    
+    .hero-button {
+        font-size: 15px;
+        margin-bottom: 30px;
+    }
+    
+    .hero-image-container {
+        max-width: 250px;
+        height: auto;
+    }
+    
+    .hero-image,
+    .hero-arch {
+        border-top-left-radius: 140px;
+        border-top-right-radius: 140px;
+    }
+}
+
+/* Small devices (576px to 767px) */
+@media (min-width: 576px) {
+    .hero-section {
+        padding: 30px 20px;
+    }
+    
+    .hero-title {
+        font-size: 40px;
+    }
+    
+    .hero-description {
+        font-size: 14px;
+    }
+    
+    .hero-button {
+        font-size: 16px;
+        padding: 12px 24px;
+        margin-bottom: 30px;
+    }
+    
+    .hero-image-container {
+        max-width: 320px;
+    }
+    
+    .hero-image,
+    .hero-arch {
+        border-top-left-radius: 160px;
+        border-top-right-radius: 160px;
+    }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+    .hero-section {
+        padding: 60px 40px;
+    }
+    
+    .hero-container {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 40px;
+    }
+    
+    .hero-text {
+        text-align: left;
+        width: 50%;
+        max-width: 585px;
+    }
+    
+    .hero-title {
+        font-size: 64px;
+    }
+    
+    .hero-description {
+        margin: 0 0 20px 0;
+        max-width: 100%;
+        font-size: 16px;
+    }
+    
+    .hero-button {
+        font-size: 18px;
+        padding: 14px 28px;
+    }
+    
+    .hero-image-container {
+        max-width: 380px;
+    }
+    
+    .hero-image,
+    .hero-arch {
+        border-top-left-radius: 200px;
+        border-top-right-radius: 200px;
+    }
+}
+
+/* Large devices (desktops, 1024px and up) */
+@media (min-width: 1024px) {
+    .hero-section {
+        padding: 80px 60px;
+    }
+    
+    .hero-title {
+        font-size: 80px;
+        line-height: 1.1;
+    }
+    
+    .hero-description {
+        font-size: 18px;
+    }
+    
+    .hero-button {
+        font-size: 20px;
+        min-width: 200px;
+        height: 60px;
+    }
+    
+    .arrow {
+        font-size: 24px;
+    }
+    
+    .hero-image-container {
+        max-width: 404px;
+    }
+    
+    .hero-image,
+    .hero-arch {
+        border-top-left-radius: 250px;
+        border-top-right-radius: 250px;
+    }
+}
+
+/* Extra large devices (large desktops, 1440px and up) */
+@media (min-width: 1440px) {
+    .hero-title {
+        font-size: 96px;
+        line-height: 1.15;
+    }
+    
+    .hero-description {
+        font-size: 20px;
+    }
+    
+    .hero-button {
+        font-size: 24px;
+    }
+}
