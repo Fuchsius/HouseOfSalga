@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
-import Breadcrumb from "./breadcrumb";
+import Breadcrumb from "../../components/breadcrumb";
 
 export default function Header() {
   const [selectedSort, setSelectedSort] = useState("Most Popular");
@@ -15,7 +15,7 @@ export default function Header() {
 
   return (
     <div className="bg-[#F0EADC] border-b border-[#F0EADC]">
-      <div className="container mx-auto px-4 py-4">
+      <div className="container mx-auto px-4 py-4 ">
         <div className="flex items-center justify-between w-full gap-2 ml-6">
           <Breadcrumb />
           <div className="flex items-center gap-2 mr-56">

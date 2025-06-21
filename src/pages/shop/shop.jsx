@@ -150,13 +150,14 @@ export default function ShopPage() {
   ];
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   return (
-    <div className="min-h-screen bg-[#F0EADC] text-lg md:">
+    <div className="min-h-screen  bg-[#F0EADC] text-lg md:">
       <Header />
       <div className="max-w-6xl mx-auto">
-        <div className="xl:grid xl:grid-cols-5 gap-4 hidden ">
+        <div className="xl:grid xl:grid-cols-5 gap-1 hidden ">
           <div className="col-span-2 ">
             <FilterSidebar />
           </div>
+
           <div className="xl:col-span-3 grid xl:grid-cols-3 gap-4">
             {products.slice(0, 9).map((product) => (
               <ProductCard key={product.id} product={product} />

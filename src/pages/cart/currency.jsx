@@ -20,7 +20,7 @@ export default function CurrencyDropdown() {
     <div className="relative w-40">
       {/* Currency label and icon */}
       <div className="flex items-center justify-between bg-[#F0EADC]  p-2">
-        <span className="text-gray-700 font-Playfair Display size-[20px] w-[400]">
+        <span className="text-gray-700 font-Playfair Display size-[20px] w-[400]font-primary">
           Currency{selectedCurrency}
         </span>
 
@@ -37,12 +37,12 @@ export default function CurrencyDropdown() {
 
       {/* Dropdown List */}
       {isOpen && (
-        <div className="absolute mt-2 bg-white border border-gray-300 rounded-lg shadow-lg w-full z-10">
+        <div className="absolute mt-2 bg-[#F0EADC] border border-[#F0EADC] rounded-lg shadow-lg w-full z-10">
           {currencies.map((currency) => (
             <div
               key={currency}
               onClick={() => selectCurrency(currency)}
-              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+              className="px-4 py-2 hover:bg-gray-100 cursor-pointer font-primary"
             >
               {currency}
             </div>

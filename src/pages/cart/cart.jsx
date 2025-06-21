@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Breadcrumb from "./breadcrumb";
+import Breadcrumb from "../../components/breadcrumb";
 import CartItems from "./cart-items";
 import OrderSummary from "./order-summary";
 
@@ -67,7 +67,7 @@ export default function CartPage() {
           <span className="absolute -bottom-2 left-0 w-1/2 h-1 bg-yellow-400"></span>
         </h1>
 
-        <div className="flex flex-col lg:flex-row gap-8 ">
+        <div className="flex flex-col lg:flex-row gap-8  ">
           <div className="w-full lg:w-2/3">
             <CartItems
               items={cartItems}
@@ -75,7 +75,7 @@ export default function CartPage() {
               removeItem={removeItem}
             />
           </div>
-          <div className="w-full lg:w-1/3 lg:ml-8  ">
+          <div className="w-full lg:w-1/3 lg:ml-8 ">
             <OrderSummary
               subtotal={subtotal}
               tax={tax}

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Button } from "../components/ui/button";
-import { Checkbox } from "../components/ui/checkbox";
-import { Slider } from "../components/ui/slider";
+import { Button } from "../../components/ui/button";
+import { Checkbox } from "../../components/ui/checkbox";
+import { Slider } from "../../components/ui/slider";
 import { SlidersHorizontal, ChevronUp } from "lucide-react";
 
 export default function FilterSidebar() {
@@ -19,7 +19,7 @@ export default function FilterSidebar() {
   ];
 
   return (
-    <div className="w-full max-w-[90%] sm:max-w-[428px] h-auto sm:h-[1095px] top-[259px] left-[160px] bg-[#F0EADC] p-6 rounded-lg shadow-sm border">
+    <div className="w-full  lg:max-w-[428px] h-auto lg:h-[1095px] top-[259px]  bg-[#F0EADC] p-6 rounded-lg shadow-sm border">
       {/* Filters Header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="font-semibold text-gray-900 font-primary">FILTERS</h2>

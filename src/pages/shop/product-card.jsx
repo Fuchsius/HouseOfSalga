@@ -6,7 +6,7 @@ export default function ProductCard({ product }) {
   };
 
   return (
-    <div className="bg-[#F0EADC] rounded-lg shadow-sm overflow-hidden group hover:shadow-md transition-shadow max-w-[200px] max-h-[358px]  border-1 border-[#4D1727] ">
+    <div className="bg-[#F0EADC] rounded-lg shadow-sm overflow-hidden group hover:shadow-md transition-shadow max-w-[200px] max-h-[358px]  border-1 border-[#4D1727] auto-fit ">
       {/* Product Image */}
       <div className="relative aspect-[3/4] overflow-hidden">
         <div>
