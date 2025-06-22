@@ -24,34 +24,33 @@ const NewArrivals = () => {
   return (
     <div>
       <section className="new-arrivals-section" id="new-arrivals">
-      <div className="container">
-        <h2 className="section-title">
-          New <span>Arrivals</span>
-        </h2>
-        <div className="products-grid1">
-          {products.map((product) => (
-            <div key={product.id} className="product-card1">
-              <img
-                src={product.image}
-                alt="Tailored Jacket"
-                className="product-image"
-              />
-              <div className="product-details">
-                <p className="product-name">Tailored Jacket</p>
-                <div className="product-meta">
-                  <span className="product-price">{product.price}</span>
-                  <span className="divider">|</span>
-                  <span className="product-rating">5.0</span>
-                  <span className="star">★</span>
+        <div className="new-arrivals-container">
+          <h2 className="new-arrivals-title">
+            New <span className="new-arrivals-span">Arrivals</span>
+          </h2>
+          <div className="products-grid1">
+            {products.map((product) => (
+              <div key={product.id} className="product-card1">
+                <img
+                  src={product.image}
+                  alt="Tailored Jacket"
+                  className="new-arrivals-product-image"
+                />
+                <div className="new-arrivals-product-details">
+                  <p className="new-arrivals-product-name">Tailored Jacket</p>
+                  <div className="new-arrivals-product-meta">
+                    <span className="new-arrivals-product-price">{product.price}</span>
+                    <span className="new-arrivals-divider">|</span>
+                    <span className="new-arrivals-product-rating">5.0</span>
+                    <span className="new-arrivals-star">★</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+          <button className="new-arrivals-load-more-button">Load More</button>
         </div>
-        <button className="load-more-button">Load More</button>
-      </div>
-    </section>
-      
+      </section>
     </div>
   )
 }
