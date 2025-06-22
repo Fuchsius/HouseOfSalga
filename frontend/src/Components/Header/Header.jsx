@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom'; // Add this import
 import './Header.css';
 
 import dropdownIcon from '../../Assets/drop-down.png';
@@ -55,10 +56,12 @@ function Header() {
         </div>
 
         <div className="left-section">
-          <div className="logo">Salga</div>
+          <div className="logo">
+            <Link to="/" className="logo-link">Salga</Link>
+          </div>
 
           <nav className="nav-links">
-            <span className="nav-item hover-link">Home</span>
+            <Link to="/" className="nav-item hover-link">Home</Link>
 
             <div className="dropdown-wrapper">
               <span className="nav-item hover-link" onClick={toggleWomenDropdown}>
@@ -83,7 +86,7 @@ function Header() {
             <input type="text" placeholder="Search" />
           </div>
 
-          <span className="nav-item hover-link">Login</span>
+          <Link to="/signin" className="nav-item hover-link">Login</Link>
           <img src={userIcon} alt="User" className="icon" />
           <img src={cartIcon} alt="Cart" className="icon" />
           <img src={favIcon} alt="Favorite" className="icon fav-icon" />
@@ -107,7 +110,7 @@ function Header() {
 
       {showMobileMenu && (
         <div className="mobile-menu">
-          <div className="mobile-menu-item">Home</div>
+          <Link to="/" className="mobile-menu-item">Home</Link>
 
           <div className="dropdown-wrapper">
             <div className="mobile-menu-item" onClick={toggleWomenDropdown}>
@@ -124,7 +127,7 @@ function Header() {
             )}
           </div>
 
-          <div className="mobile-menu-item">Login</div>
+          <Link to="/signin" className="mobile-menu-item">Login</Link>
 
           <div className="dropdown-wrapper">
             <div className="mobile-menu-item" onClick={toggleLanguageDropdown}>
