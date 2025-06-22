@@ -57,8 +57,8 @@ function Header() {
 
         <div className="left-section">
           <div className="logo">
-            <Link to="/" className="logo-link">Salga</Link>
-          </div>
+             <Link to="/" className="logo-link">Salga</Link>
+         </div>
 
           <nav className="nav-links">
             <Link to="/" className="nav-item hover-link">Home</Link>

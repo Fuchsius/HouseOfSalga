@@ -36,11 +36,47 @@ body {
   padding-left: 40px;
 }
 
+.logo{
+  font-family: 'Playfair Display', serif;
+  font-weight: 600;
+  font-size: 36px;
+  color: #000000 !important;
+}
+/* Original logo style with fixes */
 .logo {
   font-family: 'Playfair Display', serif;
   font-weight: 600;
   font-size: 36px;
-  color: #000;
+  color: #000000 !important; /* Force black color */
+  text-decoration: none; /* Remove underline if it's a link */
+}
+
+/* If logo is a link, target it specifically */
+.logo a,
+a.logo {
+  color: #000000 !important;
+  text-decoration: none;
+}
+
+/* Handle all link states */
+.logo:link,
+.logo:visited,
+.logo:hover,
+.logo:active {
+  color: #000000 !important;
+  text-decoration: none;
+}
+
+/* Alternative: More specific selector if logo is inside a link */
+ a .logo,
+.header a .logo {
+  color: #000000 !important;
+  text-decoration: none;
+}
+
+/* Reset any inherited link styles */
+.logo, .logo * {
+  color: inherit !important;
 }
 
 .nav-links {

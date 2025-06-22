@@ -6,8 +6,8 @@ import SignIn from './Pages/Signin/SignIn'
 import Product from './Pages/Product/Product'
 import ProductReturns from './Pages/ProductReturns/ProductReturns'
 import ProductReview from './Pages/ProductReview/ProductReview'
-import SignUp from './Pages/SignUp/SignUp'
-
+import SignUp from './Pages/Signup/SignUp'
+import ViewOrder from './Pages/ViewOrder/ViewOrder'
 
 const App = () => {
   return (
@@ -21,6 +21,7 @@ const App = () => {
         <Route path='/product' element={<Product/>}/>
         <Route path="/product/returns" element={<ProductReturns />} />
         <Route path="/product/review" element={<ProductReview />} />
+        <Route path='/vieworder' element={<ViewOrder/>}/>
         {/* Add more routes as needed */}
       </Routes>
     </div>

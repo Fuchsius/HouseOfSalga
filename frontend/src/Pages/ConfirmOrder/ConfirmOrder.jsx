@@ -2,10 +2,17 @@ import React from 'react'
 import './ConfirmOrder.css'
 import Header from '../../Components/Header/Header'
 import Footer from '../../Components/Footer/Footer'
+import { useNavigate } from 'react-router-dom'
 
 
 
 const ConfirmOrder = () => {
+
+  const navigate = useNavigate();
+
+  const handleViewOrder = () => {
+  navigate('/vieworder');
+};
   return (
     <div>
         
@@ -23,7 +30,11 @@ const ConfirmOrder = () => {
         </p>
         <div className="button-group">
           <button className="shop-btn">Go to shopping</button>
-          <button className="view-order-btn">View Order</button>
+         <button 
+            className="view-order-btn"
+            onClick={handleViewOrder}
+          >
+          View Order</button>
         </div>
       </div>
     </div>
