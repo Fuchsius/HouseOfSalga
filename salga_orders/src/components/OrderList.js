@@ -68,7 +68,16 @@ export default function OrderList({ selectedStatus, searchQuery }) {
 
   <div className="order-cta">
     <button className="continue-btn">Continue Shopping</button>
-    <button className="track-btn">Track Order</button>
+    {o.status === "In Process" && (
+  <button className="track-btn">Track Order</button>
+)}
+{o.status === "Completed" && (
+  <button className="track-btn">Write a Review</button>
+)}
+{o.status === "Cancelled" && (
+  <button className="track-btn">Buy Now</button>
+)}
+
   </div>
 </div>
 

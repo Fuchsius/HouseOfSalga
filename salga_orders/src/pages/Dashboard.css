@@ -11,11 +11,11 @@
   background-color: #F0EADC;
   font-family: 'Segoe UI', sans-serif;
   color: #3C4242;
-  margin-top:0px;
-  padding: 0 100px;
+  margin-top: 0;
+  padding: 0 40px;
   box-sizing: border-box;
-  flex-wrap: wrap;
-  min-height: 100vh; /* instead of height: 100vh */
+  min-height: 100vh;
+  gap: 40px;
 }
 
 

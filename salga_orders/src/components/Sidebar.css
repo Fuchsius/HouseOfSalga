@@ -44,6 +44,27 @@
   margin-bottom: 20px;
 }
 
+.sidebar-header {
+  margin-bottom: 20px;
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 14px;
+  color: #6C7275;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.breadcrumbs .sep {
+  margin: 0 4px;
+  color: #999;
+}
+
+
+
 .sidebar .nav-links {
   display: flex;
   flex-direction: column;

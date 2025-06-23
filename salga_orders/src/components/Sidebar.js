@@ -21,21 +21,22 @@ const links = [
 export default function Sidebar() {
   return (
     <aside className="sidebar">
-      <Breadcrumbs paths={['Home', 'My Account', 'My Orders']} />
-
-      <h3>Hello Amanda,</h3>
-      <p className="subtitle">Welcome to your account</p>
+      {/* ✅ Breadcrumbs */}
+      <div className="sidebar-header">
+        <Breadcrumbs paths={['Home', 'My Account', 'My Orders']} />
+        <h3>Hello Amanda,</h3>
+        <p className="subtitle">Welcome to your account</p>
+      </div>
 
       <div className="nav-box">
         <ul className="nav-links">
           {links.map(({ label, icon, active }) => (
             <li key={label} className={active ? "active" : ""}>
-  <button className="sidebar-btn">
-    {icon}
-    <span>{label}</span>
-  </button>
-</li>
-
+              <button className="sidebar-btn">
+                {icon}
+                <span>{label}</span>
+              </button>
+            </li>
           ))}
         </ul>
       </div>

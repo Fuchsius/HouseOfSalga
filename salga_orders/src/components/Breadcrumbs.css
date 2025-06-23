@@ -30,6 +30,30 @@
   color: #000;
 }
 
+
+.breadcrumb-link {
+  color: #6d6d6d;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.breadcrumb-link:hover {
+  color: #000;
+  text-decoration: underline;
+}
+
+
+.breadcrumbs a {
+  color: #6C7275;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.breadcrumbs a:hover {
+  color: #000;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .breadcrumbs {

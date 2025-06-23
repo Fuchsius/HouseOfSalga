@@ -17,14 +17,15 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 230px;
-  border-bottom: 5px solid #000;
+  gap: 100px; /* increased gap */
+  border-bottom: 3px solid #000;
   padding-bottom: 6px;
   width: 100%;
   max-width: 100%;
   position: relative;
   z-index: 0;
 }
+
 
 .tab-btn {
   position: relative;
@@ -69,14 +70,17 @@
 
 @media (max-width: 1024px) {
   .tab-group {
-    justify-content: space-around;
-    gap: 24px;
+    gap: 10px; /* or even 32px */
+    justify-content: center;
+    flex-wrap: wrap;
   }
 
   .tab-btn {
     font-size: 16px;
-    padding: 12px 20px;
+    padding: 10px 16px;
   }
+
+
 
   .tab-btn.active {
     padding: 12px 24px;
@@ -118,5 +122,18 @@
 
   .tab-btn.active {
     padding: 6px 12px;
+  }
+}
+
+@media (max-width: 900px) and (min-width: 771px) {
+  .tab-group {
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    font-size: 15px;
+    padding: 8px 12px;
   }
 }
