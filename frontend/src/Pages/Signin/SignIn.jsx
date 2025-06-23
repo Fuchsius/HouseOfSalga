@@ -61,7 +61,7 @@ function SignIn() {
       setMessage('Signed in successfully! Redirecting...');
       setTimeout(() => {
         setMessage(null);
-        navigate('/home'); // ✅ redirect to /home instead of /
+        navigate('/'); // ✅ redirect to /home instead of /
       }, 1000);
     } catch (err) {
       setMessageType('error');
