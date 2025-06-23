@@ -8,6 +8,7 @@ import ProductReturns from './Pages/ProductReturns/ProductReturns'
 import ProductReview from './Pages/ProductReview/ProductReview'
 import SignUp from './Pages/Signup/SignUp'
 import ViewOrder from './Pages/ViewOrder/ViewOrder'
+import Shop from './Pages/Shop/Shop'
 
 const App = () => {
   return (
@@ -22,6 +23,7 @@ const App = () => {
         <Route path="/product/returns" element={<ProductReturns />} />
         <Route path="/product/review" element={<ProductReview />} />
         <Route path='/vieworder' element={<ViewOrder/>}/>
+        <Route path='/shop' element={<Shop/>}/>
         {/* Add more routes as needed */}
       </Routes>
     </div>

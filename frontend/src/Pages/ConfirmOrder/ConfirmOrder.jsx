@@ -9,6 +9,10 @@ import { useNavigate } from 'react-router-dom'
 const ConfirmOrder = () => {
 
   const navigate = useNavigate();
+  const handleExploreClick = () => {
+    navigate('/shop');  
+  };
+
 
   const handleViewOrder = () => {
   navigate('/vieworder');
@@ -29,7 +33,8 @@ const ConfirmOrder = () => {
           Thanks again for choosing us!
         </p>
         <div className="button-group">
-          <button className="shop-btn">Go to shopping</button>
+          <button className="shop-btn" onClick={handleExploreClick}>Go to shopping</button>
+          
          <button 
             className="view-order-btn"
             onClick={handleViewOrder}
