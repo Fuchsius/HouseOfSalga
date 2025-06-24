@@ -41,8 +41,10 @@ const Product = () => {
     reviewCount: 18
   };
 
+  // Get product from location state or use default
   const product = location.state?.product || defaultProduct;
 
+  // Initialize states with product-specific data
   const [selectedSize, setSelectedSize] = useState(product.sizes?.[0] || 'M');
   const [selectedColor, setSelectedColor] = useState(product.colors?.[0] || 'orange');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -148,22 +150,28 @@ const Product = () => {
                   console.error('Failed to load main image:', product.images[currentImageIndex]);
                 }}
               />
-              <button className="nav-button prev" onClick={prevImage}>
-                <FaChevronLeft />
-              </button>
-              <button className="nav-button next" onClick={nextImage}>
-                <FaChevronRight />
-              </button>
+              {product.images.length > 1 && (
+                <>
+                  <button className="nav-button prev" onClick={prevImage}>
+                    <FaChevronLeft />
+                  </button>
+                  <button className="nav-button next" onClick={nextImage}>
+                    <FaChevronRight />
+                  </button>
+                </>
+              )}
             </div>
-            <div className="image-dots-container">
-              {product.images.map((_, index) => (
-                <span
-                  key={index}
-                  className={`dot ${currentImageIndex === index ? 'dot-active' : ''}`}
-                  onClick={() => setCurrentImageIndex(index)}
-                />
-              ))}
-            </div>
+            {product.images.length > 1 && (
+              <div className="image-dots-container">
+                {product.images.map((_, index) => (
+                  <span
+                    key={index}
+                    className={`dot ${currentImageIndex === index ? 'dot-active' : ''}`}
+                    onClick={() => setCurrentImageIndex(index)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Product Details Section */}
@@ -191,46 +199,51 @@ const Product = () => {
             <hr className="divider" />
 
             {/* Color Selector */}
-            <div className="color-selector">
-              <span className="color-label">Color: {selectedColor}</span>
-              <div className="color-options">
-                {product.colors.map((color) => (
-                  <div
-                    key={color}
-                    className={`color-option-wrapper ${
-                      selectedColor === color ? 'color-option-wrapper-selected' : ''
-                    }`}
-                    onClick={() => setSelectedColor(color)}
-                  >
-                    <div
-                      className="color-option"
-                      style={{
-                        backgroundColor: color.toLowerCase()
-                      }}
-                      aria-label={color}
-                    />
+            {product.colors && product.colors.length > 0 && (
+              <>
+                <div className="color-selector">
+                  <span className="color-label">Color: {selectedColor}</span>
+                  <div className="color-options">
+                    {product.colors.map((color) => (
+                      <div
+                        key={color}
+                        className={`color-option-wrapper ${
+                          selectedColor === color ? 'color-option-wrapper-selected' : ''
+                        }`}
+                        onClick={() => setSelectedColor(color)}
+                      >
+                        <div
+                          className="color-option"
+                          style={{
+                            backgroundColor: color.toLowerCase()
+                          }}
+                          aria-label={color}
+                        />
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
-
-            <hr className="divider" />
+                </div>
+                <hr className="divider" />
+              </>
+            )}
 
             {/* Size Selector */}
-            <div className="size-selector">
-              <span className="size-label">Size: {selectedSize}</span>
-              <div className="size-options">
-                {product.sizes.map((size) => (
-                  <button
-                    key={size}
-                    className={`size-option ${selectedSize === size ? 'size-option-selected' : ''}`}
-                    onClick={() => setSelectedSize(size)}
-                  >
-                    {size}
-                  </button>
-                ))}
+            {product.sizes && product.sizes.length > 0 && (
+              <div className="size-selector">
+                <span className="size-label">Size: {selectedSize}</span>
+                <div className="size-options">
+                  {product.sizes.map((size) => (
+                    <button
+                      key={size}
+                      className={`size-option ${selectedSize === size ? 'size-option-selected' : ''}`}
+                      onClick={() => setSelectedSize(size)}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Quantity Control */}
             <div className="quantity-control">
@@ -291,13 +304,16 @@ const Product = () => {
             {activeTab === 'review' && (
               <div>
                 <h2>Customer Reviews</h2>
-                <p>No reviews yet.</p>
+                <div className="review-summary">
+                  <p>Rating: {product.rating}/5 ({product.reviewCount} reviews)</p>
+                </div>
+                <p>No detailed reviews yet for this product.</p>
               </div>
             )}
             {activeTab === 'returns' && (
               <div>
                 <h2>Returns & Exchanges</h2>
-                <p>Returns accepted within 30 days of purchase.</p>
+                <p>{product.returnsPolicy || 'Returns accepted within 30 days of purchase.'}</p>
               </div>
             )}
           </div>

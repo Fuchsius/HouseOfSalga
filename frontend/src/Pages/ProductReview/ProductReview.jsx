@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+import { useEffect } from 'react';
 import {
   FaShoppingCart,
   FaChevronLeft,
@@ -39,6 +41,20 @@ const ProductReview = () => {
   const [reviewTitle, setReviewTitle] = useState('');
   const [reviewContent, setReviewContent] = useState('');
   const [likedReviews, setLikedReviews] = useState({});
+
+  const [allReviews, setAllReviews] = useState([]);
+  const [showAllReviews, setShowAllReviews] = useState(false);
+
+  useEffect(() => {
+  axios.get(`http://localhost:5000/api/reviews/${product.id}`)
+    .then((res) => {
+      setAllReviews(res.data);
+    })
+    .catch((err) => {
+      console.error("Failed to fetch reviews", err);
+    });
+}, []);
+
 
   const product = {
     id: 1,
@@ -154,18 +170,33 @@ const ProductReview = () => {
     });
   };
 
-  const handleSubmitReview = (e) => {
-    e.preventDefault();
-    if (!rating) {
-      alert('Please select a star rating.');
-      return;
-    }
-    console.log({ rating, reviewTitle, reviewContent });
+  const handleSubmitReview = async (e) => {
+  e.preventDefault();
+  if (!rating) {
+    alert('Please select a star rating.');
+    return;
+  }
+
+  try {
+    const response = await axios.post('http://localhost:5000/api/reviews', {
+      productId: product.id,
+      user: "Anonymous", // or authenticated user
+      title: reviewTitle,
+      comment: reviewContent,
+      rating: rating
+    });
+
+    setAllReviews(prev => [response.data, ...prev]); // add new review to top
     setRating(0);
     setReviewTitle('');
     setReviewContent('');
     alert('Thank you for your review!');
-  };
+  } catch (err) {
+    console.error("Failed to submit review", err);
+    alert("Something went wrong while submitting the review.");
+  }
+};
+
 
   const handleLikeReview = (reviewId) => {
     setLikedReviews(prev => ({
@@ -379,7 +410,8 @@ const ProductReview = () => {
                   <div className="reviews-section">
                     <h3>Reviews</h3>
                     
-                    {reviews.map((review) => (
+                    {(showAllReviews ? allReviews : allReviews.slice(0, 1)).map((review) => (
+
                       <div key={review.id} className="review-card">
                         <div className="review-header">
                           <div className="user-info">
@@ -419,7 +451,11 @@ const ProductReview = () => {
                     ))}
                     
                     <div className="view-all-reviews">
-                      <button className="view-all-btn">View All Reviews</button>
+                     {!showAllReviews && allReviews.length > 1 && (
+                      <button className="view-all-btn" onClick={() => setShowAllReviews(true)}>
+                        View All Reviews
+                      </button>
+                     )}
                     </div>
                   </div>
                 </div>
