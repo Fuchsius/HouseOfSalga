@@ -10,6 +10,7 @@ import googleIcon from '../../Assets/google.png';
 import signupImage from '../../Assets/signupImage.png';
 import './SignIn.css';
 
+
 function SignIn() {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
@@ -17,10 +18,14 @@ function SignIn() {
   const [message, setMessage] = useState(null);
   const [messageType, setMessageType] = useState('');
   const navigate = useNavigate();
-
+ 
+    
+    
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
+
 
   const validate = () => {
     const tempErrors = {};
@@ -61,7 +66,7 @@ function SignIn() {
       setMessage('Signed in successfully! Redirecting...');
       setTimeout(() => {
         setMessage(null);
-        navigate('/'); // ✅ redirect to /home instead of /
+        navigate('/home'); // ✅ redirect to /home instead of /
       }, 1000);
     } catch (err) {
       setMessageType('error');

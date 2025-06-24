@@ -168,7 +168,7 @@ function SignUp() {
 
             <p className="signup-text">
               <span className="no-account">Have An Account?</span>{' '}
-              <span className="signup-link" onClick={() => navigate('/signin')}>Sign In</span>
+              <span className="signup-link" onClick={() => navigate('/')}>Sign In</span>
             </p>
           </form>
         </div>

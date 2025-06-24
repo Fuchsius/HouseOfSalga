@@ -57,11 +57,11 @@ function Header() {
 
         <div className="left-section">
           <div className="logo">
-             <Link to="/" className="logo-link">Salga</Link>
+             <Link to="/home" className="logo-link">Salga</Link>
          </div>
 
           <nav className="nav-links">
-            <Link to="/" className="nav-item hover-link">Home</Link>
+            <Link to="/home" className="nav-item hover-link">Home</Link>
 
             <div className="dropdown-wrapper">
               <span className="nav-item hover-link" onClick={toggleWomenDropdown}>
@@ -86,7 +86,7 @@ function Header() {
             <input type="text" placeholder="Search" />
           </div>
 
-          <Link to="/signin" className="nav-item hover-link">Login</Link>
+          <Link to="/" className="nav-item hover-link">Login</Link>
           <img src={userIcon} alt="User" className="icon" />
           <img src={cartIcon} alt="Cart" className="icon" />
           <img src={favIcon} alt="Favorite" className="icon fav-icon" />
