@@ -1,0 +1,241 @@
+@font-face {
+  font-family: 'wilkysta';
+  src: url('../../Assets/fonts/wilkysta.ttf') format('truetype');
+  font-style: normal;
+  font-weight: normal;
+}
+
+
+.sidebar {
+  width: 300px;
+  background-color: #F0EADC;
+  border-right: none;
+  padding-top: 40px;
+  padding-left: 3%;
+}
+
+.sidebar h3 {
+  position: relative;
+  margin-top: 40px;
+  margin-bottom: 15px;
+  font-size: 34px;
+  font-family: wilkysta;
+  color: #3C4242;
+  display: flex;
+  align-items: center;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.sidebar h3::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 1em;
+  background-color: #FFC107;
+  margin-right: 10px;
+  border-radius: 4px;
+}
+
+.subtitle {
+  color: #000;
+  font-size: 16px;
+  font-family: wilkysta;
+  margin-top: 0px;
+  margin-bottom: 20px;
+}
+
+.sidebar-header {
+  margin-bottom: 20px;
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 14px;
+  color: #6C7275;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.breadcrumbs .sep {
+  margin: 0 4px;
+  color: #999;
+}
+
+.breadcrumb-link {
+  color: #000;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.breadcrumb-link.clickable:hover {
+  text-decoration: underline;
+}
+
+.breadcrumb-divider {
+  margin: 0 6px;
+  color: #888;
+}
+
+.breadcrumb-current {
+  font-weight: bold;
+}
+
+.breadcrumbs,
+.breadcrumb-link,
+.breadcrumb-current {
+  font-family: 'wilkysta', sans-serif;
+}
+
+
+
+
+.sidebar .nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar .nav-links li {
+  width: 100%;
+}
+
+/* Button inside nav item */
+.sidebar-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  font-family: 'Wilkysta';
+  font-size: 18px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.25s;
+  color: inherit;
+  margin: 0;
+  border-radius: 0;
+  box-sizing: border-box;
+}
+
+.sidebar-btn:hover {
+  background-color: #e6ac06;
+  color: #fff;
+  width: 119%;
+  margin-left: -20px;
+}
+
+.sidebar .nav-links li.active .sidebar-btn {
+  background-color: #000;
+  color: #fff;
+  font-weight: 600;
+  width: 119%;
+  margin-left: -20px;
+  padding: 12px 16px;
+  box-sizing: border-box;
+}
+
+.sidebar .nav-links li.active .sidebar-btn svg {
+  color: #fff;
+  width: 20px;
+  height: 20px;
+}
+
+.nav-box {
+  border: 2px solid #000;
+  border-radius: 12px;
+  padding: 60px 20px;
+  background-color: #F0EADC;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ✅ Responsive sidebar fix */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    padding: 20px 16px 0 16px;
+    padding-top: 10px;
+  }
+
+  .sidebar .nav-links {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .sidebar .nav-links li {
+    flex: 1 0 45%;
+    text-align: center;
+  }
+
+  .sidebar-btn {
+    justify-content: center;
+    padding: 10px;
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .sidebar .nav-links li.active .sidebar-btn,
+  .sidebar-btn:hover {
+    width: 100%;
+    margin-left: 0;
+  }
+}
+
+/* Remove scroll wrapper logic */
+.nav-links-wrapper {
+  overflow: visible;
+}
+/* ... existing styles ... */
+
+@media (max-width: 670px) {
+  .nav-box {
+    width: 100%; /* Changed from 50% to 100% */
+    padding: 30px 20px; /* Reduced padding to save space */
+  }
+
+  .sidebar .nav-links {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .sidebar .nav-links li {
+    width: 100%;
+  }
+
+  .sidebar-btn {
+    justify-content: flex-start;
+    width: 100%;
+    padding: 10px 12px; /* Adjusted padding */
+    font-size: 16px; /* Slightly smaller font */
+  }
+
+  .sidebar .nav-links li.active .sidebar-btn,
+  .sidebar-btn:hover {
+    width: 100%;
+    margin-left: 0;
+  }
+}
+
+/* New media query for very small screens */
+@media (max-width: 400px) {
+  .sidebar-btn {
+    font-size: 14px; /* Smaller font for tiny screens */
+    padding: 8px 10px;
+  }
+  
+  .nav-box {
+    padding: 20px 15px; /* Less padding */
+  }
+}

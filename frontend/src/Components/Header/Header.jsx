@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom'; // Add this import
 import './Header.css';
+
+import { Link, useLocation } from 'react-router-dom';
 
 import dropdownIcon from '../../Assets/drop-down.png';
 import searchIcon from '../../Assets/magnifyingglass.png';
@@ -12,6 +13,8 @@ function Header() {
   const [showWomenDropdown, setShowWomenDropdown] = useState(false);
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const location = useLocation(); // to detect current route
 
   const wrapperRef = useRef(null);
 
@@ -21,6 +24,7 @@ function Header() {
         setShowWomenDropdown(false);
         setShowLanguageDropdown(false);
         setShowMobileMenu(false);
+        setShowUserMenu(false); // close user menu
       }
     }
 
@@ -38,18 +42,20 @@ function Header() {
     setShowWomenDropdown(false);
   };
 
+  const toggleUserMenu = () => {
+    setShowUserMenu((prev) => !prev);
+  };
+
   const handleDropdownItemClick = () => {
     setShowWomenDropdown(false);
     setShowLanguageDropdown(false);
+    setShowUserMenu(false);
   };
 
   return (
     <header className="header" ref={wrapperRef}>
       <div className="header-container">
-        <div
-          className="hamburger"
-          onClick={() => setShowMobileMenu((prev) => !prev)}
-        >
+        <div className="hamburger" onClick={() => setShowMobileMenu((prev) => !prev)}>
           <span></span>
           <span></span>
           <span></span>
@@ -57,8 +63,8 @@ function Header() {
 
         <div className="left-section">
           <div className="logo">
-             <Link to="/home" className="logo-link">Salga</Link>
-         </div>
+            <Link to="/home" className="logo-link">Salga</Link>
+          </div>
 
           <nav className="nav-links">
             <Link to="/home" className="nav-item hover-link">Home</Link>
@@ -87,7 +93,38 @@ function Header() {
           </div>
 
           <Link to="/" className="nav-item hover-link">Login</Link>
-          <img src={userIcon} alt="User" className="icon" />
+
+          {/* User Icon & Popup Menu */}
+          <div className="user-menu-wrapper">
+            <img
+              src={userIcon}
+              alt="User"
+              className="icon"
+              onClick={toggleUserMenu}
+            />
+            {showUserMenu && (
+              <div className="user-popup-menu">
+  <p className="greeting">Hello Amanda,</p>
+  <p className="subtext">Welcome to your account</p>
+  
+  <div className="user-menu-item">👤 Personal Information</div>
+  
+  <Link 
+    to="/dashboard" 
+    className={`user-menu-item ${location.pathname === "/dashboard" ? "active" : ""}`}
+    onClick={handleDropdownItemClick}
+  >
+    📦 My Orders
+  </Link>
+
+  <div className="user-menu-item">🤍 My Wishlist</div>
+  <div className="user-menu-item">🔔 Notifications</div>
+  <div className="user-menu-item">↩ Sign Out</div>
+</div>
+
+            )}
+          </div>
+
           <img src={cartIcon} alt="Cart" className="icon" />
           <img src={favIcon} alt="Favorite" className="icon fav-icon" />
 
