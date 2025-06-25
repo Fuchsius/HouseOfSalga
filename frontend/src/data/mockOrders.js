@@ -47,6 +47,38 @@ const orders = [
     message: 'Your product has been Cancelled',
   },
 
+  {
+    id: '99999',
+    date: '25 jan 2025',
+    
+    deliveryDate: '28 jan 2025',
+    
+    productName: 'Classic Top',
+    image:classicTop,
+    size: 'Samll',
+    color:'Blue',
+    qty: 1,
+    price: 12500,
+    status: 'In Process',
+    message: 'Your product has been Inprocess',
+  },
+
+  {
+    id: '12',
+    date: '25 jan 2025',
+    
+    deliveryDate: '28 jan 2025',
+    
+    productName: 'Classic Top',
+    image:classicTop,
+    size: 'Samll',
+    color:'Blue',
+    qty: 1,
+    price: 25000,
+    status: 'In Process',
+    message: 'Your product has been Inprocess',
+  },
+
 
   
 ];

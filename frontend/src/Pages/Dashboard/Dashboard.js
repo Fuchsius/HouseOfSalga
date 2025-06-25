@@ -5,20 +5,75 @@ import OrderTabs from "../../Components/OrderTabs/OrderTabs";
 import OrderList from "../../Components/OrderList/OrderList";
 import Header from "../../Components/Header/Header";
 import Footer from "../../Components/Footer/Footer";
+import ReviewModal from "../../Components/ReviewModal/ReviewModal";
+
+import {
+  Package,
+  CalendarDays,
+  Truck,
+  DollarSign,
+  Hash,
+  X,
+  CheckSquare,
+} from "lucide-react";
 
 import "./Dashboard.css";
 
 export default function Dashboard() {
   const [selectedStatus, setSelectedStatus] = useState("In Process");
   const [searchQuery, setSearchQuery] = useState("");
-  const [showUserMenu, setShowUserMenu] = useState(false); // ✅ Control user menu from here
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
+  const [filterType, setFilterType] = useState("productName");
+
+  const [showModal, setShowModal] = useState(false);
+  const [reviewProduct, setReviewProduct] = useState(null);
+
+  const handleSortChange = (type) => {
+    setFilterType(type);
+    setShowFilter(false);
+  };
+
+  const handleOpenModal = (order) => {
+    setReviewProduct(order);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setReviewProduct(null);
+  };
+
+  const handleSubmitReview = async (formData) => {
+  try {
+    const data = new FormData();
+    data.append("orderId", formData.orderId);
+    data.append("productName", formData.productName);
+    data.append("rating", formData.rating);
+    data.append("review", formData.review);
+    if (formData.image) {
+      data.append("image", formData.image);
+    }
+
+    const res = await fetch("http://localhost:5000/api/reviews", {
+      method: "POST",
+      body: data,
+    });
+
+    if (res.ok) {
+      alert("Review submitted successfully!");
+    } else {
+      alert("Failed to submit review");
+    }
+  } catch (err) {
+    console.error("Review submit error:", err);
+    alert("An error occurred while submitting your review");
+  }
+};
 
   return (
     <>
-      <Header
-        showUserMenu={showUserMenu}
-        setShowUserMenu={setShowUserMenu}
-      />
+      <Header showUserMenu={showUserMenu} setShowUserMenu={setShowUserMenu} />
 
       <div className="dashboard">
         <Sidebar onMyAccountClick={() => setShowUserMenu(true)} />
@@ -32,15 +87,99 @@ export default function Dashboard() {
                 <FiSearch className="search-icon" />
                 <input
                   type="text"
-                  placeholder=" Search"
+                  placeholder={`Search by ${filterType}`}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
 
-              <button className="filter-btn">
-                Filter <FiFilter className="filter-icon" />
-              </button>
+              <div className="filter-container">
+                <button
+                  className="filter-btn"
+                  onClick={() => setShowFilter(!showFilter)}
+                >
+                  Filter <FiFilter />
+                </button>
+
+                {showFilter && (
+                  <div className="filter-dropdown animated-dropdown">
+                    <div className="dropdown-header">
+                      <span>Sort Options</span>
+                      <button
+                        className="close-btn"
+                        onClick={() => setShowFilter(false)}
+                      >
+                        <X size={18} strokeWidth={2} />
+                      </button>
+                    </div>
+
+                    <div
+                      onClick={() => handleSortChange("productName")}
+                      className="filter-option"
+                    >
+                      <div className="icon-text">
+                        <Package size={18} strokeWidth={2} />
+                        <span>Product Name</span>
+                      </div>
+                      {filterType === "productName" && (
+                        <CheckSquare size={18} strokeWidth={2} />
+                      )}
+                    </div>
+
+                    <div
+                      onClick={() => handleSortChange("orderNumber")}
+                      className="filter-option"
+                    >
+                      <div className="icon-text">
+                        <Hash size={18} strokeWidth={2} />
+                        <span>Order Number</span>
+                      </div>
+                      {filterType === "orderNumber" && (
+                        <CheckSquare size={18} strokeWidth={2} />
+                      )}
+                    </div>
+
+                    <div
+                      onClick={() => handleSortChange("date")}
+                      className="filter-option"
+                    >
+                      <div className="icon-text">
+                        <CalendarDays size={18} strokeWidth={2} />
+                        <span>Order Date</span>
+                      </div>
+                      {filterType === "date" && (
+                        <CheckSquare size={18} strokeWidth={2} />
+                      )}
+                    </div>
+
+                    <div
+                      onClick={() => handleSortChange("price")}
+                      className="filter-option"
+                    >
+                      <div className="icon-text">
+                        <DollarSign size={18} strokeWidth={2} />
+                        <span>Price</span>
+                      </div>
+                      {filterType === "price" && (
+                        <CheckSquare size={18} strokeWidth={2} />
+                      )}
+                    </div>
+
+                    <div
+                      onClick={() => handleSortChange("deliveryDate")}
+                      className="filter-option"
+                    >
+                      <div className="icon-text">
+                        <Truck size={18} strokeWidth={2} />
+                        <span>Estimated Delivery</span>
+                      </div>
+                      {filterType === "deliveryDate" && (
+                        <CheckSquare size={18} strokeWidth={2} />
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -52,7 +191,18 @@ export default function Dashboard() {
           <OrderList
             selectedStatus={selectedStatus}
             searchQuery={searchQuery}
+            filterType={filterType}
+            onWriteReview={handleOpenModal} // ✅ Pass modal trigger
           />
+
+          {showModal && reviewProduct && (
+  <ReviewModal
+    product={reviewProduct}
+    onClose={handleCloseModal}
+    onSubmit={handleSubmitReview} // ✅ add this here
+  />
+)}
+
         </div>
       </div>
 

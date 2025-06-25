@@ -1,29 +1,46 @@
 // src/Components/OrderList/OrderList.js
 import React from "react";
-import mockOrders from '../../data/mockOrders';
+import mockOrders from "../../data/mockOrders";
 import "./OrderList.css";
 
-export default function OrderList({ selectedStatus, searchQuery }) {
-  const results = mockOrders.filter(
-    (o) =>
-      o.status === selectedStatus &&
-      (o.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        o.id.toString().toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+export default function OrderList({ selectedStatus, searchQuery, filterType, onWriteReview }) {
+  const results = mockOrders
+    .filter(
+      (o) =>
+        o.status === selectedStatus &&
+        (o.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+         o.id.toString().includes(searchQuery))
+    )
+    .sort((a, b) => {
+      switch (filterType) {
+        case "productName":
+          return a.productName.localeCompare(b.productName);
+        case "orderNumber":
+          return a.id - b.id;
+        case "date":
+          return new Date(a.date) - new Date(b.date);
+        case "price":
+          return b.price - a.price;
+        case "deliveryDate":
+          return new Date(a.deliveryDate) - new Date(b.deliveryDate);
+        default:
+          return 0;
+      }
+    });
 
   return (
     <div className="orders-section">
       {results.length ? (
         results.map((o) => (
           <div key={o.id}>
-            {/* ── White box: Order summary only ── */}
+            {/* ── Order Summary (In Process only) ── */}
             {o.status === "In Process" && (
               <div className="order-card">
                 <div className="order-top-row">
                   <p className="order-id">Order no: #{o.id}</p>
-                  <div className={`order-dates ${o.status === "In Process" ? "default-font" : ""}`}>
+                  <div className="order-dates default-font">
                     <p>
-                      Order Date :{" "}
+                      Order Date:{" "}
                       {new Date(o.date).toLocaleString("en-GB", {
                         day: "2-digit",
                         month: "short",
@@ -34,7 +51,7 @@ export default function OrderList({ selectedStatus, searchQuery }) {
                       })}
                     </p>
                     <p>
-                      Estimated Delivery Date :{" "}
+                      Estimated Delivery Date:{" "}
                       {new Date(o.deliveryDate).toLocaleDateString("en-GB", {
                         day: "2-digit",
                         month: "short",
@@ -46,7 +63,7 @@ export default function OrderList({ selectedStatus, searchQuery }) {
               </div>
             )}
 
-            {/* ── Order details ── */}
+            {/* ── Order Details ── */}
             <div className="order-details">
               <div className="product-row">
                 <div className="image-wrapper">
@@ -72,7 +89,14 @@ export default function OrderList({ selectedStatus, searchQuery }) {
                   <div className="order-cta">
                     <button className="continue-btn">Continue Shopping</button>
                     {o.status === "In Process" && <button className="track-btn">Track Order</button>}
-                    {o.status === "Completed" && <button className="track-btn">Write a Review</button>}
+                    {o.status === "Completed" && (
+                      <button
+                        className="track-btn"
+                        onClick={() => onWriteReview(o)} // ✅ Trigger parent modal
+                      >
+                        Write a Review
+                      </button>
+                    )}
                     {o.status === "Cancelled" && <button className="track-btn">Buy Now</button>}
                   </div>
                 </div>
