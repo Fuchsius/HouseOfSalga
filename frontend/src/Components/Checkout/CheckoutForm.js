@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import styles from './CheckoutForm.module.css';
 import CardIcons from './CardIcons';
+import { FaMapMarkerAlt, FaTimes } from 'react-icons/fa';
 
 export default function CheckoutForm() {
   const [form, setForm] = useState({
@@ -8,11 +9,13 @@ export default function CheckoutForm() {
     apt: '', city: '', state: '', postal: '', phone: '',
     saveInfo: false,
     shippingAddress: 'same',
+    differentShippingAddress: '',
     payment: 'card',
     cardNumber: '', cardName: '', cardExpiry: '', cardCvc: ''
   });
   const [message, setMessage] = useState('');
   const [showDelivery, setShowDelivery] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
 
   const handleChange = e => {
     const { name, value, type, checked } = e.target;
@@ -26,7 +29,30 @@ export default function CheckoutForm() {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    setMessage('Order placed successfully!');
+    // Prepare order data
+    const orderData = {
+      ...form,
+      shippingAddress: form.shippingAddress === 'different' ? form.differentShippingAddress : form.address
+    };
+    try {
+      const res = await fetch('http://localhost:5000/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      });
+      const data = await res.json();
+      if (data.success) {
+        setMessage('Order placed successfully!');
+        setShowMessage(true);
+        setTimeout(() => window.location.reload(), 2000); // Refresh after popup
+      } else {
+        setMessage('Failed to place order.');
+        setShowMessage(true);
+      }
+    } catch (err) {
+      setMessage('Error placing order.');
+      setShowMessage(true);
+    }
   };
 
   return (
@@ -106,6 +132,37 @@ export default function CheckoutForm() {
               <input type="radio" name="shippingAddress" value="different" checked={form.shippingAddress === 'different'} onChange={handleChange} />
               Use a different shipping address
             </label>
+            {form.shippingAddress === 'different' && (
+              <div style={{
+                background: '#f8f9fa',
+                border: '1px solid #e0e0e0',
+                borderRadius: 8,
+                padding: 16,
+                marginTop: 12,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12
+              }}>
+                <FaMapMarkerAlt style={{ color: '#ff6f61', fontSize: 22 }} />
+                <div style={{ flex: 1 }}>
+                  <label htmlFor="differentShippingAddress" style={{ fontWeight: 500, color: '#333', marginBottom: 4, display: 'block' }}>
+                    Enter your shipping address
+                  </label>
+                  <input
+                    id="differentShippingAddress"
+                    type="text"
+                    name="differentShippingAddress"
+                    placeholder="House number, street, city, etc."
+                    value={form.differentShippingAddress}
+                    onChange={handleChange}
+                    className={styles['form-input']}
+                    style={{ width: '100%', padding: 8, borderRadius: 4, border: '1px solid #ccc' }}
+                    required
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </div>
         <hr style={{ color: 'white', borderTop: '2px solid #222', margin: '16px 0' }} />
@@ -116,6 +173,9 @@ export default function CheckoutForm() {
             <div className={styles['shipping-method-row']}>
               <span className={styles['shipping-method-label']}>Arrives by Monday, February 7</span>
             </div><hr style={{ color: '#888', borderTop: '2px solid #222', margin: '16px 0' }} />
+            <div className={styles['shipping-method-row']}>
+              <span className={styles['shipping-method-label']}>Delivery Charge</span>
+            </div>
             <div className={styles['shipping-method-note']}>Additional fees may apply</div>
             <span className={styles['shipping-method-fee']}>$5.00</span>
           </div>
@@ -164,7 +224,47 @@ export default function CheckoutForm() {
             </label>
           </div>
           <button className={styles['pay-btn']} type="submit">Pay Now</button>
-          {message && <div className={styles['success-msg']}>{message}</div>}
+          {showMessage && (
+            <div style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              background: 'rgba(0,0,0,0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 9999
+            }}>
+              <div style={{
+                background: '#fff',
+                padding: '32px 40px',
+                borderRadius: 12,
+                boxShadow: '0 4px 24px rgba(0,0,0,0.12)',
+                textAlign: 'center',
+                minWidth: 320,
+                position: 'relative'
+              }}>
+                <FaTimes
+                  style={{
+                    position: 'absolute',
+                    top: 16,
+                    right: 16,
+                    fontSize: 22,
+                    color: '#888',
+                    cursor: 'pointer',
+                    transition: 'color 0.2s'
+                  }}
+                  onClick={() => setShowMessage(false)}
+                  title="Close"
+                />
+                <div style={{ fontSize: 48, color: '#4BB543', marginBottom: 12 }}>✔</div>
+                <div style={{ fontSize: 20, fontWeight: 600, color: '#222', marginBottom: 8 }}>{message}</div>
+                <div style={{ color: '#666', fontSize: 15 }}>Thank you for your order!</div>
+              </div>
+            </div>
+          )}
         </div>
       </>}
     </form>
