@@ -5,7 +5,7 @@ import Header from './Components/Header/Header';
 import Footer from './Components/Footer/Footer';
 
 import Dashboard from './Pages/Dashboard/Dashboard';
-
+import Checkout from './Pages/Checkout/checkout';
 import Home from './Pages/Home/Home';
 import ConfirmOrder from './Pages/ConfirmOrder/ConfirmOrder';
 import SignIn from './Pages/Signin/SignIn';
@@ -36,6 +36,7 @@ function App() {
           <Route path="/vieworder" element={<ViewOrder />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/checkout" element={<Checkout />} />
           {/* Add more routes as needed */}
         </Routes>
 
