@@ -2,6 +2,7 @@ import { useState } from 'react';
 import styles from './CheckoutForm.module.css';
 import CardIcons from './CardIcons';
 import { FaMapMarkerAlt, FaTimes } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 export default function CheckoutForm() {
   const [form, setForm] = useState({
@@ -16,6 +17,7 @@ export default function CheckoutForm() {
   const [message, setMessage] = useState('');
   const [showDelivery, setShowDelivery] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = e => {
     const { name, value, type, checked } = e.target;
@@ -44,7 +46,10 @@ export default function CheckoutForm() {
       if (data.success) {
         setMessage('Order placed successfully!');
         setShowMessage(true);
-        setTimeout(() => window.location.reload(), 2000); // Refresh after popup
+        setTimeout(() => {
+          setShowMessage(false);
+          navigate('/ConfirmOrder');
+        }, 1500);
       } else {
         setMessage('Failed to place order.');
         setShowMessage(true);
@@ -225,44 +230,10 @@ export default function CheckoutForm() {
           </div>
           <button className={styles['pay-btn']} type="submit">Pay Now</button>
           {showMessage && (
-            <div style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              width: '100vw',
-              height: '100vh',
-              background: 'rgba(0,0,0,0.3)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 9999
-            }}>
-              <div style={{
-                background: '#fff',
-                padding: '32px 40px',
-                borderRadius: 12,
-                boxShadow: '0 4px 24px rgba(0,0,0,0.12)',
-                textAlign: 'center',
-                minWidth: 320,
-                position: 'relative'
-              }}>
-                <FaTimes
-                  style={{
-                    position: 'absolute',
-                    top: 16,
-                    right: 16,
-                    fontSize: 22,
-                    color: '#888',
-                    cursor: 'pointer',
-                    transition: 'color 0.2s'
-                  }}
-                  onClick={() => setShowMessage(false)}
-                  title="Close"
-                />
-                <div style={{ fontSize: 48, color: '#4BB543', marginBottom: 12 }}>✔</div>
-                <div style={{ fontSize: 20, fontWeight: 600, color: '#222', marginBottom: 8 }}>{message}</div>
-                <div style={{ color: '#666', fontSize: 15 }}>Thank you for your order!</div>
-              </div>
+            <div className="success-message" style={{textAlign: 'center', margin: '20px 0', color: 'green', background: '#fff', border: '1px solid #4BB543', borderRadius: 8, padding: 16, position: 'fixed', top: '30%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999}}>
+              <div style={{ fontSize: 48, color: '#4BB543', marginBottom: 12 }}>✔</div>
+              <div style={{ fontSize: 20, fontWeight: 600, color: '#222', marginBottom: 8 }}>{message}</div>
+              <div style={{ color: '#666', fontSize: 15 }}>Thank you for your order!</div>
             </div>
           )}
         </div>
