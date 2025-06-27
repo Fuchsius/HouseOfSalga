@@ -129,10 +129,10 @@ export default function ShopPage() {
     },
     {
       id: 13,
-      name: "Red Dress",
-      price: 7500,
+      name: "Blue Jeans",
+      price: 3000,
       originalPrice: null,
-      image: "4.png",
+      image: "6.png",
       rating: 4,
       reviews: 120,
       isNew: false,
@@ -153,7 +153,7 @@ export default function ShopPage() {
     <div className="min-h-screen  bg-[#F0EADC] text-lg md:">
       <Header />
       <div className="max-w-6xl mx-auto">
-        <div className="xl:grid xl:grid-cols-5 gap-5 hidden ">
+        <div className="xl:grid xl:grid-cols-5 gap-1 hidden ">
           <div className="col-span-2 ">
             <FilterSidebar />
           </div>
