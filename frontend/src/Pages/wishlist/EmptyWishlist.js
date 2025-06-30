@@ -68,6 +68,8 @@ export default function EmptyWishlist() {
   }
 
   return (
+    <div>
+     <Header />
     <div className="wishlist-page">
       {/* Breadcrumb + Clear List button (top‑row) */}
       <div className="wishlist-header">
@@ -146,6 +148,7 @@ export default function EmptyWishlist() {
         </div>
       )}
     </div>
+<Footer /></div>
   );
 }
 
