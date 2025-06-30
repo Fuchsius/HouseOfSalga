@@ -15,6 +15,7 @@ import ProductReturns from './Pages/ProductReturns/ProductReturns';
 import ProductReview from './Pages/ProductReview/ProductReview';
 import ViewOrder from './Pages/ViewOrder/ViewOrder';
 import Shop from './Pages/Shop/Shop';
+import EmptyWishlist from './Pages/wishlist/EmptyWishlist';
 
 
 
@@ -37,6 +38,7 @@ function App() {
           <Route path="/shop" element={<Shop />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/checkout" element={<Checkout />} />
+         <Route path="/wishlist" element={<EmptyWishlist />} />
           {/* Add more routes as needed */}
         </Routes>
 
