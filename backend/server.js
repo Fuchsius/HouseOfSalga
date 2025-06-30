@@ -7,6 +7,8 @@ require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const reviewRoutes = require('./routes/reviewRoutes');
 const checkoutRoutes = require('./routes/checkout');
+const wishlistRoutes = require('./routes/wishlist');
+
 
 
 const app = express();
@@ -27,6 +29,7 @@ mongoose.connect(process.env.MONGO_URI)
 app.use('/api/auth', authRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/checkout', checkoutRoutes);
+app.use('/api/wishlist', wishlistRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5000;
