@@ -11,8 +11,6 @@ import ConfirmOrder from './Pages/ConfirmOrder/ConfirmOrder';
 import SignIn from './Pages/Signin/SignIn';
 import SignUp from './Pages/SignUp/SignUp';
 import Product from './Pages/Product/Product';
-import ProductReturns from './Pages/ProductReturns/ProductReturns';
-import ProductReview from './Pages/ProductReview/ProductReview';
 import ViewOrder from './Pages/ViewOrder/ViewOrder';
 import Shop from './Pages/Shop/Shop';
 
@@ -31,8 +29,6 @@ function App() {
           <Route path="/confirmorder/:id" element={<ConfirmOrder />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/product" element={<Product />} />
-          <Route path="/product/returns" element={<ProductReturns />} />
-          <Route path="/product/review" element={<ProductReview />} />
           <Route path="/vieworder" element={<ViewOrder />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/dashboard" element={<Dashboard />} />
