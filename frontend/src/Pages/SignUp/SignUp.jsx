@@ -80,7 +80,7 @@ function SignUp() {
         setMessage('Sign up successful! Redirecting...');
         setTimeout(() => {
           setMessage(null);
-          navigate('/signin');
+          navigate('/');
         }, 1000);
       } else {
         setMessageType('error');
