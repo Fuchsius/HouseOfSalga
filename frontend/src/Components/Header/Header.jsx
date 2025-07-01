@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Header.css';
-
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 import dropdownIcon from '../../Assets/drop-down.png';
 import searchIcon from '../../Assets/magnifyingglass.png';
@@ -14,9 +13,17 @@ function Header() {
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const location = useLocation(); // to detect current route
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  const navigate = useNavigate();
+  const location = useLocation();
   const wrapperRef = useRef(null);
+
+  useEffect(() => {
+    // Check login state on mount or location change
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
+  }, [location]);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -24,7 +31,7 @@ function Header() {
         setShowWomenDropdown(false);
         setShowLanguageDropdown(false);
         setShowMobileMenu(false);
-        setShowUserMenu(false); // close user menu
+        setShowUserMenu(false);
       }
     }
 
@@ -32,24 +39,26 @@ function Header() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const toggleWomenDropdown = () => {
-    setShowWomenDropdown((prev) => !prev);
-    setShowLanguageDropdown(false);
-  };
-
-  const toggleLanguageDropdown = () => {
-    setShowLanguageDropdown((prev) => !prev);
-    setShowWomenDropdown(false);
-  };
-
-  const toggleUserMenu = () => {
-    setShowUserMenu((prev) => !prev);
+  const toggleDropdown = (type) => {
+    if (type === 'women') {
+      setShowWomenDropdown((prev) => !prev);
+      setShowLanguageDropdown(false);
+    } else if (type === 'language') {
+      setShowLanguageDropdown((prev) => !prev);
+      setShowWomenDropdown(false);
+    }
   };
 
   const handleDropdownItemClick = () => {
     setShowWomenDropdown(false);
     setShowLanguageDropdown(false);
     setShowUserMenu(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+    navigate('/signup');
   };
 
   return (
@@ -70,7 +79,7 @@ function Header() {
             <Link to="/home" className="nav-item hover-link">Home</Link>
 
             <div className="dropdown-wrapper">
-              <span className="nav-item hover-link" onClick={toggleWomenDropdown}>
+              <span className="nav-item hover-link" onClick={() => toggleDropdown('women')}>
                 Women
                 <img src={dropdownIcon} alt="dropdown" className="dropdown-icon" />
               </span>
@@ -92,36 +101,40 @@ function Header() {
             <input type="text" placeholder="Search" />
           </div>
 
-          <Link to="/" className="nav-item hover-link">Login</Link>
+          {isLoggedIn ? (
+            <span className="nav-item hover-link" onClick={handleLogout} style={{ cursor: 'pointer' }}>
+              Sign Out
+            </span>
+          ) : (
+            <Link to="/" className="nav-item hover-link">Login</Link>
+          )}
 
-          {/* User Icon & Popup Menu */}
           <div className="user-menu-wrapper">
             <img
               src={userIcon}
               alt="User"
               className="icon"
-              onClick={toggleUserMenu}
+              onClick={() => setShowUserMenu((prev) => !prev)}
             />
             {showUserMenu && (
               <div className="user-popup-menu">
-  <p className="greeting">Hello Amanda,</p>
-  <p className="subtext">Welcome to your account</p>
-  
-  <div className="user-menu-item">👤 Personal Information</div>
-  
-  <Link 
-    to="/dashboard" 
-    className={`user-menu-item ${location.pathname === "/dashboard" ? "active" : ""}`}
-    onClick={handleDropdownItemClick}
-  >
-    📦 My Orders
-  </Link>
+                <p className="greeting">Hello Amanda,</p>
+                <p className="subtext">Welcome to your account</p>
 
-  <div className="user-menu-item">🤍 My Wishlist</div>
-  <div className="user-menu-item">🔔 Notifications</div>
-  <div className="user-menu-item">↩ Sign Out</div>
-</div>
+                <div className="user-menu-item">👤 Personal Information</div>
 
+                <Link
+                  to="/dashboard"
+                  className={`user-menu-item ${location.pathname === "/dashboard" ? "active" : ""}`}
+                  onClick={handleDropdownItemClick}
+                >
+                  📦 My Orders
+                </Link>
+
+                <div className="user-menu-item">🤍 My Wishlist</div>
+                <div className="user-menu-item">🔔 Notifications</div>
+                <div className="user-menu-item" onClick={handleLogout}>↩ Sign Out</div>
+              </div>
             )}
           </div>
 
@@ -129,7 +142,7 @@ function Header() {
           <img src={favIcon} alt="Favorite" className="icon fav-icon" />
 
           <div className="dropdown-wrapper">
-            <span className="nav-item hover-link" onClick={toggleLanguageDropdown}>
+            <span className="nav-item hover-link" onClick={() => toggleDropdown('language')}>
               Language
               <img src={dropdownIcon} alt="dropdown" className="dropdown-icon" />
             </span>
@@ -147,10 +160,10 @@ function Header() {
 
       {showMobileMenu && (
         <div className="mobile-menu">
-          <Link to="/" className="mobile-menu-item">Home</Link>
+          <Link to="/home" className="mobile-menu-item">Home</Link>
 
           <div className="dropdown-wrapper">
-            <div className="mobile-menu-item" onClick={toggleWomenDropdown}>
+            <div className="mobile-menu-item" onClick={() => toggleDropdown('women')}>
               Women
               <img src={dropdownIcon} alt="dropdown" className="dropdown-icon" />
             </div>
@@ -164,10 +177,14 @@ function Header() {
             )}
           </div>
 
-          <Link to="/signin" className="mobile-menu-item">Login</Link>
+          {!isLoggedIn ? (
+            <Link to="/" className="mobile-menu-item">Login</Link>
+          ) : (
+            <div className="mobile-menu-item" onClick={handleLogout}>Sign Out</div>
+          )}
 
           <div className="dropdown-wrapper">
-            <div className="mobile-menu-item" onClick={toggleLanguageDropdown}>
+            <div className="mobile-menu-item" onClick={() => toggleDropdown('language')}>
               Language
               <img src={dropdownIcon} alt="dropdown" className="dropdown-icon" />
             </div>
