@@ -76,6 +76,7 @@ function SignUp() {
       const data = await res.json();
 
       if (res.ok) {
+        localStorage.setItem('username', formData.username); // <-- store name
         setMessageType('success');
         setMessage('Sign up successful! Redirecting...');
         setTimeout(() => {
