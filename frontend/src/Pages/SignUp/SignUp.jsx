@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Footer from '../../Components/Footer/Footer'
-import Header from '../../Components/Header/Header'
-// import axios from 'axios';
+import Footer from '../../Components/Footer/Footer';
+import Header from '../../Components/Header/Header';
 import './SignUp.css';
 import signupImage from '../../Assets/signupImage.png';
 import eyeIcon from '../../Assets/eye.png';
+
 function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -16,7 +16,7 @@ function SignUp() {
   });
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState(null);
-  const [messageType, setMessageType] = useState(''); // 'success' or 'error'
+  const [messageType, setMessageType] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -76,7 +76,11 @@ function SignUp() {
       const data = await res.json();
 
       if (res.ok) {
-        localStorage.setItem('username', formData.username); // <-- store name
+        // ✅ Store username returned from backend instead of formData
+        if (data.user && data.user.username) {
+          localStorage.setItem('username', data.user.username);
+        }
+
         setMessageType('success');
         setMessage('Sign up successful! Redirecting...');
         setTimeout(() => {
@@ -99,9 +103,7 @@ function SignUp() {
   return (
     <div>
       <Header />
-
       <div className="signup-wrapper">
-        {/* LEFT FORM SIDE */}
         <div className="signup-left">
           <form className="signup-form" onSubmit={handleSubmit}>
             <h1 className="form-title">Sign Up</h1>
@@ -174,7 +176,6 @@ function SignUp() {
           </form>
         </div>
 
-        {/* RIGHT IMAGE SIDE */}
         <div className="signup-right">
           <div className="half-bg"></div>
           <img src={signupImage} alt="Doni" className="doni-img" />
