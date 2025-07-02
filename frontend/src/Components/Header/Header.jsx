@@ -10,7 +10,6 @@ import favIcon from '../../Assets/bag-04 (1).png';
 
 function Header() {
   const [showWomenDropdown, setShowWomenDropdown] = useState(false);
-  const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -21,7 +20,6 @@ function Header() {
   const location = useLocation();
   const wrapperRef = useRef(null);
 
-  // Update login status & username when location changes (navigation)
   useEffect(() => {
     const token = localStorage.getItem('token');
     const name = localStorage.getItem('username');
@@ -29,12 +27,10 @@ function Header() {
     setUsername(name || '');
   }, [location]);
 
-  // Close dropdowns if clicked outside
   useEffect(() => {
     function handleClickOutside(event) {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
         setShowWomenDropdown(false);
-        setShowLanguageDropdown(false);
         setShowMobileMenu(false);
         setShowUserMenu(false);
       }
@@ -48,10 +44,6 @@ function Header() {
     if (!isLoggedIn) return triggerLoginPopup();
     if (type === 'women') {
       setShowWomenDropdown((prev) => !prev);
-      setShowLanguageDropdown(false);
-    } else if (type === 'language') {
-      setShowLanguageDropdown((prev) => !prev);
-      setShowWomenDropdown(false);
     }
   };
 
@@ -62,7 +54,6 @@ function Header() {
 
   const handleDropdownItemClick = () => {
     setShowWomenDropdown(false);
-    setShowLanguageDropdown(false);
     setShowUserMenu(false);
   };
 
@@ -135,7 +126,7 @@ function Header() {
             <img
               src={userIcon}
               alt="User"
-              className="icon"
+              className="icon user-icon"
               onClick={() => {
                 if (isLoggedIn) setShowUserMenu((prev) => !prev);
                 else triggerLoginPopup();
@@ -187,21 +178,6 @@ function Header() {
               if (!isLoggedIn) triggerLoginPopup();
             }}
           />
-
-          <div className="dropdown-wrapper">
-            <span className="nav-item hover-link" onClick={() => toggleDropdown('language')}>
-              Language
-              <img src={dropdownIcon} alt="dropdown" className="dropdown-icon" />
-            </span>
-
-            {showLanguageDropdown && (
-              <div className="dropdown-menu">
-                <div onClick={handleDropdownItemClick}>English</div>
-                <div onClick={handleDropdownItemClick}>Sinhala</div>
-                <div onClick={handleDropdownItemClick}>Tamil</div>
-              </div>
-            )}
-          </div>
         </div>
       </div>
 
@@ -233,21 +209,6 @@ function Header() {
           ) : (
             <div className="mobile-menu-item" onClick={handleLogout}>Sign Out</div>
           )}
-
-          <div className="dropdown-wrapper">
-            <div className="mobile-menu-item" onClick={() => toggleDropdown('language')}>
-              Language
-              <img src={dropdownIcon} alt="dropdown" className="dropdown-icon" />
-            </div>
-
-            {showLanguageDropdown && (
-              <div className="dropdown-menu">
-                <div onClick={handleDropdownItemClick}>English</div>
-                <div onClick={handleDropdownItemClick}>Sinhala</div>
-                <div onClick={handleDropdownItemClick}>Tamil</div>
-              </div>
-            )}
-          </div>
         </div>
       )}
 
