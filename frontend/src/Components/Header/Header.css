@@ -588,4 +588,28 @@ a.logo {
     transform: translateX(-50%) translateY(-10px);
   }
 }
+.user-popup-menu .user-popup-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* adds space between links */
+  margin-top: 10px;
+}
+/* Add or update this section */
+
+.user-popup-menu .greeting {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.user-popup-menu .subtext {
+  font-size: 15px;
+  color: #555;
+  margin-bottom: 12px;
+}
+
+.user-popup-menu .user-popup-links .user-menu-item {
+  font-size: 18px;
+  font-weight: 500;
+}
 
