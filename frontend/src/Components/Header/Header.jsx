@@ -21,13 +21,15 @@ function Header() {
   const location = useLocation();
   const wrapperRef = useRef(null);
 
+  // Update login status & username when location changes (navigation)
   useEffect(() => {
     const token = localStorage.getItem('token');
     const name = localStorage.getItem('username');
     setIsLoggedIn(!!token);
-    if (name) setUsername(name);
+    setUsername(name || '');
   }, [location]);
 
+  // Close dropdowns if clicked outside
   useEffect(() => {
     function handleClickOutside(event) {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
@@ -69,6 +71,7 @@ function Header() {
     localStorage.removeItem('username');
     setIsLoggedIn(false);
     setUsername('');
+    setShowUserMenu(false);
     navigate('/signup');
   };
 
@@ -138,35 +141,34 @@ function Header() {
                 else triggerLoginPopup();
               }}
             />
-           {isLoggedIn && showUserMenu && (
-  <div className="user-popup-menu">
-    <p className="greeting">Hello {username || 'User'},</p>
-    <p className="subtext">Welcome to your account</p>
+            {isLoggedIn && showUserMenu && (
+              <div className="user-popup-menu">
+                <p className="greeting">Hello {username || 'User'},</p>
+                <p className="subtext">Welcome to your account</p>
 
-    <div className="user-popup-links">
-      <Link
-        to="/personal-info"
-        className="user-menu-item"
-        onClick={handleDropdownItemClick}
-      >
-        👤 Personal Information
-      </Link>
+                <div className="user-popup-links">
+                  <Link
+                    to="/personal-info"
+                    className="user-menu-item"
+                    onClick={handleDropdownItemClick}
+                  >
+                    👤 Personal Information
+                  </Link>
 
-      <Link
-        to="/dashboard"
-        className={`user-menu-item ${location.pathname === "/dashboard" ? "active" : ""}`}
-        onClick={handleDropdownItemClick}
-      >
-        📦 My Orders
-      </Link>
+                  <Link
+                    to="/dashboard"
+                    className={`user-menu-item ${location.pathname === "/dashboard" ? "active" : ""}`}
+                    onClick={handleDropdownItemClick}
+                  >
+                    📦 My Orders
+                  </Link>
 
-      <div className="user-menu-item">🤍 My Wishlist</div>
-      <div className="user-menu-item">🔔 Notifications</div>
-      <div className="user-menu-item" onClick={handleLogout}>↩ Sign Out</div>
-    </div>
-  </div>
-)}
-
+                  <div className="user-menu-item">🤍 My Wishlist</div>
+                  <div className="user-menu-item">🔔 Notifications</div>
+                  <div className="user-menu-item" onClick={handleLogout}>↩ Sign Out</div>
+                </div>
+              </div>
+            )}
           </div>
 
           <img
