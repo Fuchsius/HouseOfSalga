@@ -16,15 +16,12 @@ import ProductReview from './Pages/ProductReview/ProductReview';
 import ViewOrder from './Pages/ViewOrder/ViewOrder';
 import Shop from './Pages/Shop/Shop';
 import EmptyWishlist from './Pages/wishlist/EmptyWishlist';
-
-
+import PersonalInformation from './Pages/PersonalInformations/PersonalInformation'; // ✅ added
 
 function App() {
   return (
     <BrowserRouter>
       <div className="App">
-        
-
         <Routes>
           <Route path="/" element={<SignIn />} />
           <Route path="/home" element={<Home />} />
@@ -38,11 +35,10 @@ function App() {
           <Route path="/shop" element={<Shop />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/checkout" element={<Checkout />} />
-         <Route path="/wishlist" element={<EmptyWishlist />} />
+          <Route path="/wishlist" element={<EmptyWishlist />} />
+          <Route path="/personal-info" element={<PersonalInformation />} /> {/* ✅ new route */}
           {/* Add more routes as needed */}
         </Routes>
-
-        
       </div>
     </BrowserRouter>
   );
