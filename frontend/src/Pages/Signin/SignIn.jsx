@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // <-- import useNavigate
-import Footer from '../../Components/Footer/Footer'
-import Header from '../../Components/Header/Header'
+import { useNavigate } from 'react-router-dom';
+import Footer from '../../Components/Footer/Footer';
+import Header from '../../Components/Header/Header';
 import axios from 'axios';
 
 import eyeIcon from '../../Assets/eye.png';
@@ -10,7 +10,6 @@ import googleIcon from '../../Assets/google.png';
 import signupImage from '../../Assets/signupImage.png';
 import './SignIn.css';
 
-
 function SignIn() {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
@@ -18,14 +17,10 @@ function SignIn() {
   const [message, setMessage] = useState(null);
   const [messageType, setMessageType] = useState('');
   const navigate = useNavigate();
- 
-    
-    
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
-
 
   const validate = () => {
     const tempErrors = {};
@@ -61,12 +56,13 @@ function SignIn() {
     try {
       const res = await axios.post('http://localhost:5000/api/auth/signin', formData);
       localStorage.setItem('token', res.data.token);
+      localStorage.setItem('username', res.data.user.username); // ✅ fixed this line
 
       setMessageType('success');
       setMessage('Signed in successfully! Redirecting...');
       setTimeout(() => {
         setMessage(null);
-        navigate('/home'); // ✅ redirect to /home instead of /
+        navigate('/home');
       }, 1000);
     } catch (err) {
       setMessageType('error');
