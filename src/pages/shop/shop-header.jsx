@@ -2,8 +2,8 @@ import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import Breadcrumb from "../../components/breadcrumb";
 
-export default function Header() {
-  const [selectedSort, setSelectedSort] = useState("Most Popular");
+export default function Header({ onApplyEdits }) {
+  const [selectedSort, setSelectedSort] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const sortOptions = [
@@ -12,6 +12,21 @@ export default function Header() {
     "Price: High to Low",
     "Newest",
   ];
+  const handleApply = () => {
+    const appliedFilters = {
+      sort: selectedSort,
+    };
+    console.log("Applied filters:", appliedFilters);
+    onApplyEdits(appliedFilters);
+  };
+
+  const handleClear = () => {
+    setSelectedSort("");
+
+    onApplyEdits({
+      sort: "",
+    });
+  };
 
   return (
     <div className="bg-[#F0EADC] border-b border-[#F0EADC] max-w-6xl mx-auto">
@@ -25,7 +40,7 @@ export default function Header() {
           {/* Title and Sort */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 md:flex-1 md:justify-end">
             <h1 className="text-lg font-primary text-gray-900 text-center md:text-left">
-              Women's Red Perfection
+              Showing 1-10 of 100 Products
             </h1>
 
             <div className="flex items-center gap-2">
@@ -57,6 +72,22 @@ export default function Header() {
                     ))}
                   </div>
                 )}
+              </div>
+              {/* Apply & Clear buttons */}
+              <div className="flex gap-2">
+                <button
+                  onClick={handleApply}
+                  disabled={!selectedSort}
+                  className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm disabled:opacity-50"
+                >
+                  Apply
+                </button>
+                <button
+                  onClick={handleClear}
+                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
+                >
+                  Clear
+                </button>
               </div>
             </div>
           </div>

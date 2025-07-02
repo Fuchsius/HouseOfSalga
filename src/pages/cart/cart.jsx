@@ -1,61 +1,55 @@
-import { useState } from "react";
+import { useCart } from "./useCart";
 import Breadcrumb from "../../components/breadcrumb";
 import CartItems from "./cart-items";
 import OrderSummary from "./order-summary";
 
+import { useCurrency } from "./useCurrency";
+
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: "Classic Top",
-      size: "Size: M",
-      price: 2500.0,
-      quantity: 1,
-      image: "6.png",
-      color: "blue",
-    },
-    {
-      id: 2,
-      name: "Full Fit",
-      size: "Color: 01",
-      price: 6900.0,
-      quantity: 1,
-      image: "5.png",
-      color: "red",
-    },
-    {
-      id: 3,
-      name: "Winter Jersey",
-      size: "Size: L",
-      price: 5100.0,
-      quantity: 1,
-      image: "2.png",
-      color: "green",
-    },
-  ]);
-
-  // Calculate totals
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
-  const tax = 250;
-  const deliveryFee = 150;
-  const total = subtotal + tax + deliveryFee;
-
-  // Update quantity
-  const updateQuantity = (id, newQuantity) => {
-    if (newQuantity < 1) return;
-    setCartItems(
-      cartItems.map((item) =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
+  //  Static cart items with backend data
+  const { cart, loading, error, updateQuantity, removeItem, applyDiscount } =
+    useCart();
+  const { formatPrice } = useCurrency();
+  //  Loading and error states
+  if (loading && !cart) {
+    return (
+      <div className="min-h-screen bg-[#F0EADC] py-8 flex items-center justify-center">
+        <div className="text-lg font-primary">Loading cart...</div>
+      </div>
     );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-[#F0EADC] py-8 flex items-center justify-center">
+        <div className="text-lg font-primary text-red-600">Error: {error}</div>
+      </div>
+    );
+  }
+
+  //  Use backend data instead of static data
+  const cartItems = cart?.items || [];
+  const subtotal = cart?.subtotal || 0;
+  const tax = cart?.tax || 250;
+  const deliveryFee = cart?.deliveryFee || 150;
+  const total = cart?.total || 0;
+  const discountAmount = cart?.discountAmount || 0;
+  const discountCode = cart?.discountCode || "";
+
+  //  Update quantity function to use backend
+  const handleUpdateQuantity = (itemId, newQuantity) => {
+    if (newQuantity < 1) return;
+    updateQuantity(itemId, newQuantity);
   };
 
-  // Remove item
-  const removeItem = (id) => {
-    setCartItems(cartItems.filter((item) => item.id !== id));
+  //  Remove item function to use backend
+  const handleRemoveItem = (itemId) => {
+    removeItem(itemId);
+  };
+
+  //  Apply discount function
+  const handleApplyDiscount = async (discountCode) => {
+    return await applyDiscount(discountCode);
   };
 
   return (
@@ -71,8 +65,10 @@ export default function CartPage() {
           <div className="w-full lg:w-2/3  ">
             <CartItems
               items={cartItems}
-              updateQuantity={updateQuantity}
-              removeItem={removeItem}
+              updateQuantity={handleUpdateQuantity}
+              removeItem={handleRemoveItem}
+              loading={loading} //  Pass loading state
+              formatPrice={formatPrice}
             />
           </div>
           <div className="w-full lg:w-1/3 lg:ml-8 mr-72">
@@ -81,6 +77,10 @@ export default function CartPage() {
               tax={tax}
               deliveryFee={deliveryFee}
               total={total}
+              discountAmount={discountAmount} // Pass discount amount
+              discountCode={discountCode} // Pass discount code
+              onApplyDiscount={handleApplyDiscount} //  Pass discount function
+              loading={loading} //  Pass loading state
             />
           </div>
         </div>

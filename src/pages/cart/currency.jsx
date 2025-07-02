@@ -1,27 +1,38 @@
 import { useState } from "react";
 
-export default function CurrencyDropdown() {
+export default function CurrencyDropdown({
+  selectedCurrency,
+  onCurrencyChange,
+}) {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedCurrency, setSelectedCurrency] = useState("LKR");
 
-  const currencies = ["Rs", "USD", "EUR", "GBP"];
-
+  const currencies = [
+    { code: "Rs", name: "Sri Lankan Rupees", symbol: "Rs.", rate: 1 },
+    { code: "USD", name: "US Dollar", symbol: "$", rate: 0.0036 },
+    { code: "EUR", name: "Euro", symbol: "€", rate: 0.0033 },
+    { code: "GBP", name: "British Pound", symbol: "£", rate: 0.0028 },
+    { code: "INR", name: "Indian Rupee", symbol: "₹", rate: 0.3 },
+    { code: "AED", name: "UAE Dirham", symbol: "د.إ", rate: 0.013 },
+    { code: "SAR", name: "Saudi Riyal", symbol: "﷼", rate: 0.013 },
+  ];
   // Toggle dropdown only when icon is clicked
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
 
   const selectCurrency = (currency) => {
-    setSelectedCurrency(currency);
+    onCurrencyChange(currency);
     setIsOpen(false); // Close dropdown after selection
   };
+  const currentCurrency =
+    currencies.find((c) => c.code === selectedCurrency) || currencies[0];
 
   return (
     <div className="relative w-40">
       {/* Currency label and icon */}
       <div className="flex items-center justify-between bg-[#F0EADC]  p-2">
         <span className="text-gray-700 font-Playfair Display size-[20px] w-[400]font-primary">
-          Currency{selectedCurrency}
+          Currency{currentCurrency.symbol}
         </span>
 
         {/* Only this icon will trigger the dropdown */}
@@ -40,11 +51,11 @@ export default function CurrencyDropdown() {
         <div className="absolute mt-2 bg-[#F0EADC] border border-[#F0EADC] rounded-lg shadow-lg w-full z-10">
           {currencies.map((currency) => (
             <div
-              key={currency}
+              key={currency.code}
               onClick={() => selectCurrency(currency)}
               className="px-4 py-2 hover:bg-gray-100 cursor-pointer font-primary"
             >
-              {currency}
+              {currency.name} ({currency.symbol})
             </div>
           ))}
         </div>
