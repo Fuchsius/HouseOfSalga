@@ -1,0 +1,44 @@
+.personal-info-page {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 40px 30px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.personal-info-page h1 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #333;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+}
+
+.personal-info-page .info-section {
+  margin-top: 25px;
+}
+
+.personal-info-page .info-label {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #444;
+  margin-bottom: 5px;
+}
+
+.personal-info-page .info-value {
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .personal-info-page {
+    padding: 20px;
+  }
+
+  .personal-info-page h1 {
+    font-size: 1.5rem;
+  }
+}
