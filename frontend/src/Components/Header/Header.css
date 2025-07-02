@@ -372,6 +372,9 @@ a.logo {
   }
 }
 
+.user-icon {
+  margin-top: 7px; /* You can adjust this value (e.g., 2px, 4px) */
+}
 
 /* ✅ New - Very small screen (below 350px) */
 @media (max-width: 350px) {
