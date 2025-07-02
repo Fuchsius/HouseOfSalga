@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   FaShoppingCart,
   FaChevronLeft,
@@ -11,7 +11,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import ProductCard from '../../Components/ProductCard/ProductCard';
 import RatingStars from '../../Components/RatingStars/RatingStars';
 import ProductTabs from '../../Components/ProductTabs/ProductTabs'; 
-import { useCart } from '../../Context/CartContext';
 import Image3 from '../../Assets/Image3.png';
 import Image2 from '../../Assets/Image2.png';
 import Image1 from '../../Assets/Image1.png';
@@ -22,15 +21,12 @@ import R4 from '../../Assets/R4.png';
 import visa from '../../Assets/1.png';
 import pay from '../../Assets/2.png';
 import './Product.css';
-import Footer from '../../Components/Footer/Footer';
-import Header from '../../Components/Header/Header';
-import ProductReview from '../../Components/ProductReview/ProductReview';
-import ProductReturns from '../../Components/ProductReturns/ProductReturns';
+import Footer from '../../Components/Footer/Footer'
+import Header from '../../Components/Header/Header'
 
 const Product = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { addToCart } = useCart();
 
   const defaultProduct = {
     id: 1,
@@ -42,219 +38,300 @@ const Product = () => {
     images: [Image3, Image2, Image1],
     description: 'This is a stylish Noah Yellow Overcoat designed with bold black and gray accents, adding a modern edge to its vibrant yellow base. Perfect for colder seasons, it blends functionality with high fashion. The product offers a variety of sizes and color choices.',
     rating: 4.5,
-    reviewCount: 18,
-    returnsPolicy: 'Returns accepted within 30 days of purchase.'
+    reviewCount: 18
   };
 
-  const { product: locationProduct, defaultTab = 'description' } = location.state || {};
-  const product = locationProduct || defaultProduct;
+  // Get product from location state or use default
+  const product = location.state?.product || defaultProduct;
 
-  // Backend uploads base URL:
-  const backendUrl = 'http://localhost:5000/uploads/';
-
-  // Convert image filenames to full URLs if they are strings and not already URLs
-  const productImages = product.images?.map(img =>
-    typeof img === 'string' && !img.startsWith('http') ? backendUrl + img : img
-  ) || [];
-
+  // Initialize states with product-specific data
   const [selectedSize, setSelectedSize] = useState(product.sizes?.[0] || 'M');
   const [selectedColor, setSelectedColor] = useState(product.colors?.[0] || 'orange');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [activeTab, setActiveTab] = useState(defaultTab);
-
-  useEffect(() => {
-    setActiveTab(defaultTab);
-  }, [defaultTab]);
+  const [activeTab, setActiveTab] = useState('description');
 
   const recommendedProducts = [
-    { id: 2, name: 'Black Pim', price: 2500.0, rating: 4, reviewCount: 5, image: Image1 },
-    { id: 3, name: 'Winter Jersey', price: 500.0, rating: 5, reviewCount: 12, image: R1 },
-    { id: 4, name: 'Over Coal', price: 10000.0, rating: 4.5, reviewCount: 8, image: R2 },
-    { id: 5, name: 'Summer dress', price: 1500.0, rating: 3.5, reviewCount: 3, image: R3 },
-    { id: 6, name: 'Full kit', price: 9000.0, rating: 5, reviewCount: 15, image: R4 }
+    { 
+      id: 2, 
+      name: 'Black Pim', 
+      price: 2500.0, 
+      rating: 4, 
+      reviewCount: 5,
+      image: Image1
+    },
+    { 
+      id: 3, 
+      name: 'Winter Jersey', 
+      price: 500.0, 
+      rating: 5, 
+      reviewCount: 12,
+      image: R1
+    },
+    { 
+      id: 4, 
+      name: 'Over Coal', 
+      price: 10000.0, 
+      rating: 4.5, 
+      reviewCount: 8,
+      image: R2
+    },
+    { 
+      id: 5, 
+      name: 'Summer dress', 
+      price: 1500.0, 
+      rating: 3.5, 
+      reviewCount: 3,
+      image: R3
+    },
+    { 
+      id: 6, 
+      name: 'Full kit', 
+      price: 9000.0, 
+      rating: 5, 
+      reviewCount: 15,
+      image: R4
+    }
   ];
 
   const nextImage = () => {
     setCurrentImageIndex((prev) =>
-      prev === productImages.length - 1 ? 0 : prev + 1
+      prev === product.images.length - 1 ? 0 : prev + 1
     );
   };
 
   const prevImage = () => {
     setCurrentImageIndex((prev) =>
-      prev === 0 ? productImages.length - 1 : prev - 1
+      prev === 0 ? product.images.length - 1 : prev - 1
     );
   };
 
   const handleAddToCart = () => {
-    addToCart({
-      ...product,
-      selectedSize,
-      selectedColor,
-      quantity,
-      image: productImages[0]
+    navigate('/cart', {
+      state: {
+        product: {
+          ...product,
+          selectedSize,
+          selectedColor,
+          quantity
+        }
+      }
     });
-    navigate('/cart');
   };
 
   const handleBuyNow = () => {
-    addToCart({
-      ...product,
-      selectedSize,
-      selectedColor,
-      quantity,
-      image: productImages[0]
+    navigate('/checkout', {
+      state: {
+        product: {
+          ...product,
+          selectedSize,
+          selectedColor,
+          quantity
+        }
+      }
     });
-    navigate('/checkout');
   };
 
   return (
     <div>
       <Header />
-      <div className="product-page">
-        <div className="product-container">
-          <div className="product-main">
-            <div className="product-images">
-              <div className="main-image">
-                <img
-                  src={productImages[currentImageIndex]}
-                  alt={product.name}
-                  className="product-main-img"
-                />
-                {productImages.length > 1 && (
-                  <>
-                    <button className="nav-button prev" onClick={prevImage}>
-                      <FaChevronLeft />
-                    </button>
-                    <button className="nav-button next" onClick={nextImage}>
-                      <FaChevronRight />
-                    </button>
-                  </>
-                )}
-              </div>
-              {productImages.length > 1 && (
-                <div className="image-dots-container">
-                  {productImages.map((_, index) => (
-                    <span
-                      key={index}
-                      className={`dot ${currentImageIndex === index ? 'dot-active' : ''}`}
-                      onClick={() => setCurrentImageIndex(index)}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="product-details">
-              <div className="rating-favorite-container">
-                <RatingStars rating={product.rating} size="large" />
-                <button className="favorite-button-top" onClick={() => setIsFavorite(!isFavorite)}>
-                  {isFavorite ? <FaHeart className="filled" /> : <FaRegHeart />}
-                </button>
-              </div>
-
-              <h1 className="product-title">{product.name}</h1>
-              <a href="#!" className="view-saves">View including taxes</a>
-
-              <div className="price-stock">
-                <span className="product-page-price">Rs. {product.price.toFixed(2)}</span>
-                <span className="stock">{product.inStock ? 'In stock' : 'Out of stock'}</span>
-              </div>
-
-              <hr className="divider" />
-
-              {product.colors && (
+    <div className="product-page">
+      <div className="product-container">
+        <div className="product-main">
+          {/* Image Gallery Section */}
+          <div className="product-images">
+            <div className="main-image">
+              <img
+                src={product.images[currentImageIndex]}
+                alt={product.name}
+                className="product-main-img"
+                onError={(e) => {
+                  console.error('Failed to load main image:', product.images[currentImageIndex]);
+                }}
+              />
+              {product.images.length > 1 && (
                 <>
-                  <div className="color-selector">
-                    <span className="color-label">Color: {selectedColor}</span>
-                    <div className="color-options">
-                      {product.colors.map((color) => (
-                        <div
-                          key={color}
-                          className={`color-option-wrapper ${selectedColor === color ? 'color-option-wrapper-selected' : ''}`}
-                          onClick={() => setSelectedColor(color)}
-                        >
-                          <div className="color-option" style={{ backgroundColor: color.toLowerCase() }} />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  <hr className="divider" />
+                  <button className="nav-button prev" onClick={prevImage}>
+                    <FaChevronLeft />
+                  </button>
+                  <button className="nav-button next" onClick={nextImage}>
+                    <FaChevronRight />
+                  </button>
                 </>
               )}
+            </div>
+            {product.images.length > 1 && (
+              <div className="image-dots-container">
+                {product.images.map((_, index) => (
+                  <span
+                    key={index}
+                    className={`dot ${currentImageIndex === index ? 'dot-active' : ''}`}
+                    onClick={() => setCurrentImageIndex(index)}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
 
-              {product.sizes && (
-                <div className="size-selector">
-                  <span className="size-label">Size: {selectedSize}</span>
-                  <div className="size-options">
-                    {product.sizes.map((size) => (
-                      <button
-                        key={size}
-                        className={`size-option ${selectedSize === size ? 'size-option-selected' : ''}`}
-                        onClick={() => setSelectedSize(size)}
+          {/* Product Details Section */}
+          <div className="product-details">
+            <div className="rating-favorite-container">
+              <RatingStars rating={product.rating} size="large" />
+              <button
+                className="favorite-button-top"
+                onClick={() => setIsFavorite(!isFavorite)}
+              >
+                {isFavorite ? <FaHeart className="filled" /> : <FaRegHeart />}
+              </button>
+            </div>
+
+            <h1 className="product-title">{product.name}</h1>
+            <a href="#!" className="view-saves">
+              View including taxes
+            </a>
+
+            <div className="price-stock">
+              <span className="product-page-price">Rs. {product.price.toFixed(2)}</span>
+              <span className="stock">{product.inStock ? 'In stock' : 'Out of stock'}</span>
+            </div>
+
+            <hr className="divider" />
+
+            {/* Color Selector */}
+            {product.colors && product.colors.length > 0 && (
+              <>
+                <div className="color-selector">
+                  <span className="color-label">Color: {selectedColor}</span>
+                  <div className="color-options">
+                    {product.colors.map((color) => (
+                      <div
+                        key={color}
+                        className={`color-option-wrapper ${
+                          selectedColor === color ? 'color-option-wrapper-selected' : ''
+                        }`}
+                        onClick={() => setSelectedColor(color)}
                       >
-                        {size}
-                      </button>
+                        <div
+                          className="color-option"
+                          style={{
+                            backgroundColor: color.toLowerCase()
+                          }}
+                          aria-label={color}
+                        />
+                      </div>
                     ))}
                   </div>
                 </div>
-              )}
+                <hr className="divider" />
+              </>
+            )}
 
-              <div className="quantity-control">
-                <div className="quantity-selector">
-                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</button>
-                  <span>{quantity}</span>
-                  <button onClick={() => setQuantity(quantity + 1)}>+</button>
+            {/* Size Selector */}
+            {product.sizes && product.sizes.length > 0 && (
+              <div className="size-selector">
+                <span className="size-label">Size: {selectedSize}</span>
+                <div className="size-options">
+                  {product.sizes.map((size) => (
+                    <button
+                      key={size}
+                      className={`size-option ${selectedSize === size ? 'size-option-selected' : ''}`}
+                      onClick={() => setSelectedSize(size)}
+                    >
+                      {size}
+                    </button>
+                  ))}
                 </div>
               </div>
+            )}
 
-              <div className="product-actions">
-                <button className="add-to-cart" onClick={handleAddToCart}>
-                  <FaShoppingCart /> Add To Cart
+            {/* Quantity Control */}
+            <div className="quantity-control">
+              <div className="quantity-selector">
+                <button 
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  aria-label="Decrease quantity"
+                >
+                  -
                 </button>
-                <button className="buy-now" onClick={handleBuyNow}>
-                  <FaShoppingBag /> Buy Now
+                <span aria-live="polite">{quantity}</span>
+                <button 
+                  onClick={() => setQuantity(quantity + 1)}
+                  aria-label="Increase quantity"
+                >
+                  +
                 </button>
-              </div>
-
-              <div className="secure-checkout">
-                <div className="secure-icons">
-                  <img src={visa} alt="Secure Payment" />
-                  <img src={pay} alt="Secure Payment" />
-                </div>
-                <p>Guarantee safe & secure checkout</p>
               </div>
             </div>
-          </div>
-
-          <div className="tabs-section">
-            <ProductTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-            <div className="tab-content">
-              {activeTab === 'description' && (
-                <div className="product-description">
-                  <h2>Product Description</h2>
-                  <p>{product.description}</p>
-                </div>
-              )}
-              {activeTab === 'review' && <ProductReview product={product} />}
-              {activeTab === 'returns' && <ProductReturns product={product} />}
+            
+            {/* Action Buttons */}
+            <div className="product-actions">
+              <button className="add-to-cart" onClick={handleAddToCart}>
+                <FaShoppingCart /> Add To Cart
+              </button>
+              <button className="buy-now" onClick={handleBuyNow}>
+                <FaShoppingBag /> Buy Now
+              </button>
             </div>
-          </div>
 
-          <div className="recommended-products">
-            <h2>Recommended</h2>
-            <p className="subtitle">You might want to take a look at these.</p>
-            <div className="product-grid">
-              {recommendedProducts.map((p) => (
-                <ProductCard key={p.id} product={p} variant="small" />
-              ))}
+            {/* Secure Checkout */}
+            <div className="secure-checkout">
+              <div className="secure-icons">
+                <img
+                  src= {visa}
+                  alt= "Secure Payment"
+                />
+                <img
+                  src= {pay}
+                  alt= "Secure Payment"
+                />
+              </div>
+              <p>Guarantee safe & secure checkout</p>
             </div>
           </div>
         </div>
+
+        {/* Tabs Section */}
+        <div className="tabs-section">
+          <ProductTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+          <div className="tab-content">
+            {activeTab === 'description' && (
+              <div className="product-description">
+                <h2>Product Description</h2>
+                <p>{product.description}</p>
+              </div>
+            )}
+            {activeTab === 'review' && (
+              <div>
+                <h2>Customer Reviews</h2>
+                <div className="review-summary">
+                  <p>Rating: {product.rating}/5 ({product.reviewCount} reviews)</p>
+                </div>
+                <p>No detailed reviews yet for this product.</p>
+              </div>
+            )}
+            {activeTab === 'returns' && (
+              <div>
+                <h2>Returns & Exchanges</h2>
+                <p>{product.returnsPolicy || 'Returns accepted within 30 days of purchase.'}</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Recommended Products */}
+        <div className="recommended-products">
+          <h2>Recommended</h2>
+          <p className="subtitle">You might want to take a look at these.</p>
+          <div className="product-grid">
+            {recommendedProducts.map((p) => (
+              <ProductCard key={p.id} product={p} variant="small" />
+            ))}
+          </div>
+        </div>
       </div>
-      <Footer />
+    </div>
+    <Footer />
     </div>
   );
 };
