@@ -1,5 +1,5 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   FiUser,
   FiPackage,
@@ -7,48 +7,46 @@ import {
   FiBell,
   FiLogOut,
 } from "react-icons/fi";
-
 import "./Sidebar.css";
 
+// Define links
 const links = [
-  { label: "Personal Information", icon: <FiUser /> },
-  { label: "My Orders", icon: <FiPackage />, active: true },
-  { label: "My Wishlist", icon: <FiHeart /> },
-  { label: "Notifications", icon: <FiBell /> },
-  { label: "Sign Out", icon: <FiLogOut /> },
+  { label: "Personal Information", icon: <FiUser />, path: "/account" },
+  { label: "My Orders", icon: <FiPackage />, path: "/dashboard" },
+  { label: "My Wishlist", icon: <FiHeart />, path: "/wishlist" },
+  { label: "Notifications", icon: <FiBell />, path: "/notifications" },
+  { label: "Sign Out", icon: <FiLogOut />, path: "/logout" },
 ];
 
 export default function Sidebar({ onMyAccountClick }) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [showConfirm, setShowConfirm] = useState(false); // state for modal
 
-  const handleMyOrdersClick = () => {
-    // Reload the current page
-    navigate(0);
+  const signOut = () => {
+    localStorage.removeItem("authToken"); // or your token/session cleanup
+    navigate("/signup");
+  };
+
+  const handleClick = (label, path) => {
+    if (label === "Sign Out") {
+      setShowConfirm(true); // show modal
+    } else {
+      navigate(path);
+    }
   };
 
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
         <div className="breadcrumb-wrapper">
-          {/* Home link */}
           <Link to="/home" className="breadcrumb-link">Home</Link>
-          <span className="breadcrumb-divider">/</span>
-
-          {/* My Account opens user popup menu */}
-          <span
-            className="breadcrumb-link clickable"
-            onClick={onMyAccountClick}
-          >
+          <span className="breadcrumb-divider">&gt; </span>
+          <span className="breadcrumb-link clickable" onClick={onMyAccountClick}>
             My Account
           </span>
-
-          <span className="breadcrumb-divider">/</span>
-
-          {/* Clicking My Orders reloads the page */}
-          <span
-            className="breadcrumb-link clickable"
-            onClick={handleMyOrdersClick}
-          >
+          <span className="breadcrumb-divider"> &gt;</span>
+          <span className="breadcrumb-link clickable" onClick={() => navigate(0)}>
             My Orders
           </span>
         </div>
@@ -59,9 +57,12 @@ export default function Sidebar({ onMyAccountClick }) {
 
       <div className="nav-box">
         <ul className="nav-links">
-          {links.map(({ label, icon, active }) => (
-            <li key={label} className={active ? "active" : ""}>
-              <button className="sidebar-btn">
+          {links.map(({ label, icon, path }) => (
+            <li
+              key={label}
+              className={location.pathname === path ? "active" : ""}
+            >
+              <button className="sidebar-btn" onClick={() => handleClick(label, path)}>
                 {icon}
                 <span>{label}</span>
               </button>
@@ -69,6 +70,19 @@ export default function Sidebar({ onMyAccountClick }) {
           ))}
         </ul>
       </div>
+
+      {/* Confirmation Popup */}
+      {showConfirm && (
+        <div className="popup-overlay">
+          <div className="popup-box">
+            <p className="popup-message">Are you sure you want to sign out?</p>
+            <div className="popup-buttons">
+              <button className="btn-warning" onClick={signOut}>Yes</button>
+              <button className="btn-cancel" onClick={() => setShowConfirm(false)}>No</button>
+            </div>
+          </div>
+        </div>
+      )}
     </aside>
   );
 }

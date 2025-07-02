@@ -1,4 +1,3 @@
-// src/Components/ReviewModal/ReviewModal.js
 import React, { useState } from "react";
 import { FaStar, FaRegStar, FaTimes } from "react-icons/fa";
 import "./ReviewModal.css";
@@ -17,13 +16,19 @@ export default function ReviewModal({ product, onClose, onSubmit }) {
   };
 
   const handleSubmit = () => {
+    if (!rating || !reviewText) {
+      alert("Please provide a rating and review text.");
+      return;
+    }
+
     const formData = {
-      productId: product.id,
+      orderId: product.orderId || product.id || product._id, // fallback
       productName: product.productName,
       rating,
       review: reviewText,
       image,
     };
+
     onSubmit(formData);
     onClose();
   };
@@ -37,7 +42,11 @@ export default function ReviewModal({ product, onClose, onSubmit }) {
 
         <div className="product-summary">
           <img
-            src={product?.image || product?.productImage || "https://via.placeholder.com/80"}
+            src={
+              product?.image ||
+              product?.productImage ||
+              "https://via.placeholder.com/80"
+            }
             alt={product?.productName}
             className="product-review-image"
           />
@@ -67,14 +76,14 @@ export default function ReviewModal({ product, onClose, onSubmit }) {
           onChange={(e) => setReviewText(e.target.value)}
         />
 
-       <h4 className="upload-heading">Share a snap of your favorite product! 📸</h4>
-<input type="file" accept="image/*" onChange={handleImageChange} />
-
+        <h4 className="upload-heading">
+          Share a snap of your favorite product! 📸
+        </h4>
+        <input type="file" accept="image/*" onChange={handleImageChange} />
 
         <button className="submit-review-btn" onClick={handleSubmit}>
-  Submit Review
-</button>
-
+          Submit Review
+        </button>
       </div>
     </div>
   );

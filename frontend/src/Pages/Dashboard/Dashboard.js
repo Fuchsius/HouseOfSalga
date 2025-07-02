@@ -6,6 +6,8 @@ import OrderList from "../../Components/OrderList/OrderList";
 import Header from "../../Components/Header/Header";
 import Footer from "../../Components/Footer/Footer";
 import ReviewModal from "../../Components/ReviewModal/ReviewModal";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import {
   Package,
@@ -44,7 +46,7 @@ export default function Dashboard() {
     setReviewProduct(null);
   };
 
-  const handleSubmitReview = async (formData) => {
+const handleSubmitReview = async (formData) => {
   try {
     const data = new FormData();
     data.append("orderId", formData.orderId);
@@ -61,15 +63,18 @@ export default function Dashboard() {
     });
 
     if (res.ok) {
-      alert("Review submitted successfully!");
+      toast.success("🎉 Review submitted successfully!");
     } else {
-      alert("Failed to submit review");
+      const errText = await res.text();
+      console.error("Server error:", errText);
+      toast.error("❌ Failed to submit review");
     }
   } catch (err) {
     console.error("Review submit error:", err);
-    alert("An error occurred while submitting your review");
+    toast.error("⚠️ Error submitting review");
   }
 };
+
 
   return (
     <>
@@ -207,6 +212,8 @@ export default function Dashboard() {
       </div>
 
       <Footer />
+      <ToastContainer position="top-center" autoClose={1000} />
+
     </>
   );
 }

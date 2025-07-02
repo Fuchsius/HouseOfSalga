@@ -2,6 +2,7 @@
 import React from "react";
 import mockOrders from "../../data/mockOrders";
 import "./OrderList.css";
+import { Link } from 'react-router-dom';
 
 export default function OrderList({ selectedStatus, searchQuery, filterType, onWriteReview }) {
   const results = mockOrders
@@ -87,7 +88,10 @@ export default function OrderList({ selectedStatus, searchQuery, filterType, onW
                   </div>
 
                   <div className="order-cta">
-                    <button className="continue-btn">Continue Shopping</button>
+                    <Link to="/shop">
+  <button className="continue-btn">Continue Shopping</button>
+</Link>
+
                     {o.status === "In Process" && <button className="track-btn">Track Order</button>}
                     {o.status === "Completed" && (
                       <button
