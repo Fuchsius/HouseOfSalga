@@ -15,7 +15,7 @@ function Header() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
-  const [showLoginPopup, setShowLoginPopup] = useState(false); // ✅ new state
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -43,7 +43,7 @@ function Header() {
   }, []);
 
   const toggleDropdown = (type) => {
-    if (!isLoggedIn) return triggerLoginPopup(); // ✅ show popup
+    if (!isLoggedIn) return triggerLoginPopup();
     if (type === 'women') {
       setShowWomenDropdown((prev) => !prev);
       setShowLanguageDropdown(false);
@@ -135,29 +135,38 @@ function Header() {
               className="icon"
               onClick={() => {
                 if (isLoggedIn) setShowUserMenu((prev) => !prev);
-                else triggerLoginPopup(); // ✅ show popup
+                else triggerLoginPopup();
               }}
             />
-            {isLoggedIn && showUserMenu && (
-              <div className="user-popup-menu">
-                <p className="greeting">Hello {username || 'User'},</p>
-                <p className="subtext">Welcome to your account</p>
+           {isLoggedIn && showUserMenu && (
+  <div className="user-popup-menu">
+    <p className="greeting">Hello {username || 'User'},</p>
+    <p className="subtext">Welcome to your account</p>
 
-                <div className="user-menu-item">👤 Personal Information</div>
+    <div className="user-popup-links">
+      <Link
+        to="/personal-info"
+        className="user-menu-item"
+        onClick={handleDropdownItemClick}
+      >
+        👤 Personal Information
+      </Link>
 
-                <Link
-                  to="/dashboard"
-                  className={`user-menu-item ${location.pathname === "/dashboard" ? "active" : ""}`}
-                  onClick={handleDropdownItemClick}
-                >
-                  📦 My Orders
-                </Link>
+      <Link
+        to="/dashboard"
+        className={`user-menu-item ${location.pathname === "/dashboard" ? "active" : ""}`}
+        onClick={handleDropdownItemClick}
+      >
+        📦 My Orders
+      </Link>
 
-                <div className="user-menu-item">🤍 My Wishlist</div>
-                <div className="user-menu-item">🔔 Notifications</div>
-                <div className="user-menu-item" onClick={handleLogout}>↩ Sign Out</div>
-              </div>
-            )}
+      <div className="user-menu-item">🤍 My Wishlist</div>
+      <div className="user-menu-item">🔔 Notifications</div>
+      <div className="user-menu-item" onClick={handleLogout}>↩ Sign Out</div>
+    </div>
+  </div>
+)}
+
           </div>
 
           <img
@@ -240,7 +249,6 @@ function Header() {
         </div>
       )}
 
-      {/* ✅ Popup message */}
       {showLoginPopup && (
         <div className="login-popup">
           Please login first!
