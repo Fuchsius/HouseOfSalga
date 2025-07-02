@@ -14,15 +14,17 @@ function Header() {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState('');
 
   const navigate = useNavigate();
   const location = useLocation();
   const wrapperRef = useRef(null);
 
   useEffect(() => {
-    // Check login state on mount or location change
     const token = localStorage.getItem('token');
+    const name = localStorage.getItem('username');
     setIsLoggedIn(!!token);
+    if (name) setUsername(name);
   }, [location]);
 
   useEffect(() => {
@@ -57,7 +59,9 @@ function Header() {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('username');
     setIsLoggedIn(false);
+    setUsername('');
     navigate('/signup');
   };
 
@@ -118,7 +122,7 @@ function Header() {
             />
             {showUserMenu && (
               <div className="user-popup-menu">
-                <p className="greeting">Hello Amanda,</p>
+                <p className="greeting">Hello {username || 'User'},</p>
                 <p className="subtext">Welcome to your account</p>
 
                 <div className="user-menu-item">👤 Personal Information</div>
