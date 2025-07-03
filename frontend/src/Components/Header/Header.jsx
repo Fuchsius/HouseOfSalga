@@ -24,8 +24,14 @@ function Header() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     const name = localStorage.getItem('username');
-    setIsLoggedIn(!!token);
-    setUsername(name || '');
+    // ✅ explicitly check token truthy and not empty
+    if (token && token.trim() !== '') {
+      setIsLoggedIn(true);
+      setUsername(name || '');
+    } else {
+      setIsLoggedIn(false);
+      setUsername('');
+    }
   }, [location]);
 
   useEffect(() => {
