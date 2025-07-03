@@ -1,44 +1,247 @@
-.personal-info-page {
-  max-width: 900px;
-  margin: 40px auto;
-  padding: 40px 30px;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+.container {
+  font-family: 'Arial', sans-serif;
+  background-color: #F0EADC;
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
 }
 
-.personal-info-page h1 {
-  font-size: 2rem;
+.content {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  gap: 40px;
+}
+
+
+.account-greeting {
   margin-bottom: 20px;
+}
+
+.greeting {
+  font-size: 32px;
+  font-weight: 400;
+  color: #3C4242;
+  margin: 0;
+  font-family: "Wilkysta", sans-serif;
+}
+
+.welcome-text {
+  font-size: 16px;
+  color: #3C4242;
+  margin-top: 5px;
+  font-family: "Wilkysta", sans-serif;
+}
+
+
+.main-content {
+  flex: 1;
+}
+
+.form-section {
+ 
+  background-color: #F0EADC;
+  border-radius: 8px;
+  padding: 40px;
+  
+}
+
+.form-title {
+  width: 378px;
+  font-family: "Wilkysta", sans-serif;
+  font-size: 36px;
+  font-weight: 400;
+  color: #3C4242;
+  margin: 0 0 10px 0;
+  text-align: left;
+}
+
+.form-subtitle {
+  font-size: 20px;
+  color: #3C4242;
+  margin: 0 0 10px 0;
+  font-weight: 400;
+  font-family: "Wilkysta", sans-serif;
+  text-align: left;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width:760px;
+  height: 977px;
+
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+}
+
+.form-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group-full {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 500;
   color: #333;
-  border-bottom: 2px solid #eee;
-  padding-bottom: 10px;
 }
 
-.personal-info-page .info-section {
-  margin-top: 25px;
+.input {
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #fff;
+  transition: border-color 0.3s ease;
+  font-family: "Wilkysta", sans-serif;
 }
 
-.personal-info-page .info-label {
-  font-weight: 600;
-  font-size: 1rem;
-  color: #444;
-  margin-bottom: 5px;
+.input:focus {
+  outline: none;
+  border-color: #007bff;
 }
 
-.personal-info-page .info-value {
-  margin-bottom: 20px;
-  font-size: 0.95rem;
-  color: #666;
+.textarea {
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #fff;
+  resize: vertical;
+  font-family: 'Arial', sans-serif;
+  transition: border-color 0.3s ease;
 }
 
+.textarea:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 10px;
+}
+
+.checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.checkbox-text {
+  font-size: 14px;
+  color: #333;
+}
+
+.button-group {
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
+  justify-content: left;
+  
+}
+
+.view-cart-button {
+  padding: 12px 30px;
+  background-color: transparent;
+  border: 2px solid #333;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 189px;
+  height: 60px;
+}
+
+.view-cart-button:hover {
+  background-color: #333;
+  color: #fff;
+}
+
+.checkout-button {
+  padding: 12px 30px;
+  background-color: #ffc107;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 189px;
+  height: 60px;
+}
+
+.checkout-button:hover {
+  background-color: #e0a800;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-  .personal-info-page {
+  .content {
+    flex-direction: column;
+    padding: 20px;
+    gap: 20px;
+  }
+  
+  .sidebar {
+    width: 100%;
+  }
+  
+  .form-row {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .form-section {
     padding: 20px;
   }
+  
+  .button-group {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .view-cart-button,
+  .checkout-button {
+    width: 100%;
+  }
+}
 
-  .personal-info-page h1 {
-    font-size: 1.5rem;
+@media (max-width: 480px) {
+  .header {
+    padding: 15px 20px;
+  }
+  
+  .greeting {
+    font-size: 20px;
+  }
+  
+  .form-title {
+    font-size: 24px;
   }
 }
