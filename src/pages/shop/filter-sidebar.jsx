@@ -6,8 +6,8 @@ import { SlidersHorizontal, ChevronUp } from "lucide-react";
 
 export default function FilterSidebar({ onApplyFilter }) {
   const [priceRange, setPriceRange] = useState([500, 10000]);
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedSize, setSelectedSize] = useState("");
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedSizes, setSelectedSizes] = useState([]);
   const [selectedColors, setSelectedColors] = useState([]);
 
   const colorOptions = [
@@ -27,8 +27,8 @@ export default function FilterSidebar({ onApplyFilter }) {
     const appliedFilters = {
       minPrice: priceRange[0],
       maxPrice: priceRange[1],
-      category: selectedCategory,
-      size: selectedSize,
+      category: selectedCategories,
+      size: selectedSizes,
       colors: selectedColors,
     };
     console.log("Applied filters:", appliedFilters);
@@ -37,8 +37,8 @@ export default function FilterSidebar({ onApplyFilter }) {
 
   const handleClear = () => {
     setPriceRange([500, 10000]);
-    setSelectedCategory("");
-    setSelectedSize("");
+    setSelectedCategories("");
+    setSelectedSizes("");
     setSelectedColors([]);
     onApplyFilter({
       minPrice: 500,
@@ -96,14 +96,16 @@ export default function FilterSidebar({ onApplyFilter }) {
           {["Women", "Ladies", "Men", "Kids"].map((cat) => (
             <div key={cat} className="flex items-center space-x-2">
               <Checkbox
-                id={cat.toLowerCase()}
-                checked={selectedCategory === cat}
+                id={cat.toLowerCase().replace(" ", "-")}
+                checked={selectedCategories.includes(cat)}
                 onCheckedChange={(checked) => {
                   // Use onCheckedChange instead of onChange
                   if (checked) {
-                    setSelectedCategory(cat);
+                    setSelectedCategories((prev) => [...prev, cat]);
                   } else {
-                    setSelectedCategory("");
+                    setSelectedCategories((prev) =>
+                      prev.filter((s) => s !== cat)
+                    );
                   }
                 }}
               />
@@ -126,13 +128,12 @@ export default function FilterSidebar({ onApplyFilter }) {
             <div key={size} className="flex items-center space-x-2">
               <Checkbox
                 id={size.toLowerCase().replace(" ", "-")}
-                checked={selectedSize === size}
+                checked={selectedSizes.includes(size)}
                 onCheckedChange={(checked) => {
-                  //  Use onCheckedChange instead of onChange
                   if (checked) {
-                    setSelectedSize(size);
+                    setSelectedSizes((prev) => [...prev, size]);
                   } else {
-                    setSelectedSize("");
+                    setSelectedSizes((prev) => prev.filter((s) => s !== size));
                   }
                 }}
               />
@@ -189,8 +190,8 @@ export default function FilterSidebar({ onApplyFilter }) {
       </Button>
 
       {/* Filter Summary */}
-      {(selectedCategory ||
-        selectedSize ||
+      {(selectedCategories ||
+        selectedSizes ||
         selectedColors.length > 0 ||
         priceRange[0] !== 500 ||
         priceRange[1] !== 10000) && (
@@ -202,8 +203,8 @@ export default function FilterSidebar({ onApplyFilter }) {
                 Price: Rs.{priceRange[0]} - Rs.{priceRange[1]}
               </div>
             )}
-            {selectedCategory && <div>Category: {selectedCategory}</div>}
-            {selectedSize && <div>Size: {selectedSize}</div>}
+            {selectedCategories && <div>Category: {selectedCategories}</div>}
+            {selectedSizes && <div>Size: {selectedSizes}</div>}
             {selectedColors.length > 0 && (
               <div>Colors: {selectedColors.join(", ")}</div>
             )}
