@@ -41,7 +41,6 @@ function Header() {
   }, []);
 
   const toggleDropdown = (type) => {
-    if (!isLoggedIn) return triggerLoginPopup();
     if (type === 'women') {
       setShowWomenDropdown((prev) => !prev);
     }
@@ -77,19 +76,11 @@ function Header() {
 
         <div className="left-section">
           <div className="logo">
-            {isLoggedIn ? (
-              <Link to="/home" className="logo-link">Salga</Link>
-            ) : (
-              <span className="logo-link" onClick={triggerLoginPopup}>Salga</span>
-            )}
+            <Link to="/home" className="logo-link">Salga</Link>
           </div>
 
           <nav className="nav-links">
-            {isLoggedIn ? (
-              <Link to="/home" className="nav-item hover-link">Home</Link>
-            ) : (
-              <span className="nav-item hover-link" onClick={triggerLoginPopup}>Home</span>
-            )}
+            <Link to="/home" className="nav-item hover-link">Home</Link>
 
             <div className="dropdown-wrapper">
               <span className="nav-item hover-link" onClick={() => toggleDropdown('women')}>
@@ -97,11 +88,11 @@ function Header() {
                 <img src={dropdownIcon} alt="dropdown" className="dropdown-icon" />
               </span>
 
-              {isLoggedIn && showWomenDropdown && (
+              {showWomenDropdown && (
                 <div className="dropdown-menu">
-                  <div onClick={handleDropdownItemClick}>Dresses</div>
-                  <div onClick={handleDropdownItemClick}>Shoes</div>
-                  <div onClick={handleDropdownItemClick}>Accessories</div>
+                  <div onClick={handleDropdownItemClick}>Kurtha</div>
+                  <div onClick={handleDropdownItemClick}>Saree</div>
+                  <div onClick={handleDropdownItemClick}>Shalva</div>
                 </div>
               )}
             </div>
@@ -127,19 +118,25 @@ function Header() {
               src={userIcon}
               alt="User"
               className="icon user-icon"
-              onClick={() => {
-                if (isLoggedIn) setShowUserMenu((prev) => !prev);
-                else triggerLoginPopup();
-              }}
+              onClick={() => setShowUserMenu((prev) => !prev)}
             />
-            {isLoggedIn && showUserMenu && (
+            {showUserMenu && (
               <div className="user-popup-menu">
-                <p className="greeting">Hello {username || 'User'},</p>
-                <p className="subtext">Welcome to your account</p>
+                {isLoggedIn ? (
+                  <>
+                    <p className="greeting">Hello {username || 'User'},</p>
+                    <p className="subtext">Welcome to your account</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="greeting">Hello Guest,</p>
+                    <p className="subtext">Please login for full access</p>
+                  </>
+                )}
 
                 <div className="user-popup-links">
                   <Link
-                    to="/personal-info"
+                    to={isLoggedIn ? "/personal-info" : "/"}
                     className="user-menu-item"
                     onClick={handleDropdownItemClick}
                   >
@@ -147,7 +144,7 @@ function Header() {
                   </Link>
 
                   <Link
-                    to="/dashboard"
+                    to={isLoggedIn ? "/dashboard" : "/"}
                     className={`user-menu-item ${location.pathname === "/dashboard" ? "active" : ""}`}
                     onClick={handleDropdownItemClick}
                   >
@@ -156,38 +153,23 @@ function Header() {
 
                   <div className="user-menu-item">🤍 My Wishlist</div>
                   <div className="user-menu-item">🔔 Notifications</div>
-                  <div className="user-menu-item" onClick={handleLogout}>↩ Sign Out</div>
+
+                  {isLoggedIn && (
+                    <div className="user-menu-item" onClick={handleLogout}>↩ Sign Out</div>
+                  )}
                 </div>
               </div>
             )}
           </div>
 
-          <img
-            src={cartIcon}
-            alt="Cart"
-            className="icon"
-            onClick={() => {
-              if (!isLoggedIn) triggerLoginPopup();
-            }}
-          />
-          <img
-            src={favIcon}
-            alt="Favorite"
-            className="icon fav-icon"
-            onClick={() => {
-              if (!isLoggedIn) triggerLoginPopup();
-            }}
-          />
+          <img src={cartIcon} alt="Cart" className="icon" />
+          <img src={favIcon} alt="Favorite" className="icon fav-icon" />
         </div>
       </div>
 
       {showMobileMenu && (
         <div className="mobile-menu">
-          {isLoggedIn ? (
-            <Link to="/home" className="mobile-menu-item">Home</Link>
-          ) : (
-            <span className="mobile-menu-item" onClick={triggerLoginPopup}>Home</span>
-          )}
+          <Link to="/home" className="mobile-menu-item">Home</Link>
 
           <div className="dropdown-wrapper">
             <div className="mobile-menu-item" onClick={() => toggleDropdown('women')}>
@@ -195,7 +177,7 @@ function Header() {
               <img src={dropdownIcon} alt="dropdown" className="dropdown-icon" />
             </div>
 
-            {isLoggedIn && showWomenDropdown && (
+            {showWomenDropdown && (
               <div className="dropdown-menu">
                 <div onClick={handleDropdownItemClick}>Dresses</div>
                 <div onClick={handleDropdownItemClick}>Shoes</div>
