@@ -16,6 +16,7 @@ function Header() {
   const [username, setUsername] = useState('');
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [showActionPrompt, setShowActionPrompt] = useState(false);
+  const [showCartPopup, setShowCartPopup] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -24,7 +25,6 @@ function Header() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     const name = localStorage.getItem('username');
-    // ✅ explicitly check token truthy and not empty
     if (token && token.trim() !== '') {
       setIsLoggedIn(true);
       setUsername(name || '');
@@ -70,6 +70,21 @@ function Header() {
     setUsername('');
     setShowUserMenu(false);
     navigate('/signup');
+  };
+
+  const handleCartClick = () => {
+    setShowCartPopup(true);
+  };
+
+  const handleViewCartOrCheckout = (type) => {
+    if (!isLoggedIn) {
+      setShowActionPrompt(true);
+    } else {
+      setShowCartPopup(false);
+      if (type === 'checkout') {
+        navigate('/checkout');
+      }
+    }
   };
 
   return (
@@ -144,18 +159,10 @@ function Header() {
                 <div className="user-popup-links">
                   {isLoggedIn ? (
                     <>
-                      <Link
-                        to="/personal-info"
-                        className="user-menu-item"
-                        onClick={handleDropdownItemClick}
-                      >
+                      <Link to="/personal-info" className="user-menu-item" onClick={handleDropdownItemClick}>
                         👤 Personal Information
                       </Link>
-                      <Link
-                        to="/dashboard"
-                        className={`user-menu-item ${location.pathname === "/dashboard" ? "active" : ""}`}
-                        onClick={handleDropdownItemClick}
-                      >
+                      <Link to="/dashboard" className={`user-menu-item ${location.pathname === "/dashboard" ? "active" : ""}`} onClick={handleDropdownItemClick}>
                         📦 My Orders
                       </Link>
                     </>
@@ -176,7 +183,12 @@ function Header() {
           </div>
 
           <img src={cartIcon} alt="Cart" className="icon" />
-          <img src={favIcon} alt="Favorite" className="icon fav-icon" />
+          <img
+            src={favIcon}
+            alt="Favorite"
+            className="icon fav-icon"
+            onClick={handleCartClick}
+          />
         </div>
       </div>
 
@@ -219,6 +231,38 @@ function Header() {
           <div className="action-buttons">
             <button onClick={() => navigate('/')}>Login</button>
             <button onClick={() => navigate('/signup')}>Sign Up</button>
+          </div>
+        </div>
+      )}
+
+      {/* 🛒 Shopping Cart Popup */}
+      {showCartPopup && (
+        <div className="cart-popup">
+          <div className="cart-header">
+            <span className="cart-title">Shopping Cart</span>
+            <span className="cart-close" onClick={() => setShowCartPopup(false)}>✖</span>
+          </div>
+          <div className="cart-content">
+            <p style={{ color: '#000', textAlign: 'center', marginTop: '5px', fontSize: '14px' }}>
+              Cart items will appear here.
+            </p>
+          </div>
+          <div className="cart-footer">
+            <div className="subtotal">Sub Total: $0.00</div>
+            <div className="cart-buttons">
+              <button
+                className="view-cart-btn"
+                onClick={() => handleViewCartOrCheckout('view')}
+              >
+                View Cart
+              </button>
+              <button
+                className="checkout-btn"
+                onClick={() => handleViewCartOrCheckout('checkout')}
+              >
+                Checkout
+              </button>
+            </div>
           </div>
         </div>
       )}
