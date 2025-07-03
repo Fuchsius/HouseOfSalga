@@ -617,6 +617,7 @@ a.logo {
 }
 
 
+
 /* Popup for guest access */
 .login-popup.action-popup {
   background-color: #fff8e1;
@@ -653,3 +654,95 @@ a.logo {
 
 
 
+.cart-popup {
+  position: fixed;
+  top: 0px;
+  right: 00px;
+  width: 600px;
+  height: 800px;
+  background: #fff;
+  color: #000;
+  padding: 10px 20px;
+  border-radius: 8px;
+  z-index: 9999;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: Wilkysta;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 100%;
+}
+
+.cart-title {
+  color: #000;
+}
+
+.cart-close {
+  cursor: pointer;
+  font-size: 24px;
+  color: #000;
+}
+
+.cart-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cart-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.subtotal {
+  font-family: Wilkysta;
+  font-size: 16px;
+  font-weight: 400;
+  margin-bottom: 8px;
+}
+
+.cart-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.view-cart-btn {
+  width: 189px;
+  height: 60px;
+  border-radius: 12px;
+  background: #F0EADC;
+  font-family: Wilkysta;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 100%;
+  text-align: center;
+  border: none;
+  cursor: pointer;
+}
+
+.checkout-btn {
+  width: 189px;
+  height: 60px;
+  border-radius: 12px;
+  background: #FFC107;
+  font-family: Wilkysta;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 100%;
+  text-align: center;
+  color: #4D1727;
+  border: none;
+  cursor: pointer;
+}
