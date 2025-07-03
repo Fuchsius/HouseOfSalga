@@ -87,6 +87,10 @@ function Header() {
     }
   };
 
+  const handleWishlistClick = () => {
+    navigate('/wishlist');
+  };
+
   return (
     <header className="header" ref={wrapperRef}>
       <div className="header-container">
@@ -182,7 +186,13 @@ function Header() {
             )}
           </div>
 
-          <img src={cartIcon} alt="Cart" className="icon" />
+          <img
+            src={cartIcon}
+            alt="Cart"
+            className="icon"
+            onClick={handleWishlistClick}
+            style={{ cursor: 'pointer' }}
+          />
           <img
             src={favIcon}
             alt="Favorite"
