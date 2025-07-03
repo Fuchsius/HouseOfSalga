@@ -3,6 +3,8 @@
   padding: 80px 20px;
   text-align: center;
   font-family: "Playfair Display", serif;
+  justify-content: center;
+  justify-items: center;
 }
 
 .testimonial-title {
