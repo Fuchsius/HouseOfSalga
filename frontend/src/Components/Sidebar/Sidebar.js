@@ -11,7 +11,9 @@ import "./Sidebar.css";
 
 // Define links
 const links = [
-  { label: "Personal Information", icon: <FiUser />, path: "/account" },
+{ label: "Personal Info", icon: <FiUser />, path: "/personal-info" },
+
+
   { label: "My Orders", icon: <FiPackage />, path: "/dashboard" },
   { label: "My Wishlist", icon: <FiHeart />, path: "/wishlist" },
   { label: "Notifications", icon: <FiBell />, path: "/notifications" },
@@ -32,18 +34,22 @@ export default function Sidebar({ onMyAccountClick }) {
   }, []);
 
   const signOut = () => {
-    localStorage.removeItem("authToken"); // or your token/session cleanup
+    localStorage.removeItem("authToken");
     localStorage.removeItem("username");
     navigate("/signup");
   };
 
   const handleClick = (label, path) => {
     if (label === "Sign Out") {
-      setShowConfirm(true); // show modal
+      setShowConfirm(true);
     } else {
       navigate(path);
     }
   };
+
+  // Get the current active link label
+  const activeLink = links.find(link => location.pathname === link.path);
+  const activeLabel = activeLink?.label || "My Orders";
 
   return (
     <aside className="sidebar">
@@ -56,7 +62,7 @@ export default function Sidebar({ onMyAccountClick }) {
           </span>
           <span className="breadcrumb-divider">&gt;</span>
           <span className="breadcrumb-link clickable" onClick={() => navigate(0)}>
-            My Orders
+            {activeLabel}
           </span>
         </div>
 

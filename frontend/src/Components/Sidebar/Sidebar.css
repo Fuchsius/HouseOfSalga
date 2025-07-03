@@ -7,7 +7,7 @@
 
 .sidebar {
   width: 300px;
-  background-color: #F0EADC;
+ 
   border-right: none;
   padding-top: 40px;
   padding-left: 3%;
@@ -15,9 +15,7 @@
   margin-top: 20px; /* ✅ Move sidebar down slightly */
 }
 
-.sidebar-wrapper {
-  margin-top: 40px; /* ✅ this will force it down */
-}
+
 
 .sidebar h3 {
   position: relative;
@@ -104,10 +102,7 @@
   text-decoration: underline;
 }
 
-.breadcrumb-divider {
-  margin: 0 6px;
-  color: #888;
-}
+
 
 .breadcrumb-current {
   font-weight: bold;

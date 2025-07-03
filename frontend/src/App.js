@@ -17,6 +17,7 @@ import ViewOrder from './Pages/ViewOrder/ViewOrder';
 import Shop from './Pages/Shop/Shop';
 import EmptyWishlist from './Pages/wishlist/EmptyWishlist';
 import PersonalInformation from './Pages/PersonalInformations/PersonalInformation'; // ✅ added
+import Notifications from './Components/Notifications/Notifications';
 
 function App() {
   return (
@@ -37,6 +38,8 @@ function App() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/wishlist" element={<EmptyWishlist />} />
           <Route path="/personal-info" element={<PersonalInformation />} /> {/* ✅ new route */}
+          <Route path="/notifications" element={<Notifications />} />
+
           {/* Add more routes as needed */}
         </Routes>
       </div>
