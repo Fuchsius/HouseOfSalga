@@ -49,10 +49,13 @@ export default function Dashboard() {
 const handleSubmitReview = async (formData) => {
   try {
     const data = new FormData();
-    data.append("orderId", formData.orderId);
-    data.append("productName", formData.productName);
+    data.append("productId", formData.orderId);      // ✅ Backend expects `productId`
     data.append("rating", formData.rating);
     data.append("review", formData.review);
+    data.append("productName", formData.productName); // ✅ Include product name
+
+    data.append("user", "guest");                    // Optional but included for consistency
+
     if (formData.image) {
       data.append("image", formData.image);
     }

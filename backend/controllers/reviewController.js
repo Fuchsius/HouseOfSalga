@@ -1,10 +1,19 @@
 const Review = require('../models/Review');
 
-// Create a new review
 exports.createReview = async (req, res) => {
   try {
     const { productId, user, title, comment, rating } = req.body;
-    const newReview = new Review({ productId, user, title, comment, rating });
+    const image = req.file ? req.file.filename : null;
+
+    const newReview = new Review({
+      productId,
+      user,
+      title,
+      comment,
+      rating,
+      image
+    });
+
     await newReview.save();
     res.status(201).json(newReview);
   } catch (error) {
@@ -12,7 +21,6 @@ exports.createReview = async (req, res) => {
   }
 };
 
-// Get all reviews for a specific product
 exports.getReviewsByProduct = async (req, res) => {
   try {
     const reviews = await Review.find({ productId: req.params.productId }).sort({ createdAt: -1 });

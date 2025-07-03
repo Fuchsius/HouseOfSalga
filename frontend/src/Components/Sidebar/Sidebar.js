@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   FiUser,
@@ -22,9 +22,18 @@ export default function Sidebar({ onMyAccountClick }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [showConfirm, setShowConfirm] = useState(false); // state for modal
+  const [username, setUsername] = useState(""); // dynamic user name
+
+  useEffect(() => {
+    const storedUsername = localStorage.getItem("username");
+    if (storedUsername) {
+      setUsername(storedUsername);
+    }
+  }, []);
 
   const signOut = () => {
     localStorage.removeItem("authToken"); // or your token/session cleanup
+    localStorage.removeItem("username");
     navigate("/signup");
   };
 
@@ -41,17 +50,17 @@ export default function Sidebar({ onMyAccountClick }) {
       <div className="sidebar-header">
         <div className="breadcrumb-wrapper">
           <Link to="/home" className="breadcrumb-link">Home</Link>
-          <span className="breadcrumb-divider">&gt; </span>
+          <span className="breadcrumb-divider">&gt;</span>
           <span className="breadcrumb-link clickable" onClick={onMyAccountClick}>
             My Account
           </span>
-          <span className="breadcrumb-divider"> &gt;</span>
+          <span className="breadcrumb-divider">&gt;</span>
           <span className="breadcrumb-link clickable" onClick={() => navigate(0)}>
             My Orders
           </span>
         </div>
 
-        <h3>Hello Amanda,</h3>
+        <h3>Hello {username || "User"},</h3>
         <p className="subtitle">Welcome to your account</p>
       </div>
 
