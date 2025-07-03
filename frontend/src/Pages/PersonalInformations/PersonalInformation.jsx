@@ -49,8 +49,8 @@ const PersonalInformation = () => {
           <div className="main-content">
             {/* Form title above the form section */}
             <div className="form-container">
-              <h1 className="form-title">Personal Information</h1>
-              <p className="form-subtitle">Add Address</p>
+              <h1 className="form-title1">Personal Information</h1>
+              <p className="form-subtitle1">Add Address</p>
 
               <div className="form-section">
                 <div className="form">
