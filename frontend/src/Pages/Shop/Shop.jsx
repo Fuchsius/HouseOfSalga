@@ -1,262 +1,297 @@
-import React, { useState } from 'react';
-import ProductCard from '../../Components/ProductCard/ProductCard';
-import Footer from '../../Components/Footer/Footer';
-import Header from '../../Components/Header/Header';
+import Footer from "../../Components/Footer/Footer";
+import Header from "../../Components/Header/Header";
 
-import './Shop.css';
-import S1 from '../../Assets/S1.png';
-import R1 from '../../Assets/R1.png';
-import R2 from '../../Assets/R2.png';
-import R3 from '../../Assets/R3.png';
-import R4 from '../../Assets/R4.png';
+import ShopHeader from "./shop-header";
+import FilterSidebar from "./filter-sidebar";
+import Pagination from "./pagination";
+import ShopFooter from "./shop-footer";
+import ProductCard from "./product-card";
+import { useEffect, useState } from "react";
 
-// --- ProductFilters Component ---
-const ProductFilters = () => {
-  const [priceRange, setPriceRange] = useState(1000);
-  const [selectedFilters, setSelectedFilters] = useState({
-    category: [],
-    size: [],
-    color: null,
-  });
+export default function ShopPage() {
+  const [productData, setProductData] = useState([]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = 10;
 
-  const colors = ['#00ff00', '#ff0000', '#ffff00', '#ffa500', '#00ffff', '#0000ff', '#800080', '#ff69b4', '#ffffff', '#000000'];
+  // Fetch products function
+  const fetchProducts = async (filters = {}) => {
+    setLoading(true);
+    setError(null);
 
-  const handleFilterChange = (type, value) => {
-    if (type === 'color') {
-      setSelectedFilters(prev => ({
-        ...prev,
-        color: prev.color === value ? null : value
-      }));
-    } else {
-      setSelectedFilters(prev => ({
-        ...prev,
-        [type]: prev[type].includes(value)
-          ? prev[type].filter(item => item !== value)
-          : [...prev[type], value]
-      }));
+    try {
+      // Build query string from filters
+      const queryParams = new URLSearchParams();
+
+      if (filters.minPrice && filters.minPrice !== 500) {
+        queryParams.append("minPrice", filters.minPrice);
+      }
+      if (filters.maxPrice && filters.maxPrice !== 10000) {
+        queryParams.append("maxPrice", filters.maxPrice);
+      }
+      if (filters.category) {
+        queryParams.append("category", filters.category);
+      }
+      if (filters.size) {
+        queryParams.append("size", filters.size);
+      }
+      if (filters.colors && filters.colors.length > 0) {
+        queryParams.append("colors", filters.colors.join(","));
+      }
+      if (filters.sort) {
+        queryParams.append("sort", filters.sort);
+      }
+
+      const hasFilters = queryParams.toString().length > 0;
+      const url = hasFilters
+        ? `http://localhost:5000/api/products?${queryParams.toString()}`
+        : "http://localhost:5000/api/products/all";
+
+      console.log("Fetching from URL:", url);
+
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        setProductData(data.data);
+        setTotalProducts(data.count);
+        console.log("Products fetched successfully:", data.data);
+      } else {
+        throw new Error(data.message || "Failed to fetch products");
+      }
+    } catch (error) {
+      console.error("Failed to fetch products:", error);
+      setError(error.message);
+      setProductData([]);
+      setTotalProducts(0);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const applyFilters = () => {
-    console.log("Applying Filters:", {
-      priceRange: { min: 500, max: priceRange },
-      filters: selectedFilters,
-    });
+  // Fetch initial products on component mount
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  // Handle filter application from FilterSidebar
+  const handleApplyFilter = (filters) => {
+    console.log("Applying filters:", filters);
+    fetchProducts(filters);
   };
 
-  return (
-    <div className="sidebar">
-      <div className="filter-header">
-        <h2>FILTERS</h2>
-        <span className="filter-icon">
-          <div className="icon-line"></div>
-          <div className="icon-line"></div>
-          <div className="icon-line"></div>
-        </span>
-      </div>
+  // Transform backend data to frontend format
+  const products = productData.map((item, index) => {
+    // Generate a reliable ID with multiple fallbacks
+    const productId =
+      item._id ||
+      item.id ||
+      `product-${index}` ||
+      `fallback-${Date.now()}-${index}`;
 
-      {/* Price Range */}
-      <div className="filter-section">
-        <div className="filter-title">PRICES</div>
-        <div className="price-range">
-          <div className="price-display">
-            <span>Rs. 500</span>
-            <span>Rs. {priceRange}</span>
-          </div>
-          <input
-            type="range"
-            min="500"
-            max="8000"
-            value={priceRange}
-            onChange={(e) => setPriceRange(Number(e.target.value))}
-            className="range-slider"
-          />
-        </div>
-      </div>
-
-      {/* Category */}
-      <div className="filter-section">
-        <div className="filter-title">FILTERS</div>
-        <div className="filter-group">
-          {['Women', 'Ladies'].map(item => (
-            <div key={item} className="checkbox-item">
-              <input
-                type="checkbox"
-                id={item}
-                checked={selectedFilters.category.includes(item)}
-                onChange={() => handleFilterChange('category', item)}
-              />
-              <label htmlFor={item}>{item}</label>
-            </div>
-          ))}
-        </div>
-
-        {/* Size */}
-        <div className="filter-title size-title">SIZE</div>
-        <div className="filter-group">
-          {['Small', 'Medium', 'Large', 'Extra Large'].map(item => (
-            <div key={item} className="checkbox-item">
-              <input
-                type="checkbox"
-                id={item}
-                checked={selectedFilters.size.includes(item)}
-                onChange={() => handleFilterChange('size', item)}
-              />
-              <label htmlFor={item}>{item}</label>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Colors */}
-      <div className="filter-section">
-        <div className="filter-title">Colors</div>
-        <div className="color-filters">
-          {colors.map((color, index) => (
-            <div
-              key={index}
-              className={`color-circle ${selectedFilters.color === color ? 'selected' : ''}`}
-              style={{ backgroundColor: color }}
-              onClick={() => handleFilterChange('color', color)}
-            >
-              {selectedFilters.color === color && (
-                <svg className="check-icon" viewBox="0 0 24 24">
-                  <path fill="#fff" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-                </svg>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <button className="apply-btn" onClick={applyFilters}>
-        Apply Filter
-      </button>
-    </div>
-  );
-};
-
-// --- ShopPage Component ---
-const ShopPage = () => {
-  const [sortBy, setSortBy] = useState('default');
-
-  const products = [
-    {
-      id: 1,
-      name: 'Black Tops',
-      price: 2500.0,
-      rating: 4,
-      reviews: 124,
-      image: S1,
-    },
-    {
-      id: 2,
-      name: 'Winter Jacket',
-      price: 5500.0,
-      rating: 5,
-      reviews: 89,
-      image: R1,
-    },
-    {
-      id: 3,
-      name: 'Blue Coat',
-      price: 8000.0,
-      rating: 4,
-      reviews: 156,
-      image: R2,
-    },
-    {
-      id: 4,
-      name: 'Blue Coat',
-      price: 8000.0,
-      rating: 4,
-      reviews: 156,
-      image: R3,
-    },
-    {
-      id: 5,
-      name: 'Blue Coat',
-      price: 8000.0,
-      rating: 4,
-      reviews: 156,
-      image: R4,
-    },
-  ];
+    return {
+      id: productId,
+      name: item.name || `Product ${index + 1}`,
+      price: item.price || 0,
+      originalPrice: item.originalPrice,
+      image: item.image || "/placeholder.svg?height=300&width=300",
+      rating: Math.round(item.averageRating || 4),
+      reviews: item.reviewCount || 0,
+      isNew: item.isNew || false,
+      category: item.category,
+      size: item.size,
+      color: item.color,
+      description: item.description,
+      inStock: item.inStock !== false,
+      sort: item.sort,
+    };
+  });
 
   return (
     <>
       <Header />
-      <div className="shop-container">
-        <ProductFilters />
+      <div className="min-h-screen bg-[#F0EADC] text-lg">
+        <ShopHeader onApplyEdits={handleApplyFilter} />
 
-        <div className="main-content">
-          <div className="content-header">
-            <div className="breadcrumb">
-              Showing (1-12) of 120 Products - Sort by
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          {/* Loading State */}
+          {loading && (
+            <div className="flex justify-center items-center py-12">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+                <p className="text-gray-600">Loading products...</p>
+              </div>
             </div>
-            <div className="sort-dropdown">
-              <select
-                className="sort-select"
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
+          )}
+
+          {/* Error State */}
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+              <p className="font-bold">Error:</p>
+              <p>{error}</p>
+              <button
+                onClick={() => fetchProducts()}
+                className="mt-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
               >
-                <option value="default">Most Popular</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
-                <option value="rating">Rating</option>
-              </select>
+                Retry
+              </button>
             </div>
+          )}
+
+          {/* Products Header */}
+          {!loading && !error && (
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Products
+              </h2>
+              <p className="text-gray-600">{totalProducts} products found</p>
+            </div>
+          )}
+
+          {/* Desktop Layout */}
+          <div className="xl:grid xl:grid-cols-5 gap-1 hidden">
+            {/* Filter Sidebar - Takes 2 columns */}
+            <div className="col-span-2">
+              <FilterSidebar onApplyFilter={handleApplyFilter} />
+            </div>
+
+            {/* First 9 products in 3 columns (right side) */}
+            <div className="col-span-3">
+              {!loading && !error && products.length > 0 ? (
+                <div className="grid grid-cols-3 gap-4">
+                  {products.slice(0, 9).map((product, index) => (
+                    <ProductCard
+                      key={`first-${product.id}-${index}`}
+                      product={product}
+                    />
+                  ))}
+                </div>
+              ) : (
+                !loading &&
+                !error && (
+                  <div className="text-center py-12">
+                    <p className="text-gray-600 text-lg">
+                      No products found matching your filters.
+                    </p>
+                    <button
+                      onClick={() => fetchProducts()}
+                      className="mt-4 bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded"
+                    >
+                      Show All Products
+                    </button>
+                  </div>
+                )
+              )}
+            </div>
+
+            {/* Fourth row - 5 products starting from end of filter sidebar */}
+            {!loading && !error && products.length > 9 && (
+              <>
+                {/* Empty space for filter sidebar alignment */}
+                <div className="col-span-2"></div>
+
+                {/* 5 products spanning 3 columns (right side) */}
+                <div className="col-span-5">
+                  <div className="grid grid-cols-5 gap-3 mt-4">
+                    {products.slice(9, 14).map((product, index) => (
+                      <ProductCard
+                        key={`fourth-row-${product.id}-${index + 9}`}
+                        product={product}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Remaining products in 5 columns spanning full width */}
+            {!loading && !error && products.length > 14 && (
+              <div className="col-span-5">
+                <div className="grid grid-cols-5 gap-3 mt-4">
+                  {products.slice(14).map((product, index) => (
+                    <ProductCard
+                      key={`remaining-${product.id}-${index + 14}`}
+                      product={product}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
-          <div className="products-grid">
-            {products.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+          {/* Mobile Layout */}
+          <div className="xl:hidden">
+            {/* Mobile Filter Toggle */}
+            <div className="mb-4">
+              <button
+                className="bg-yellow-400 hover:bg-yellow-500 text-black px-4 py-2 rounded font-primary font-semibold w-full sm:w-auto"
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              >
+                {isSidebarOpen ? "Hide Filters" : "Show Filters"} (
+                {totalProducts} products)
+              </button>
+            </div>
+
+            {/* Mobile Filter Sidebar */}
+            {isSidebarOpen && (
+              <div className="mb-6">
+                <FilterSidebar onApplyFilter={handleApplyFilter} />
+              </div>
+            )}
+
+            {/* Mobile Products Grid */}
+            {!loading && !error && products.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {products.map((product, index) => (
+                  <div
+                    key={`mobile-${product.id}-${index}`}
+                    className="flex justify-center"
+                  >
+                    <ProductCard product={product} />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              !loading &&
+              !error && (
+                <div className="text-center py-12">
+                  <p className="text-gray-600 text-lg">
+                    No products found matching your filters.
+                  </p>
+                  <button
+                    onClick={() => fetchProducts()}
+                    className="mt-4 bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded"
+                  >
+                    Show All Products
+                  </button>
+                </div>
+              )
+            )}
           </div>
 
-          <div className="pagination">
-            <button className="page-btn">←</button>
-            {[1, 2, 3, 4, 5, 6].map(n => (
-              <button key={n} className={`page-btn ${n === 1 ? 'active' : ''}`}>{n}</button>
-            ))}
-            <button className="page-btn">→</button>
-          </div>
-
-          <div className="footer-features">
-            <div className="feature">
-              <div className="feature-icon">🏆</div>
-              <div>
-                <div className="feature-text">High Quality</div>
-                <div className="feature-subtext">crafted from top materials</div>
-              </div>
+          {/* Pagination */}
+          {!loading && !error && products.length > 0 && (
+            <div className="mt-8 flex justify-center">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={(page) => setCurrentPage(page)}
+              />
             </div>
-            <div className="feature">
-              <div className="feature-icon">✓</div>
-              <div>
-                <div className="feature-text">Warranty Protection</div>
-                <div className="feature-subtext">Over 2 years</div>
-              </div>
-            </div>
-            <div className="feature">
-              <div className="feature-icon">🚚</div>
-              <div>
-                <div className="feature-text">Free Delivery</div>
-                <div className="feature-subtext">Order over Rs. 15000</div>
-              </div>
-            </div>
-            <div className="feature">
-              <div className="feature-icon">📞</div>
-              <div>
-                <div className="feature-text">24 / 7 Support</div>
-                <div className="feature-subtext">Dedicated support</div>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
+
+        <ShopFooter />
       </div>
       <Footer />
     </>
   );
-};
-
-export default ShopPage;
+}
