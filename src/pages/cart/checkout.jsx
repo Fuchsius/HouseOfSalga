@@ -9,7 +9,6 @@ export default function CheckoutModal({
   if (!isOpen) return null;
 
   const handleProceedToPayment = () => {
-    // Here you would redirect to payment page or payment gateway
     alert("Redirecting to payment gateway...");
     onClose();
   };

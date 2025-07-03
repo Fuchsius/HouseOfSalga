@@ -12,7 +12,7 @@ export default function ToastNotification({
     const timer = setTimeout(() => {
       setIsVisible(false);
       onClose?.();
-    }, 4000); // Auto close after 4 seconds
+    }, 4000);
 
     return () => clearTimeout(timer);
   }, [onClose]);

@@ -11,6 +11,8 @@ export default function ShopPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [totalProducts, setTotalProducts] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = 10;
 
   // Fetch products function
   const fetchProducts = async (filters = {}) => {
@@ -271,7 +273,11 @@ export default function ShopPage() {
         {/* Pagination */}
         {!loading && !error && products.length > 0 && (
           <div className="mt-8 flex justify-center">
-            <Pagination />
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={(page) => setCurrentPage(page)}
+            />
           </div>
         )}
       </div>

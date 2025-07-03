@@ -29,8 +29,8 @@ export default function CartItems({
         >
           <div className="flex-shrink-0  relative overflow-hidden">
             <img
-              src={item.product?.image || item.image || "/placeholder.svg"} //  Handle populated product data
-              alt={item.product?.name || item.name} // Handle populated product data
+              src={item.product?.image || item.image || "/placeholder.svg"}
+              alt={item.product?.name || item.name}
               className="object-contain max-w-[93px] max-h-[123px] max-top-[8px] max-left-[28px] "
             />
           </div>
@@ -40,7 +40,6 @@ export default function CartItems({
               <div>
                 <h3 className="font-medium text-gray-900 font-primary">
                   {item.product?.name || item.name}{" "}
-                  {/*  Handle populated product data */}
                 </h3>
                 <p className="text-sm text-gray-900 font-primary">
                   Size: {item.size}

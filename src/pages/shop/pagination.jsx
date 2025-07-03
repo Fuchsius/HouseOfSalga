@@ -1,7 +1,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "../../components/ui/button";
-export default function Pagination() {
-  const currentPage = 1;
+export default function Pagination({ currentPage, totalPages, onPageChange }) {
+  const pagesToShow = [1, 2, 3];
 
   return (
     <div className="flex  items-center justify-center gap-[216px] mt-8 mb-7">
@@ -9,13 +9,15 @@ export default function Pagination() {
         variant="outline"
         size="sm"
         className="flex items-center gap-1 bg-[#FFFFFF]"
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
       >
         <ChevronLeft className="w-4 h-4 " />
         Previous
       </Button>
 
       <div className="flex items-center gap-2 ">
-        {[1, 2, 3].map((page) => (
+        {pagesToShow.map((page) => (
           <Button
             key={page}
             variant={page === currentPage ? "default" : "outline"}
@@ -23,6 +25,7 @@ export default function Pagination() {
             className={`w-8 h-8 p-0 ${
               page === currentPage ? "bg-[#0000000F]" : ""
             }`}
+            onClick={() => onPageChange(page)}
           >
             {page}
           </Button>
@@ -32,9 +35,12 @@ export default function Pagination() {
         {[7, 9, 10].map((page) => (
           <Button
             key={page}
-            variant="outline"
+            variant={page === currentPage ? "default" : "outline"}
             size="sm"
-            className="w-8 h-8 p-0"
+            className={`w-8 h-8 p-0 ${
+              page === currentPage ? "bg-[#0000000F]" : ""
+            }`}
+            onClick={() => onPageChange(page)}
           >
             {page}
           </Button>
@@ -45,6 +51,8 @@ export default function Pagination() {
         variant="outline"
         size="sm"
         className="flex items-center gap-1 bg-[#FFFFFF]"
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
       >
         Next
         <ChevronRight className="w-4 h-4" />
