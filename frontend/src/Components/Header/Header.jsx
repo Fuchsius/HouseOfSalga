@@ -15,6 +15,7 @@ function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
   const [showLoginPopup, setShowLoginPopup] = useState(false);
+  const [showActionPrompt, setShowActionPrompt] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -33,6 +34,7 @@ function Header() {
         setShowWomenDropdown(false);
         setShowMobileMenu(false);
         setShowUserMenu(false);
+        setShowActionPrompt(false);
       }
     }
 
@@ -46,14 +48,13 @@ function Header() {
     }
   };
 
-  const triggerLoginPopup = () => {
-    setShowLoginPopup(true);
-    setTimeout(() => setShowLoginPopup(false), 1500);
-  };
-
   const handleDropdownItemClick = () => {
-    setShowWomenDropdown(false);
-    setShowUserMenu(false);
+    if (!isLoggedIn) {
+      setShowActionPrompt(true);
+    } else {
+      setShowWomenDropdown(false);
+      setShowUserMenu(false);
+    }
   };
 
   const handleLogout = () => {
@@ -135,25 +136,31 @@ function Header() {
                 )}
 
                 <div className="user-popup-links">
-                  <Link
-                    to={isLoggedIn ? "/personal-info" : "/"}
-                    className="user-menu-item"
-                    onClick={handleDropdownItemClick}
-                  >
-                    👤 Personal Information
-                  </Link>
-
-                  <Link
-                    to={isLoggedIn ? "/dashboard" : "/"}
-                    className={`user-menu-item ${location.pathname === "/dashboard" ? "active" : ""}`}
-                    onClick={handleDropdownItemClick}
-                  >
-                    📦 My Orders
-                  </Link>
-
-                  <div className="user-menu-item">🤍 My Wishlist</div>
-                  <div className="user-menu-item">🔔 Notifications</div>
-
+                  {isLoggedIn ? (
+                    <>
+                      <Link
+                        to="/personal-info"
+                        className="user-menu-item"
+                        onClick={handleDropdownItemClick}
+                      >
+                        👤 Personal Information
+                      </Link>
+                      <Link
+                        to="/dashboard"
+                        className={`user-menu-item ${location.pathname === "/dashboard" ? "active" : ""}`}
+                        onClick={handleDropdownItemClick}
+                      >
+                        📦 My Orders
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <div className="user-menu-item" onClick={handleDropdownItemClick}>👤 Personal Information</div>
+                      <div className="user-menu-item" onClick={handleDropdownItemClick}>📦 My Orders</div>
+                    </>
+                  )}
+                  <div className="user-menu-item" onClick={handleDropdownItemClick}>🤍 My Wishlist</div>
+                  <div className="user-menu-item" onClick={handleDropdownItemClick}>🔔 Notifications</div>
                   {isLoggedIn && (
                     <div className="user-menu-item" onClick={handleLogout}>↩ Sign Out</div>
                   )}
@@ -197,6 +204,16 @@ function Header() {
       {showLoginPopup && (
         <div className="login-popup">
           Please login first!
+        </div>
+      )}
+
+      {showActionPrompt && (
+        <div className="login-popup action-popup">
+          <p>Please log in or create an account to access this feature</p>
+          <div className="action-buttons">
+            <button onClick={() => navigate('/')}>Login</button>
+            <button onClick={() => navigate('/signup')}>Sign Up</button>
+          </div>
         </div>
       )}
     </header>
