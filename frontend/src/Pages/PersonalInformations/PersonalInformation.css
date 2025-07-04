@@ -9,7 +9,7 @@
 
 .content {
   display: flex;
-  max-width: 1200px;
+  /* max-width: 1200px; */
   margin: 0 auto;
   padding: 40px 20px;
   gap: 40px;
@@ -71,7 +71,7 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
-  width:760px;
+  width:auto;
   height: 977px;
 
 }
@@ -200,16 +200,70 @@
   background-color: #e0a800;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+/* Add these media queries to your existing CSS */
+
+/* 1024px */
+@media (max-width: 1024px) {
+  .content {
+    max-width: 100%;
+    padding: 30px 15px;
+    gap: 30px;
+  }
+  
+  .form {
+    width: 100%;
+    height: auto;
+  }
+  
+  .form-title1 {
+    width: auto;
+    font-size: 32px;
+  }
+  
+  .form-subtitle1 {
+    font-size: 18px;
+  }
+}
+
+/* 900px */
+@media (max-width: 900px) {
   .content {
     flex-direction: column;
-    padding: 20px;
+    padding: 25px 15px;
+    gap: 25px;
+  }
+  
+  .form-section {
+    padding: 30px;
+  }
+  
+  .form-title1 {
+    font-size: 28px;
+    margin-bottom: 8px;
+  }
+  
+  .form-subtitle1 {
+    font-size: 16px;
+  }
+}
+
+/* 768px */
+@media (max-width: 768px) {
+  .content {
+    padding: 20px 10px;
     gap: 20px;
   }
   
-  .sidebar {
-    width: 100%;
+  .form-section {
+    padding: 20px;
+  }
+  
+  .form-title1 {
+    font-size: 26px;
+  }
+  
+  .form-subtitle1 {
+    font-size: 15px;
   }
   
   .form-row {
@@ -217,8 +271,36 @@
     gap: 15px;
   }
   
+  .button-group {
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .view-cart-button,
+  .checkout-button {
+    width: 160px;
+    height: 50px;
+    font-size: 14px;
+  }
+}
+
+/* 480px */
+@media (max-width: 480px) {
+  .content {
+    padding: 15px 8px;
+  }
+  
   .form-section {
-    padding: 20px;
+    padding: 15px;
+  }
+  
+  .form-title1 {
+    font-size: 22px;
+  }
+  
+  .form-subtitle1 {
+    font-size: 14px;
   }
   
   .button-group {
@@ -230,18 +312,48 @@
   .checkout-button {
     width: 100%;
   }
-}
-
-@media (max-width: 480px) {
-  .header {
-    padding: 15px 20px;
+  
+  .input,
+  .textarea {
+    padding: 10px 12px;
+    font-size: 13px;
   }
   
-  .greeting {
+  .label {
+    font-size: 13px;
+  }
+}
+
+/* 300px */
+@media (max-width: 300px) {
+  .content {
+    padding: 10px 5px;
+  }
+  
+  .form-section {
+    padding: 10px;
+  }
+  
+  .form-title1 {
     font-size: 20px;
   }
   
-  .form-title {
+  .greeting {
     font-size: 24px;
+  }
+  
+  .welcome-text {
+    font-size: 14px;
+  }
+  
+  .button-group {
+    margin-top: 15px;
+  }
+  
+  .view-cart-button,
+  .checkout-button {
+    height: 45px;
+    padding: 8px 15px;
+    font-size: 13px;
   }
 }
