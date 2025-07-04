@@ -31,11 +31,11 @@ const PersonalInformation = () => {
   };
 
   const handleViewCart = () => {
-    alert('View Cart clicked');
+    alert('Save clicked');
   };
 
   const handleCheckout = () => {
-    alert('Checkout clicked');
+    alert('Edit clicked');
   };
 
   return (
@@ -210,19 +210,20 @@ const PersonalInformation = () => {
                     </label>
                   </div>
                   <div className="button-group">
-                    <button
-                      type="button"
-                      onClick={handleViewCart}
-                      className="save-button"
-                    >
-                     Save
-                    </button>
+                    
                     <button
                       type="button"
                       onClick={handleCheckout}
                       className="edit-button"
                     >
                       Edit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleViewCart}
+                      className="save-button"
+                    >
+                     Save
                     </button>
                   </div>
                 </div>
