@@ -1,6 +1,8 @@
-// ✅ Corrected wishlistpage.jsx
 import React, { useState } from 'react';
 import './wishlistpage.css';
+import Sidebar from './components/Sidebar';
+
+
 
 import {
   FaRegHeart,
@@ -53,7 +55,7 @@ const initialWishlist = [
   },
 ];
 
-const WishlistPage = () => {
+const Wishlist = () => {
   const [wishlist, setWishlist] = useState(initialWishlist);
 
   const handleAddToCart = (index) => {
@@ -69,7 +71,11 @@ const WishlistPage = () => {
   return (
     <div className="wishlist-container page-padding">
       <div className="main-layout">
-        <div className="wishlist-content" style={{ width: '100%' }}>
+        {/* ✅ Add Sidebar here */}
+        <Sidebar />
+
+        {/* ✅ Wishlist content remains */}
+        <div className="wishlist-content">
           {wishlist.length === 0 ? (
             <div className="wishlist-box">
               <div className="wishlist-heart-circle">
@@ -129,4 +135,4 @@ const WishlistPage = () => {
   );
 };
 
-export default WishlistPage;
+export default Wishlist;
