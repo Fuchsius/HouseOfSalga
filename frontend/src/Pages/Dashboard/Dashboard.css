@@ -27,13 +27,13 @@
   padding: 32px;
 }
 
-.orders-header {
+.orders-headers {
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-family: 'Wilkysta';
   font-size: 20px;
-  margin: 105px 0 20px;  /* ✅ Reduced top margin */
+  margin: 40px 0 20px;  /* ✅ Reduced top margin */
 }
 
 

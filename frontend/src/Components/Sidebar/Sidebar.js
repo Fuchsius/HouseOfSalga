@@ -13,7 +13,7 @@ import "./Sidebar.css";
 const links = [
   { label: "Personal Info", icon: <FiUser />, path: "/personal-info" },
   { label: "My Orders", icon: <FiPackage />, path: "/dashboard" },
-  { label: "My Wishlist", icon: <FiHeart />, path: "/wishlist" },
+  { label: "My Wishlist", icon: <FiHeart />, path: "/wishlistpage" },
   { label: "Notification", icon: <FiBell />, path: "/notifications" },
   { label: "Sign Out", icon: <FiLogOut />, path: "/logout" },
 ];

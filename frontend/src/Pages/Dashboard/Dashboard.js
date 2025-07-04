@@ -87,7 +87,7 @@ const handleSubmitReview = async (formData) => {
         <Sidebar onMyAccountClick={() => setShowUserMenu(true)} />
 
         <div className="main-content">
-          <div className="orders-header">
+          <div className="orders-headers">
             <h2>My Orders</h2>
 
             <div className="search-filter">
