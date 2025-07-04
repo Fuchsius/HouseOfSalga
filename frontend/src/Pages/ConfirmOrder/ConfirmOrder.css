@@ -1,4 +1,4 @@
-.order-success-container {
+.confirm-order-wrapper {
   background-color: #f8f0e3;
   height: 100vh;
   display: flex;
@@ -7,17 +7,17 @@
   font-family: 'Segoe UI', sans-serif;
 }
 
-.order-success-content {
+.confirm-order-content {
   text-align: center;
   max-width: 844px;
   height: 478px;
-  gap:30px;
-  top:203px;
-  left:298px;
+  gap: 30px;
+  top: 203px;
+  left: 298px;
   padding: 40px;
 }
 
-.success-icon {
+.confirm-order-icon {
   font-size: 40px;
   color: green;
   border: 4px solid #2DB224;
@@ -25,36 +25,37 @@
   width: 66px;
   height: 66px;
   line-height: 56px;
-  margin: 0 auto 20px auto;
+  margin: 0 auto 10px auto; 
+  margin-top:-100px;/* reduced gap, adjust below if needed */
+  /* You can adjust this margin for icon spacing */
 }
 
-.order-success-content h2 {
+.confirm-order-content h2 {
   font-size: 24px;
-  margin-bottom: 20px;
   font-family: 'Wilkysta', sans-serif;
   font-weight: 400;
   line-height: 32px;
-  margin-bottom: 30px;
+  margin-left: 200px; /* center + gap */
+  margin-top:40px;
 }
 
-
-.order-success-content p {
+.confirm-order-content p {
   font-family: 'Wilkysta', sans-serif;
   font-size: 16px;
   line-height: 30px;
-  margin-bottom: 30px;
+  margin-Top: 30px;
+  margin-bottom: 70px; /* increased gap between paragraph & buttons */
   color: #000;
-
 }
 
-.button-group {
+.confirm-order-buttons {
   display: flex;
   justify-content: center;
   gap: 12px;
 }
 
-.shop-btn,
-.view-order-btn {
+.confirm-order-shop-btn,
+.confirm-order-view-btn {
   padding: 16px 54px 16px 54px;
   width: 265px;
   height: 60px;
@@ -65,53 +66,52 @@
   cursor: pointer;
   border: 1px solid #000;
   transition: 0.3s;
-  top:318px;
-  left:142px;
+  top: 318px;
+  left: 142px;
 }
 
-.shop-btn {
+.confirm-order-shop-btn {
   background-color: #fff;
   color: #000;
 }
 
-.view-order-btn {
+.confirm-order-view-btn {
   background-color: #fdbb2d;
   color: #000;
   border: none;
 }
+
 /* ≤ 335px */
 @media screen and (max-width: 335px) {
-  .order-success-content {
+  .confirm-order-content {
     padding: 20px;
     margin-bottom: 0px;
   }
 
-  .order-success-content h2 {
+  .confirm-order-content h2 {
     font-size: 18px;
     line-height: 28px;
   }
 
-  .order-success-content p {
+  .confirm-order-content p {
     font-size: 14px;
     line-height: 24px;
   }
 
-  .button-group {
+  .confirm-order-buttons {
     flex-direction: column;
     gap: 10px;
-    
   }
 
-  .shop-btn,
-  .view-order-btn {
+  .confirm-order-shop-btn,
+  .confirm-order-view-btn {
     width: 100%;
     font-size: 16px;
     padding: 12px;
     height: auto;
-    
   }
 
-  .success-icon {
+  .confirm-order-icon {
     width: 50px;
     height: 50px;
     font-size: 28px;
@@ -121,26 +121,26 @@
 
 /* 336px - 576px */
 @media screen and (min-width: 336px) and (max-width: 576px) {
-  .order-success-content {
+  .confirm-order-content {
     padding: 30px;
   }
 
-  .order-success-content h2 {
+  .confirm-order-content h2 {
     font-size: 20px;
   }
 
-  .order-success-content p {
+  .confirm-order-content p {
     font-size: 15px;
   }
 
-  .shop-btn,
-  .view-order-btn {
+  .confirm-order-shop-btn,
+  .confirm-order-view-btn {
     width: 100%;
     font-size: 18px;
     padding: 14px;
   }
 
-  .button-group {
+  .confirm-order-buttons {
     flex-direction: column;
     gap: 12px;
   }
@@ -148,20 +148,20 @@
 
 /* 577px - 767px */
 @media screen and (min-width: 577px) and (max-width: 767px) {
-  .order-success-content {
+  .confirm-order-content {
     padding: 35px;
   }
 
-  .order-success-content h2 {
+  .confirm-order-content h2 {
     font-size: 22px;
   }
 
-  .order-success-content p {
+  .confirm-order-content p {
     font-size: 16px;
   }
 
-  .shop-btn,
-  .view-order-btn {
+  .confirm-order-shop-btn,
+  .confirm-order-view-btn {
     width: 240px;
     font-size: 18px;
   }
@@ -169,20 +169,20 @@
 
 /* ≥ 768px */
 @media screen and (min-width: 768px) {
-  .order-success-content {
+  .confirm-order-content {
     padding: 40px;
   }
 
-  .order-success-content h2 {
+  .confirm-order-content h2 {
     font-size: 24px;
   }
 
-  .order-success-content p {
+  .confirm-order-content p {
     font-size: 16px;
   }
 
-  .shop-btn,
-  .view-order-btn {
+  .confirm-order-shop-btn,
+  .confirm-order-view-btn {
     width: 265px;
     font-size: 20px;
   }
@@ -190,29 +190,29 @@
 
 /* ≥ 1024px */
 @media screen and (min-width: 1024px) {
-  .order-success-content {
+  .confirm-order-content {
     max-width: 844px;
   }
 }
 
 /* ≥ 1440px */
 @media screen and (min-width: 1440px) {
-  .order-success-content {
+  .confirm-order-content {
     max-width: 900px;
     padding: 50px;
   }
 
-  .shop-btn,
-  .view-order-btn {
+  .confirm-order-shop-btn,
+  .confirm-order-view-btn {
     width: 280px;
     font-size: 22px;
   }
 
-  .order-success-content h2 {
+  .confirm-order-content h2 {
     font-size: 28px;
   }
 
-  .order-success-content p {
+  .confirm-order-content p {
     font-size: 18px;
   }
 }
