@@ -88,7 +88,7 @@ function Header() {
   };
 
   const handleWishlistClick = () => {
-    navigate('/wishlist');
+    navigate('/wishlistpage'); // <-- Always navigate, regardless of login state
   };
 
   return (
@@ -176,7 +176,7 @@ function Header() {
                       <div className="user-menu-item" onClick={handleDropdownItemClick}>📦 My Orders</div>
                     </>
                   )}
-                  <div className="user-menu-item" onClick={handleDropdownItemClick}>🤍 My Wishlist</div>
+                  <div className="user-menu-item" onClick={handleWishlistClick}>🤍 My Wishlist</div> {/* updated */}
                   <div className="user-menu-item" onClick={handleDropdownItemClick}>🔔 Notifications</div>
                   {isLoggedIn && (
                     <div className="user-menu-item" onClick={handleLogout}>↩ Sign Out</div>
@@ -245,7 +245,6 @@ function Header() {
         </div>
       )}
 
-      {/* 🛒 Shopping Cart Popup */}
       {showCartPopup && (
         <div className="cart-popup">
           <div className="cart-header">
