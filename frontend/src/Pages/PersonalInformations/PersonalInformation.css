@@ -1,4 +1,3 @@
-
 .container {
   font-family: 'Arial', sans-serif;
   background-color: #F0EADC;
@@ -164,7 +163,7 @@
   
 }
 
-.view-cart-button {
+.save-button {
   padding: 12px 30px;
   background-color: transparent;
   border: 2px solid #333;
@@ -178,12 +177,12 @@
   height: 60px;
 }
 
-.view-cart-button:hover {
+.save-button:hover {
   background-color: #333;
   color: #fff;
 }
 
-.checkout-button {
+.edit-button {
   padding: 12px 30px;
   background-color: #ffc107;
   border: none;
@@ -197,7 +196,7 @@
   height: 60px;
 }
 
-.checkout-button:hover {
+.edit-button:hover {
   background-color: #e0a800;
 }
 
@@ -278,8 +277,8 @@
     margin-top: 20px;
   }
   
-  .view-cart-button,
-  .checkout-button {
+  .save-button,
+  .edit-button {
     width: 160px;
     height: 50px;
     font-size: 14px;
@@ -309,8 +308,8 @@
     gap: 10px;
   }
   
-  .view-cart-button,
-  .checkout-button {
+  .save-button,
+  .edit-button {
     width: 100%;
   }
   
@@ -351,8 +350,8 @@
     margin-top: 15px;
   }
   
-  .view-cart-button,
-  .checkout-button {
+  .save-button,
+  .edit-button {
     height: 45px;
     padding: 8px 15px;
     font-size: 13px;
