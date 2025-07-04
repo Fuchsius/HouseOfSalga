@@ -213,16 +213,16 @@ const PersonalInformation = () => {
                     <button
                       type="button"
                       onClick={handleViewCart}
-                      className="view-cart-button"
+                      className="save-button"
                     >
-                      View Cart
+                     Save
                     </button>
                     <button
                       type="button"
                       onClick={handleCheckout}
-                      className="checkout-button"
+                      className="edit-button"
                     >
-                      Checkout
+                      Edit
                     </button>
                   </div>
                 </div>
