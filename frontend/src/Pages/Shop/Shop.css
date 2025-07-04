@@ -7,22 +7,9 @@
 }
 
 /* Sidebar */
-.sidebar {
-  width: 280px;
-  background-color: #F0EADC;
-  padding: 24px;
-  height: fit-content;
-  border-radius: 12px;
-  margin: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
 
-.sidebar h2 {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 20px;
-  color: #333;
-}
+
+
 
 .filter-section {
   margin-bottom: 32px;

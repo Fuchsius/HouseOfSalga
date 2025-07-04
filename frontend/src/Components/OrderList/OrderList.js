@@ -1,10 +1,15 @@
-// src/Components/OrderList/OrderList.js
 import React from "react";
+import { useNavigate, Link } from "react-router-dom"; // ✅ import useNavigate
 import mockOrders from "../../data/mockOrders";
 import "./OrderList.css";
-import { Link } from 'react-router-dom';
 
 export default function OrderList({ selectedStatus, searchQuery, filterType, onWriteReview }) {
+  const navigate = useNavigate(); // ✅ init navigate
+
+  const handleTrackOrder = (orderId) => {
+    navigate(`/track-order/${orderId}`); // ✅ navigate to tracking page
+  };
+
   const results = mockOrders
     .filter(
       (o) =>
@@ -34,7 +39,6 @@ export default function OrderList({ selectedStatus, searchQuery, filterType, onW
       {results.length ? (
         results.map((o) => (
           <div key={o.id}>
-            {/* ── Order Summary (In Process only) ── */}
             {o.status === "In Process" && (
               <div className="order-card">
                 <div className="order-top-row">
@@ -64,7 +68,6 @@ export default function OrderList({ selectedStatus, searchQuery, filterType, onW
               </div>
             )}
 
-            {/* ── Order Details ── */}
             <div className="order-details">
               <div className="product-row">
                 <div className="image-wrapper">
@@ -89,19 +92,24 @@ export default function OrderList({ selectedStatus, searchQuery, filterType, onW
 
                   <div className="order-cta">
                     <Link to="/shop">
-  <button className="continue-btn">Continue Shopping</button>
-</Link>
+                      <button className="continue-btn">Continue Shopping</button>
+                    </Link>
 
-                    {o.status === "In Process" && <button className="track-btn">Track Order</button>}
+                    {o.status === "In Process" && (
+                      <button className="track-btn" onClick={() => handleTrackOrder(o.id)}>
+                        Track Order
+                      </button>
+                    )}
+
                     {o.status === "Completed" && (
-                      <button
-                        className="track-btn"
-                        onClick={() => onWriteReview(o)} // ✅ Trigger parent modal
-                      >
+                      <button className="track-btn" onClick={() => onWriteReview(o)}>
                         Write a Review
                       </button>
                     )}
-                    {o.status === "Cancelled" && <button className="track-btn">Buy Now</button>}
+
+                    {o.status === "Cancelled" && (
+                      <button className="track-btn">Buy Now</button>
+                    )}
                   </div>
                 </div>
               </div>
