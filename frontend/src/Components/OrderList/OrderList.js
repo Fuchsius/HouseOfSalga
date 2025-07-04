@@ -107,9 +107,12 @@ const handleTrackOrder = (orderId) => {
                       </button>
                     )}
 
-                    {o.status === "Cancelled" && (
-                      <button className="track-btn">Buy Now</button>
+                   {o.status === "Cancelled" && (
+                     <button className="track-btn" onClick={() => navigate("/checkout")}>
+                        Buy Now
+                      </button>
                     )}
+
                   </div>
                 </div>
               </div>

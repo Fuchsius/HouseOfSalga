@@ -2,6 +2,7 @@
 
 //import { colours } from "nodemon/lib/config/defaults";
 import classicTop      from "../images/op1.png";
+import blackPant       from "../images/black-pant.png";
 
 
 const orders = [
@@ -79,6 +80,36 @@ const orders = [
     message: 'Your product has been Inprocess',
   },
 
+ {
+    id: '45678',
+    date: '10 june 2025',
+    
+    deliveryDate: '15 june 2025',
+    
+    productName: 'Black Pant',
+    image:blackPant,
+    size: 'Medium',
+    color:'Black',
+    qty: 1,
+    price: 7850,
+    status: 'Completed',
+    message: 'Your product has been Completed',
+  },
+{
+    id: '435678',
+    date: '12 june 2025',
+    
+    deliveryDate: '15 june 2025',
+    
+    productName: 'Black Pant',
+    image:blackPant,
+    size: 'Medium',
+    color:'Black',
+    qty: 1,
+    price: 7850,
+    status: 'Cancelled',
+    message: 'Your product has been Completed',
+  },
 
   
 ];

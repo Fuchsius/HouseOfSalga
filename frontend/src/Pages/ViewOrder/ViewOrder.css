@@ -204,6 +204,10 @@
   color: #282828;
   margin-top: 80px;
   margin-bottom: 40px;
+  width: 100%;              
+  display: block;          
+  justify-content: center;  
+
 }
 
 .vieworder-item-card {
@@ -340,6 +344,7 @@
   margin: 40px auto 80px;
   max-width: 1200px;
   padding: 0 20px;
+  text-align: center;
 }
 
 /* ✅ Hover effect on item-card */

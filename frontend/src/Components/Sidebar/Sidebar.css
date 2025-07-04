@@ -159,7 +159,7 @@
 .sidebar-btn:hover {
   background-color: #e6ac06;
   color: #fff;
-  width: 121%;
+  width: 118%;
   margin-left: -20px;
 }
 
@@ -167,7 +167,7 @@
   background-color: #000;
   color: #F0EADC;
   font-weight: 600;
-  width: 121%;
+  width: 118%;
   margin-left: -20px;
   padding: 12px 16px;
   box-sizing: border-box;
@@ -337,4 +337,22 @@
 
 .btn-cancel:hover {
   background-color: #ec971f;
+}
+
+@media (max-width: 1024px) {
+  .dashboard {
+    flex-direction: column;
+    padding: 24px;
+  }
+
+  .main-content {
+    margin: 0;
+    padding: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 16px;
+  }
 }
