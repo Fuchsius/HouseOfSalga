@@ -6,9 +6,9 @@ import "./OrderList.css";
 export default function OrderList({ selectedStatus, searchQuery, filterType, onWriteReview }) {
   const navigate = useNavigate(); // ✅ init navigate
 
-  const handleTrackOrder = (orderId) => {
-    navigate(`/track-order/${orderId}`); // ✅ navigate to tracking page
-  };
+const handleTrackOrder = (orderId) => {
+  navigate(`/order-tracking/${orderId}`); // ✅ This matches your App.jsx route
+};
 
   const results = mockOrders
     .filter(

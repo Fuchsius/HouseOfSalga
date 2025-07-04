@@ -1,10 +1,29 @@
 import React from 'react';
+import { useParams } from "react-router-dom";
 import { Package, Truck, MapPin, CheckCircle, User, Calendar } from 'lucide-react';
 import './OrderTracking.css';
 import Footer from '../../Components/Footer/Footer';
 import Header from '../../Components/Header/Header';
+import mockOrders from "../../data/mockOrders";
 
 const OrderTracking = () => {
+  const { orderId } = useParams(); // 👈 get order ID from URL
+  const order = mockOrders.find((o) => o.id === orderId); // 👈 find order by ID
+
+  // If order not found, show fallback
+  if (!order) {
+    return (
+      <>
+        <Header />
+        <div className="order-tracking-container">
+          <h2>Order Not Found</h2>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  // Sample static step tracker — customize dynamically later
   const steps = [
     {
       id: 'order-placed',
@@ -22,13 +41,13 @@ const OrderTracking = () => {
       id: 'on-the-road',
       label: 'On The Road',
       icon: Truck,
-      status: 'pending'
+      status: order.status === 'Completed' ? 'completed' : 'pending'
     },
     {
       id: 'delivered',
       label: 'Delivered',
       icon: MapPin,
-      status: 'pending'
+      status: order.status === 'Completed' ? 'completed' : 'pending'
     }
   ];
 
@@ -36,25 +55,25 @@ const OrderTracking = () => {
     {
       icon: CheckCircle,
       text: "Your order has been delivered. Thank you for shopping at Clicon!",
-      time: "23 Jan, 2025 at 7:32 PM",
+      time: order.deliveryDate,
       type: "success"
     },
     {
       icon: User,
-      text: "Our delivery man (John Wick) Has picked-up your order for delivery.",
+      text: "Our delivery man (John Wick) has picked up your order for delivery.",
       time: "23 Jan, 2025 at 2:00 PM",
       type: "info"
     },
     {
       icon: MapPin,
-      text: "Your order has reached at last mile hub.",
+      text: "Your order has reached the last mile hub.",
       time: "22 Jan, 2025 at 8:00 AM",
       type: "info"
     },
     {
       icon: Package,
-      text: "Your order on the way to (last mile) hub.",
-      time: "21, 2025 at 5:32 AM",
+      text: "Your order is on the way to the last mile hub.",
+      time: "21 Jan, 2025 at 5:32 AM",
       type: "info"
     },
     {
@@ -66,12 +85,11 @@ const OrderTracking = () => {
     {
       icon: Calendar,
       text: "Your order has been confirmed.",
-      time: "19 Jan, 2025 at 2:61 PM",
+      time: "19 Jan, 2025 at 2:30 PM",
       type: "info"
     }
   ];
 
-  // Calculate the fill width based on completed steps
   const completedSteps = steps.filter(step => step.status === 'completed').length;
   const fillWidth = ((completedSteps - 1) / (steps.length - 1)) * 100;
 
@@ -82,25 +100,24 @@ const OrderTracking = () => {
         {/* Header */}
         <div className="order-header">
           <div className="order-info">
-            <div className="order-number">#961597612</div>
-            <div className="order-details">1 Products • Order Placed on 25 Jan 2025 at 7:32 PM</div>
+            <div className="order-number">#{order.id}</div>
+            <div className="order-details">
+              {order.qty} Product{order.qty > 1 ? 's' : ''} • Order Placed on {order.date}
+            </div>
           </div>
-          <div className="order-total">Rs.11000.00</div>
+          <div className="order-total">Rs.{order.price?.toFixed(2)}</div>
         </div>
 
         {/* Expected Delivery */}
         <div className="delivery-info">
-          <span className="delivery-text">Order expected arrival 23 Jan 2025</span>
+          <span className="delivery-text">Order expected arrival {order.deliveryDate}</span>
         </div>
 
         {/* Progress Bar */}
         <div className="progress-container">
           <div className="progress-bar-image-style">
             <div className="progress-bar-track"></div>
-            <div
-              className="progress-bar-fill"
-              style={{ width: `${fillWidth}%` }}
-            ></div>
+            <div className="progress-bar-fill" style={{ width: `${fillWidth}%` }}></div>
             <div className="progress-steps-image-style">
               {steps.map((step) => {
                 const Icon = step.icon;
@@ -144,4 +161,3 @@ const OrderTracking = () => {
 };
 
 export default OrderTracking;
-

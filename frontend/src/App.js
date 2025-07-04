@@ -1,5 +1,6 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+
 
 import Header from './Components/Header/Header';
 import Footer from './Components/Footer/Footer';
@@ -40,8 +41,8 @@ function App() {
           <Route path="/wishlist" element={<EmptyWishlist />} />
           <Route path="/personal-info" element={<PersonalInformation />} /> {/* ✅ new route */}
           <Route path="/notifications" element={<Notifications />} />
-          <Route path="/order-tracking" element={<OrderTracking />} /> 
           <Route path="/order-tracking/:orderId" element={<OrderTracking />} />
+          <Route path="/order-tracking" element={<Navigate to="/dashboard" />} />
 
           {/* Add more routes as needed */}
         </Routes>

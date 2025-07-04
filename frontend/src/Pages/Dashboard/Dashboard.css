@@ -33,8 +33,9 @@
   align-items: center;
   font-family: 'Wilkysta';
   font-size: 20px;
-  margin: 60px 0 20px;
+  margin: 105px 0 20px;  /* ✅ Reduced top margin */
 }
+
 
 .search-filter {
   display: flex;
