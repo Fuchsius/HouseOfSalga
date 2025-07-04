@@ -1,10 +1,4 @@
-@font-face {
-  font-family: 'Wilkysta';
-  src: url('./fonts/Wilkysta.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-
+/* ===== Base Styles ===== */
 body {
   margin: 0;
   font-family: 'Wilkysta', serif;
@@ -31,95 +25,32 @@ body {
   }
 }
 
-/* ------------------------------------------------------------
-   Header & Navigation (Breadcrumb, Greeting)
-------------------------------------------------------------- */
-.breadcrumb {
-  font-size: 13px;
-  color: #444;
-  margin: 20px 20px 10px;
-}
-
 h2 {
-  display: flex;
   color: #444;
-  align-items: center;
-  gap: 10px;
-  margin: 0 20px;
   font-size: 26px;
   font-weight: 600;
+  margin-bottom: 20px;
 }
 
-h2::before {
-  content: '';
-  width: 4px;
-  height: 24px;
-  background-color: #f0b500;
-  border-radius: 2px;
-  display: inline-block;
-}
-
-.welcome-text {
-  margin: 5px 20px 20px;
-  font-size: 14px;
-}
-
-/* ------------------------------------------------------------
-   Layout: Main Page & Sidebar
-------------------------------------------------------------- */
+/* ===== Layout ===== */
 .main-layout {
   display: flex;
   gap: 20px;
   padding: 0 20px;
-  flex-wrap: wrap;
+  flex-direction: row;
+  align-items: flex-start;
 }
 
-.sidebar {
-  font-family: 'Poppins', sans-serif;
-  font-size: 16px;
+.wishlist-content {
+  flex: 1;
+  padding: 40px 60px 40px 0px;
   background-color: #f5eddf;
-  border: 1px solid #894f1e33;
-  border-radius: 6px;
-  min-width: 240px;
-  padding: 0;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
-.sidebar ul {
-  padding: 0;
-  margin: auto 0;
-  width: 100%;
-}
-
-.sidebar li {
-  padding: 15px 20px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  font-size: 15px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.sidebar li.menu-item:hover {
-  background-color: #000;
-  color: #fff;
-  border-radius: 6px;
-}
-
-.sidebar li.menu-item:hover svg {
-  color: #fff;
-}
-
-.sidebar li.active {
-  background-color: #000;
-  color: #fff;
-}
-
-/* ------------------------------------------------------------
-   Wishlist: Empty State
-------------------------------------------------------------- */
+/* ===== Wishlist: Empty State ===== */
 .wishlist-box {
   background-color: #fff;
   padding: 40px 20px;
@@ -186,9 +117,7 @@ h2::before {
   background-color: #e0a800;
 }
 
-/* ------------------------------------------------------------
-   Wishlist: Item Cards (Filled State)
-------------------------------------------------------------- */
+/* ===== Wishlist: Item Cards ===== */
 .wishlist-item {
   display: flex;
   align-items: center;
@@ -260,9 +189,7 @@ h2::before {
   color: #333;
 }
 
-/* ------------------------------------------------------------
-   Recently Viewed Products
-------------------------------------------------------------- */
+/* ===== Recently Viewed ===== */
 .recently-viewed {
   margin: 40px 20px;
   width: calc(100% - 40px);
@@ -276,9 +203,20 @@ h2::before {
 }
 
 .product-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  display: flex;
   gap: 20px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scrollbar-width: thin;
+}
+
+.product-list::-webkit-scrollbar {
+  height: 6px;
+}
+
+.product-list::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
 }
 
 .product-card {
@@ -337,7 +275,6 @@ h2::before {
 .rating {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
   gap: 4px;
   font-size: 13px;
   color: #666;
@@ -349,22 +286,14 @@ h2::before {
   font-size: 14px;
 }
 
-/* ------------------------------------------------------------
-   Responsive Layouts
-------------------------------------------------------------- */
+/* ===== Responsive Layout ===== */
 @media (max-width: 768px) {
   .main-layout {
     flex-direction: column;
   }
 
-  .sidebar {
-    align-items: flex-start;
-    justify-content: center;
-    width: 100%;
-  }
-
-  .sidebar ul {
-    margin: 20px 0;
+  .wishlist-content {
+    padding: 20px;
   }
 
   .wishlist-box {
@@ -379,7 +308,6 @@ h2::before {
 
   .product-list {
     justify-content: center;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   }
 
   .product-card {
