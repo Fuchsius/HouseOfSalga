@@ -1,21 +1,19 @@
 const mongoose = require('mongoose');
 
-const PersonalInfoSchema = new mongoose.Schema({
+const personalInfoSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   country: { type: String, required: true },
-  company: { type: String },
+  company: String,
   streetAddress: { type: String, required: true },
-  apartment: { type: String },
+  apartment: String,
   city: { type: String, required: true },
   state: { type: String, required: true },
   phone: { type: String, required: true },
   postalCode: { type: String, required: true },
-  deliveryInstructions: { type: String },
+  deliveryInstructions: String,
   defaultShipping: { type: Boolean, default: false },
   defaultBilling: { type: Boolean, default: false },
-}, {
-  timestamps: true
-});
+}, { timestamps: true });
 
-module.exports = mongoose.model('PersonalInfo', PersonalInfoSchema);
+module.exports = mongoose.model('PersonalInfo', personalInfoSchema);
