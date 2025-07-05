@@ -12,6 +12,7 @@ const wishlistRoutes = require("./routes/wishlist");
 const productRoutes = require("./routes/products");
 const cartRoutes = require("./routes/cart");
 const discountRoutes = require("./routes/discount");
+const personalInfoRoutes = require('./routes/personalInfoRoutes');
 
 const app = express();
 app.use(cors());
@@ -37,6 +38,11 @@ app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/discount", discountRoutes);
+app.use("/api/personal-info", personalInfoRoutes);
+
+app.post('/api/personal-info/test', (req, res) => {
+  res.json({ message: 'Test route works!' });
+});
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

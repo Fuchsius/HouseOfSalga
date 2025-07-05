@@ -25,7 +25,12 @@ function Header() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     const name = localStorage.getItem('username');
-    if (token && token.trim() !== '') {
+
+    if (location.pathname === '/') {
+      // ✅ Always show Login at SignIn page
+      setIsLoggedIn(false);
+      setUsername('');
+    } else if (token && token.trim() !== '') {
       setIsLoggedIn(true);
       setUsername(name || '');
     } else {
@@ -88,13 +93,16 @@ function Header() {
   };
 
   const handleWishlistClick = () => {
-    navigate('/wishlist');
+    navigate('/wishlistpage');
   };
 
   return (
     <header className="header" ref={wrapperRef}>
       <div className="header-container">
-        <div className="hamburger" onClick={() => setShowMobileMenu((prev) => !prev)}>
+        <div
+          className="hamburger"
+          onClick={() => setShowMobileMenu((prev) => !prev)}
+        >
           <span></span>
           <span></span>
           <span></span>
@@ -102,16 +110,27 @@ function Header() {
 
         <div className="left-section">
           <div className="logo">
-            <Link to="/home" className="logo-link">Salga</Link>
+            <Link to="/home" className="logo-link">
+              Salga
+            </Link>
           </div>
 
           <nav className="nav-links">
-            <Link to="/home" className="nav-item hover-link">Home</Link>
+            <Link to="/home" className="nav-item hover-link">
+              Home
+            </Link>
 
             <div className="dropdown-wrapper">
-              <span className="nav-item hover-link" onClick={() => toggleDropdown('women')}>
+              <span
+                className="nav-item hover-link"
+                onClick={() => toggleDropdown('women')}
+              >
                 Women
-                <img src={dropdownIcon} alt="dropdown" className="dropdown-icon" />
+                <img
+                  src={dropdownIcon}
+                  alt="dropdown"
+                  className="dropdown-icon"
+                />
               </span>
 
               {showWomenDropdown && (
@@ -132,11 +151,17 @@ function Header() {
           </div>
 
           {isLoggedIn ? (
-            <span className="nav-item hover-link" onClick={handleLogout} style={{ cursor: 'pointer' }}>
+            <span
+              className="nav-item hover-link"
+              onClick={handleLogout}
+              style={{ cursor: 'pointer' }}
+            >
               Sign Out
             </span>
           ) : (
-            <Link to="/" className="nav-item hover-link">Login</Link>
+            <Link to="/" className="nav-item hover-link">
+              Login
+            </Link>
           )}
 
           <div className="user-menu-wrapper">
@@ -163,23 +188,55 @@ function Header() {
                 <div className="user-popup-links">
                   {isLoggedIn ? (
                     <>
-                      <Link to="/personal-info" className="user-menu-item" onClick={handleDropdownItemClick}>
+                      <Link
+                        to="/personal-info"
+                        className="user-menu-item"
+                        onClick={handleDropdownItemClick}
+                      >
                         👤 Personal Information
                       </Link>
-                      <Link to="/dashboard" className={`user-menu-item ${location.pathname === "/dashboard" ? "active" : ""}`} onClick={handleDropdownItemClick}>
+                      <Link
+                        to="/dashboard"
+                        className={`user-menu-item ${
+                          location.pathname === '/dashboard' ? 'active' : ''
+                        }`}
+                        onClick={handleDropdownItemClick}
+                      >
                         📦 My Orders
                       </Link>
                     </>
                   ) : (
                     <>
-                      <div className="user-menu-item" onClick={handleDropdownItemClick}>👤 Personal Information</div>
-                      <div className="user-menu-item" onClick={handleDropdownItemClick}>📦 My Orders</div>
+                      <div
+                        className="user-menu-item"
+                        onClick={handleDropdownItemClick}
+                      >
+                        👤 Personal Information
+                      </div>
+                      <div
+                        className="user-menu-item"
+                        onClick={handleDropdownItemClick}
+                      >
+                        📦 My Orders
+                      </div>
                     </>
                   )}
-                  <div className="user-menu-item" onClick={handleDropdownItemClick}>🤍 My Wishlist</div>
-                  <div className="user-menu-item" onClick={handleDropdownItemClick}>🔔 Notifications</div>
+                  <div className="user-menu-item" onClick={handleWishlistClick}>
+                    🤍 My Wishlist
+                  </div>
+                  <div
+                    className="user-menu-item"
+                    onClick={handleDropdownItemClick}
+                  >
+                    🔔 Notifications
+                  </div>
                   {isLoggedIn && (
-                    <div className="user-menu-item" onClick={handleLogout}>↩ Sign Out</div>
+                    <div
+                      className="user-menu-item"
+                      onClick={handleLogout}
+                    >
+                      ↩ Sign Out
+                    </div>
                   )}
                 </div>
               </div>
@@ -204,12 +261,21 @@ function Header() {
 
       {showMobileMenu && (
         <div className="mobile-menu">
-          <Link to="/home" className="mobile-menu-item">Home</Link>
+          <Link to="/home" className="mobile-menu-item">
+            Home
+          </Link>
 
           <div className="dropdown-wrapper">
-            <div className="mobile-menu-item" onClick={() => toggleDropdown('women')}>
+            <div
+              className="mobile-menu-item"
+              onClick={() => toggleDropdown('women')}
+            >
               Women
-              <img src={dropdownIcon} alt="dropdown" className="dropdown-icon" />
+              <img
+                src={dropdownIcon}
+                alt="dropdown"
+                className="dropdown-icon"
+              />
             </div>
 
             {showWomenDropdown && (
@@ -222,18 +288,18 @@ function Header() {
           </div>
 
           {!isLoggedIn ? (
-            <Link to="/" className="mobile-menu-item">Login</Link>
+            <Link to="/" className="mobile-menu-item">
+              Login
+            </Link>
           ) : (
-            <div className="mobile-menu-item" onClick={handleLogout}>Sign Out</div>
+            <div className="mobile-menu-item" onClick={handleLogout}>
+              Sign Out
+            </div>
           )}
         </div>
       )}
 
-      {showLoginPopup && (
-        <div className="login-popup">
-          Please login first!
-        </div>
-      )}
+      {showLoginPopup && <div className="login-popup">Please login first!</div>}
 
       {showActionPrompt && (
         <div className="login-popup action-popup">
@@ -245,15 +311,26 @@ function Header() {
         </div>
       )}
 
-      {/* 🛒 Shopping Cart Popup */}
       {showCartPopup && (
         <div className="cart-popup">
           <div className="cart-header">
             <span className="cart-title">Shopping Cart</span>
-            <span className="cart-close" onClick={() => setShowCartPopup(false)}>✖</span>
+            <span
+              className="cart-close"
+              onClick={() => setShowCartPopup(false)}
+            >
+              ✖
+            </span>
           </div>
           <div className="cart-content">
-            <p style={{ color: '#000', textAlign: 'center', marginTop: '5px', fontSize: '14px' }}>
+            <p
+              style={{
+                color: '#000',
+                textAlign: 'center',
+                marginTop: '5px',
+                fontSize: '14px',
+              }}
+            >
               Cart items will appear here.
             </p>
           </div>

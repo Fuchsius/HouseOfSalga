@@ -1,6 +1,6 @@
 import React from 'react';
-import Footer from '../../Components/Footer/Footer'
-import Header from '../../Components/Header/Header'
+import Footer from '../../Components/Footer/Footer';
+import Header from '../../Components/Header/Header';
 import './ViewOrder.css';
 import bag from '../../Assets/bag.png';
 import doni3 from '../../Assets/ViewOrder.png';
@@ -9,6 +9,7 @@ import doni4 from '../../Assets/R3.png';
 import kolla2 from '../../Assets/R4.png';
 import icon from '../../Assets/Frame 2609102 (1).png';
 import tharuu from '../../Assets/star.png';
+import { Link } from 'react-router-dom';
 
 function ViewOrder() {
   return (
@@ -26,49 +27,51 @@ function ViewOrder() {
         <p className="vieworder-order-id mt-4">ORDER DETAILS - #96459761</p>
       </div>
 
-      {/* ✅ Order Details Section with Button Alignment */}
-      <div className="vieworder-order-section container mx-auto px-4">
-        {/* Image */}
-        <div className="vieworder-order-image-box">
-          <img src={doni3} alt="product" className="vieworder-order-image" />
-        </div>
+      {/* ✅ Centered Wrapper for Order Info */}
+      <div className="vieworder-order-wrapper">
+        <div className="vieworder-order-section">
+          {/* Image */}
+          <div className="vieworder-order-image-box">
+            <img src={doni3} alt="product" className="vieworder-order-image" />
+          </div>
 
-        {/* Column 1 */}
-        <div className="vieworder-info-column vieworder-column-1">
-          <h3 className="vieworder-info-title">Classic Top</h3>
-          <p className="vieworder-info-subtext vieworder-large-text"><span className="vieworder-badge">Size:</span> small</p>
-          <p className="vieworder-info-subtext vieworder-large-text"><span className="vieworder-badge">Color:</span> Blue</p>
-          <p className="vieworder-price">Rs. 2500.00</p>
-        </div>
+          {/* Column 1 */}
+          <div className="vieworder-info-column vieworder-column-1">
+            <h3 className="vieworder-info-title">Classic Top</h3>
+            <p className="vieworder-info-subtext vieworder-large-text"><span className="vieworder-badge">Size:</span> small</p>
+            <p className="vieworder-info-subtext vieworder-large-text"><span className="vieworder-badge">Color:</span> Blue</p>
+            <p className="vieworder-price">Rs. 2500.00</p>
+          </div>
 
-        {/* Column 2 */}
-        <div className="vieworder-info-column vieworder-column-2">
-          <h3 className="vieworder-info-title">Delivery Details</h3>
-          <p className="vieworder-info-subhead vieworder-large-text">Shipping address</p>
-          <p className="vieworder-info-body vieworder-reduced-line-height">
-            No 55,Mawathgama<br />
-            Kandy Road,<br />
-            Mawatha Gama
-          </p>
+          {/* Column 2 */}
+          <div className="vieworder-info-column vieworder-column-2">
+            <h3 className="vieworder-info-title">Delivery Details</h3>
+            <p className="vieworder-info-subhead vieworder-large-text">Shipping address</p>
+            <p className="vieworder-info-body vieworder-reduced-line-height">
+              No 55,Mawathgama<br />
+              Kandy Road,<br />
+              Mawatha Gama
+            </p>
 
-          <p className="vieworder-info-subhead vieworder-spacing-tight vieworder-large-text">Contact information</p>
-          <p className="vieworder-info-body vieworder-reduced-line-height">
-            name@gmail.com
-          </p>
+            <p className="vieworder-info-subhead vieworder-spacing-tight vieworder-large-text">Contact information</p>
+            <p className="vieworder-info-body vieworder-reduced-line-height">
+              name@gmail.com
+            </p>
 
-          <button className="vieworder-cancel-btn">Cancel order</button>
-        </div>
+            <button className="vieworder-cancel-btn">Cancel order</button>
+          </div>
 
-        {/* Column 3 */}
-        <div className="vieworder-info-column vieworder-column-3">
-          <h3 className="vieworder-info-title">Payment method</h3>
-          <p className="vieworder-payment-method text-sm vieworder-reduced-line-height vieworder-large-text">Master card</p>
-          <p className="text-[#282828] text-sm mb-2 vieworder-reduced-line-height">XXXX XXXX XXXX 5425</p>
+          {/* Column 3 */}
+          <div className="vieworder-info-column vieworder-column-3">
+            <h3 className="vieworder-info-title">Payment method</h3>
+            <p className="vieworder-payment-method text-sm vieworder-reduced-line-height vieworder-large-text">Master card</p>
+            <p className="text-[#282828] text-sm mb-2 vieworder-reduced-line-height">XXXX XXXX XXXX 5425</p>
 
-          <h3 className="vieworder-info-title vieworder-spacing-tight mt-4">Estimated shipping</h3>
-          <p className="text-sm vieworder-reduced-line-height">16 June 2024</p>
+            <h3 className="vieworder-info-title vieworder-spacing-tight mt-4">Estimated shipping</h3>
+            <p className="text-sm vieworder-reduced-line-height">16 June 2024</p>
 
-          <button className="vieworder-continue-btn">Continue Shopping</button>
+            <Link to="/" className="vieworder-continue-btn">Continue Shopping</Link>
+          </div>
         </div>
       </div>
 
@@ -76,7 +79,6 @@ function ViewOrder() {
       <div className="recommend-section text-center mt-12 mb-16">
         <h2 className="vieworder-suggest-title">Suggest Item Base On Your Order</h2>
         
-        {/* Added wrapper container for flex styling */}
         <div className="vieworder-recommendations-container">
           {/* Card 1 */}
           <div className="vieworder-item-card">
@@ -84,7 +86,6 @@ function ViewOrder() {
             <img src={kolla1} alt="Over Coat" className="vieworder-item-img" />
             <p className="vieworder-item-title">Over Coat</p>
             <p className="vieworder-item-price">Rs. 8000.00</p>
-            {/* Rating placed below price */}
             <div className="vieworder-rating">
               <img src={tharuu} alt="stars" className="rating-stars" />
               <span className="rating-count">(121)</span>

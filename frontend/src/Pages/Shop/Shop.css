@@ -177,7 +177,7 @@
   display: flex;
   justify-content: center;
 }
-/* 🔥 RESPONSIVE BREAKPOINTS */
+
 @media (max-width: 1024px) {
   .desktop-grid {
     grid-template-columns: 1fr 2fr;
@@ -191,11 +191,11 @@
 
   .product-grid-3,
   .product-grid-5 {
-    grid-template-columns: repeat(3, 1fr); /* 🔥 Force 2 columns on medium screens */
+    grid-template-columns: repeat(3, 1fr); 
   }
 
   .mobile-grid {
-    grid-template-columns: repeat(3, 1fr); /* 🔥 2 columns on tablets */
+    grid-template-columns: repeat(3, 1fr); 
   }
 
   .sidebar-wrapper {
@@ -211,7 +211,7 @@
   .product-grid-3,
   .product-grid-5,
   .mobile-grid {
-    grid-template-columns: 1fr; /* 🔥 Single column on very small screens */
+    grid-template-columns: 1fr; 
   }
 
   .page-container {

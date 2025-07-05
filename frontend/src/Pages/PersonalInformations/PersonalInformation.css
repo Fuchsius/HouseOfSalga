@@ -1,4 +1,3 @@
-
 .container {
   font-family: 'Arial', sans-serif;
   background-color: #F0EADC;
@@ -9,7 +8,6 @@
 
 .content {
   display: flex;
-  max-width: 1200px;
   margin: 0 auto;
   padding: 40px 20px;
   gap: 40px;
@@ -38,6 +36,7 @@
 
 .main-content {
   flex: 1;
+  width: auto;
 }
 
 .form-section {
@@ -54,14 +53,14 @@
   font-size: 36px;
   font-weight: 400;
   color: #3C4242;
-  margin: 0 0 10px 0;
+  margin:40px 0px 10px 40px;
   text-align: left;
 }
 
 .form-subtitle1{
   font-size: 20px;
   color: #3C4242;
-  margin: 0 0 10px 0;
+  margin: 0 0 10px 40px;
   font-weight: 400;
   font-family: "Wilkysta", sans-serif;
   text-align: left;
@@ -71,7 +70,7 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
-  width:760px;
+  width:auto;
   height: 977px;
 
 }
@@ -163,7 +162,7 @@
   
 }
 
-.view-cart-button {
+.save-button {
   padding: 12px 30px;
   background-color: transparent;
   border: 2px solid #333;
@@ -177,12 +176,12 @@
   height: 60px;
 }
 
-.view-cart-button:hover {
+.save-button:hover {
   background-color: #333;
   color: #fff;
 }
 
-.checkout-button {
+.edit-button {
   padding: 12px 30px;
   background-color: #ffc107;
   border: none;
@@ -196,20 +195,74 @@
   height: 60px;
 }
 
-.checkout-button:hover {
+.edit-button:hover {
   background-color: #e0a800;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+/* Add these media queries to your existing CSS */
+
+/* 1024px */
+@media (max-width: 1024px) {
+  .content {
+    max-width: 100%;
+    padding: 30px 15px;
+    gap: 30px;
+  }
+  
+  .form {
+    width: 100%;
+    height: auto;
+  }
+  
+  .form-title1 {
+    width: auto;
+    font-size: 32px;
+  }
+  
+  .form-subtitle1 {
+    font-size: 18px;
+  }
+}
+
+/* 900px */
+@media (max-width: 900px) {
   .content {
     flex-direction: column;
-    padding: 20px;
+    padding: 25px 15px;
+    gap: 25px;
+  }
+  
+  .form-section {
+    padding: 30px;
+  }
+  
+  .form-title1 {
+    font-size: 28px;
+    margin-bottom: 8px;
+  }
+  
+  .form-subtitle1 {
+    font-size: 16px;
+  }
+}
+
+/* 768px */
+@media (max-width: 768px) {
+  .content {
+    padding: 20px 10px;
     gap: 20px;
   }
   
-  .sidebar {
-    width: 100%;
+  .form-section {
+    padding: 20px;
+  }
+  
+  .form-title1 {
+    font-size: 26px;
+  }
+  
+  .form-subtitle1 {
+    font-size: 15px;
   }
   
   .form-row {
@@ -217,8 +270,36 @@
     gap: 15px;
   }
   
+  .button-group {
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .save-button,
+  .edit-button {
+    width: 160px;
+    height: 50px;
+    font-size: 14px;
+  }
+}
+
+/* 480px */
+@media (max-width: 480px) {
+  .content {
+    padding: 15px 8px;
+  }
+  
   .form-section {
-    padding: 20px;
+    padding: 15px;
+  }
+  
+  .form-title1 {
+    font-size: 22px;
+  }
+  
+  .form-subtitle1 {
+    font-size: 14px;
   }
   
   .button-group {
@@ -226,22 +307,52 @@
     gap: 10px;
   }
   
-  .view-cart-button,
-  .checkout-button {
+  .save-button,
+  .edit-button {
     width: 100%;
+  }
+  
+  .input,
+  .textarea {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  
+  .label {
+    font-size: 13px;
   }
 }
 
-@media (max-width: 480px) {
-  .header {
-    padding: 15px 20px;
+/* 300px */
+@media (max-width: 300px) {
+  .content {
+    padding: 10px 5px;
   }
   
-  .greeting {
+  .form-section {
+    padding: 10px;
+  }
+  
+  .form-title1 {
     font-size: 20px;
   }
   
-  .form-title {
+  .greeting {
     font-size: 24px;
+  }
+  
+  .welcome-text {
+    font-size: 14px;
+  }
+  
+  .button-group {
+    margin-top: 15px;
+  }
+  
+  .save-button,
+  .edit-button {
+    height: 45px;
+    padding: 8px 15px;
+    font-size: 13px;
   }
 }

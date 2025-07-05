@@ -3,6 +3,8 @@
   position: relative;
   background-color: #F0EADC;
   z-index: 1;
+  width: 100%;
+  margin: 0 auto;  
 }
 
 .trending-section h2 {
@@ -11,9 +13,9 @@
   font-weight: 400;
   line-height: 100%;
   color: #2F2F2F;
-  padding: 0 0 0 20px;
+  text-align: left;
   font-family: 'Wilkysta', sans-serif;
-  text-align: center;
+  padding: 0 0 0 20px;
 }
 
 .trending-section .bold {
@@ -24,14 +26,14 @@
 .card-grid {
   display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: 45px;
   flex-wrap: wrap;
   margin-bottom: 40px;
 }
 
 .product-card {
   position: relative;
-  max-width: 350px;
+  width: 350px;
   background-color: #F0EADC;
   border: 1px solid #4D1727;
   border-radius: 12px;
@@ -58,7 +60,6 @@
   width: 100%;
   height: 543px;
   border-radius: 8px;
-  aspect-ratio: 1/1;
   object-fit: cover;
 }
 
@@ -93,7 +94,7 @@
 
 .freedom-text {
   font-weight: 400;
-  font-size: 48px;
+  font-size: 96px;
   line-height: 100%;
   text-align: center;
 }
@@ -106,119 +107,6 @@
   line-height: 1;
 }
 
-/* Small devices (landscape phones, 576px and up) */
-@media (min-width: 576px) {
-  .trending-section h2 {
-    font-size: 28px;
-    padding: 0 0 0 40px;
-    text-align: left;
-  }
-  
-  .trending-section .bold {
-    font-size: 40px;
-  }
-   
-  .freedom-text {
-    font-size: 40px;
-  }
-  
-  .freedom-icon {
-    font-size: 50px;
-  }
-}
-
-/* Medium devices (tablets, 768px and up) */
-@media (min-width: 768px) {
-  .trending-section {
-    padding: 30px 40px;
-  }
-  
-  .trending-section h2 {
-    font-size: 36px;
-    padding: 0 0 0 80px;
-  }
-  
-  .trending-section .bold {
-    font-size: 48px;
-  }
-  
-  .card-grid {
-    gap: 30px;
-  }
-  
-  .freedom-banner {
-    padding: 60px 40px;
-    flex-direction: row;
-    justify-content: center;
-  }
-  
-  .freedom-text {
-    font-size: 44px;
-    text-align: left;
-  }
-  
-  .freedom-icon {
-    font-size: 50px;
-  }
-}
-
-/* Large devices (desktops, 992px and up) */
-@media (min-width: 1100px) {
-  .trending-section h2 {
-    font-size: 40px;
-    padding: 0 0 0 100px;
-  }
-  
-  .trending-section .bold {
-    font-size: 64px;
-  }
-  
-  .card-grid {
-    gap: 40px;
-  }
-  
-  .freedom-banner {
-    padding: 70px 60px;
-  }
-  
-  .freedom-text {
-    font-size: 64px;
-  }
-  
-  .freedom-icon {
-    font-size: 70px;
-  }
-}
-
-/* Extra large devices (large desktops, 1200px and up) */
-@media (min-width: 1250px) {
-  .trending-section {
-    padding: 40px 100px;
-  }
-  
-  .trending-section h2 {
-    padding: 0 0 0 160px;
-    font-size: 36px;
-  }
-  
-  .card-grid {
-    gap: 63px;
-  }
-  
-  .freedom-banner {
-    padding: 80px 100px;
-    gap: 50px;
-  }
-  
-  .freedom-text {
-    font-size: 96px;
-    letter-spacing: 3px;
-  }
-  
-  .freedom-icon {
-    font-size: 100px;
-  }
-}
 /* Mobile devices (under 576px) */
 @media (max-width: 575px) {
   .trending-section {
@@ -227,7 +115,7 @@
 
   .trending-section h2 {
     font-size: 24px;
-    padding: 0 10px;
+    padding: 0;
     margin-bottom: 20px;
     text-align: center;
   }
@@ -241,6 +129,13 @@
   .card-grid {
     gap: 30px;
   }
+  
+  .product-card {
+    width: 100%;
+    max-width: 350px;
+    padding: 12px;
+  }
+  
   .product-card h3 {
     font-size: 20px;
     margin-top: 10px;
@@ -302,5 +197,118 @@
 
   .freedom-icon {
     font-size: 26px;
+  }
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) {
+  .trending-section h2 {
+    font-size: 28px;
+    padding: 0;
+    text-align: left;
+  }
+  
+  .trending-section .bold {
+    font-size: 40px;
+  }
+   
+  .freedom-text {
+    font-size: 40px;
+  }
+  
+  .freedom-icon {
+    font-size: 50px;
+  }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+  .trending-section {
+    padding: 30px 40px;
+  }
+  
+  .trending-section h2 {
+    font-size: 36px;
+    padding: 0;
+  }
+  
+  .trending-section .bold {
+    font-size: 48px;
+  }
+  
+  .card-grid {
+    gap: 30px;
+  }
+  
+  .freedom-banner {
+    padding: 60px 40px;
+    flex-direction: row;
+    justify-content: center;
+  }
+  
+  .freedom-text {
+    font-size: 44px;
+    text-align: left;
+  }
+  
+  .freedom-icon {
+    font-size: 50px;
+  }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+  .trending-section h2 {
+    font-size: 40px;
+    padding: 0 0 0 60px;
+    text-align: left;
+  }
+  
+  .trending-section .bold {
+    font-size: 64px;
+  }
+  
+  .card-grid {
+    gap: 40px;
+  }
+  
+  .freedom-banner {
+    padding: 70px 60px;
+  }
+  
+  .freedom-text {
+    font-size: 86px;
+  }
+  
+  .freedom-icon {
+    font-size: 86px;
+  }
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+  .trending-section {
+    padding: 40px 100px;
+    width: 100%;
+  }
+  
+  .trending-section h2 {
+    text-align: left;
+    padding: 0 0 0 100px;
+    font-size: 36px;
+  }
+  
+  .card-grid {
+    gap: 25px;
+  }
+  
+  .freedom-banner {
+    padding: 50px 10px;
+    width: 100%;
+  }
+   
+  .freedom-text {
+    font-size: 86px;
+    line-height: 1.2;
   }
 }

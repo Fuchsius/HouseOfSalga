@@ -1,5 +1,6 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+
 
 import Header from './Components/Header/Header';
 import Footer from './Components/Footer/Footer';
@@ -15,6 +16,7 @@ import ProductReturns from './Pages/ProductReturns/ProductReturns';
 import ProductReview from './Pages/ProductReview/ProductReview';
 import ViewOrder from './Pages/ViewOrder/ViewOrder';
 import EmptyWishlist from './Pages/wishlist/EmptyWishlist';
+import WishlistPage from './Pages/wishlistpage/wishlistpage'; // ✅ added
 import PersonalInformation from './Pages/PersonalInformations/PersonalInformation'; // ✅ added
 import Notifications from './Components/Notifications/Notifications';
 import OrderTracking from './Pages/OrderTracking/OrderTracking';
@@ -40,10 +42,11 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/wishlist" element={<EmptyWishlist />} />
+          <Route path="/wishlistpage" element={<WishlistPage />} /> {/* ✅ new route */}
           <Route path="/personal-info" element={<PersonalInformation />} /> {/* ✅ new route */}
           <Route path="/notifications" element={<Notifications />} />
-          <Route path="/order-tracking" element={<OrderTracking />} /> 
           <Route path="/order-tracking/:orderId" element={<OrderTracking />} />
+          <Route path="/order-tracking" element={<Navigate to="/dashboard" />} />
 
           {/* Add more routes as needed */}
         </Routes>

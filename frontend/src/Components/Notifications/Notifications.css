@@ -18,7 +18,7 @@
 
 .notifications-page {
   flex-grow: 1;
-  padding: 40px 30px;
+  padding: 56px 40px;
   background-color: #F0EADC;
   font-family: 'Playfair Display', serif;
 }
@@ -27,4 +27,5 @@
   font-size: 18px;
   color: #555;
   margin-top: 20px;
+  margin-left: 20px;
 }
