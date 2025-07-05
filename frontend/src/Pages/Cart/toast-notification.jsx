@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { CheckCircle, X } from "lucide-react";
+import "./toast-notification.css";
 
 export default function ToastNotification({
   message,
@@ -20,24 +21,18 @@ export default function ToastNotification({
   if (!isVisible) return null;
 
   return (
-    <div className="fixed top-4 right-4 z-50 animate-slide-in">
-      <div
-        className={`flex items-center p-4 rounded-lg shadow-lg ${
-          type === "success"
-            ? "bg-green-500 text-white"
-            : "bg-blue-500 text-white"
-        }`}
-      >
-        <CheckCircle className="w-5 h-5 mr-3" />
-        <span className="font-medium">{message}</span>
+    <div className="toast-wrapper">
+      <div className={`toast ${type === "success" ? "success" : "info"}`}>
+        <CheckCircle className="toast-icon" />
+        <span className="toast-message">{message}</span>
         <button
           onClick={() => {
             setIsVisible(false);
             onClose?.();
           }}
-          className="ml-4 hover:bg-white/20 rounded p-1"
+          className="toast-close-btn"
         >
-          <X className="w-4 h-4" />
+          <X className="toast-close-icon" />
         </button>
       </div>
     </div>

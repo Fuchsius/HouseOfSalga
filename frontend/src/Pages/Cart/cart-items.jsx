@@ -1,5 +1,7 @@
 import CartItemQuantity from "./cart-quantity";
 import { Trash2 } from "lucide-react";
+import "./cart-items.css";
+
 export default function CartItems({
   items,
   updateQuantity,
@@ -7,62 +9,48 @@ export default function CartItems({
   loading,
   formatPrice,
 }) {
-  //  Empty Cart state
   if (!items || items.length === 0) {
     return (
-      <div className="bg-[#F0EADC] w-full lg:max-w-[645px] h-auto p-6 lg:ml-20 border rounded-lg shadow-sm overflow-hidden">
-        <div className="text-center py-12">
-          <p className="text-gray-500 text-lg font-primary">
-            Your cart is empty
-          </p>
-        </div>
+      <div className="cart-container empty-cart">
+        <div className="empty-text">Your cart is empty</div>
       </div>
     );
   }
 
   return (
-    <div className=" w-full lg:max-w-[645px] h-auto p-6 lg:ml-20 border-2  border-amber-950 rounded-lg shadow-sm overflow-hidden ">
+    <div className="cart-container">
       {items.map((item) => (
-        <div
-          key={item._id}
-          className="flex items-center p-6 border-b border-[#6C7275] last:border-b-0"
-        >
-          <div className="flex-shrink-0  relative overflow-hidden">
+        <div key={item._id} className="cart-item">
+          <div className="cart-image-container">
             <img
               src={item.product?.image || item.image || "/placeholder.svg"}
               alt={item.product?.name || item.name}
-              className="object-contain max-w-[93px] max-h-[123px] max-top-[8px] max-left-[28px] "
+              className="cart-image"
             />
           </div>
 
-          <div className="ml-4 flex-grow">
-            <div className="flex justify-between">
+          <div className="cart-details">
+            <div className="cart-header">
               <div>
-                <h3 className="font-medium text-gray-900 font-primary">
-                  {item.product?.name || item.name}{" "}
+                <h3 className="cart-product-name">
+                  {item.product?.name || item.name}
                 </h3>
-                <p className="text-sm text-gray-900 font-primary">
-                  Size: {item.size}
-                </p>
-                <h3 className="font-medium text-gray-900 font-primary">
-                  Color: {item.color}
+                <p className="cart-product-size">Size: {item.size}</p>
+                <h3 className="cart-product-color">Color: {item.color}</h3>
+                <h3 className="cart-product-price">
+                  {formatPrice(item.priceAtTime || item.price || 0)}
                 </h3>
               </div>
-
-              {/* Delete Button using lucide-react Trash2 icon */}
               <button
                 onClick={() => removeItem(item._id)}
-                className="text-red-500 hover:text-red-700"
+                className="cart-remove-btn"
                 disabled={loading}
               >
-                <Trash2 className="w-5 h-5" />
+                <Trash2 className="cart-trash-icon" />
               </button>
             </div>
 
-            <div className="flex justify-between items-center mt-2">
-              <span className="font-semibold">
-                {formatPrice(item.priceAtTime || item.price || 0)}
-              </span>
+            <div className="cart-footer">
               <CartItemQuantity
                 quantity={item.quantity}
                 onIncrease={() => updateQuantity(item._id, item.quantity + 1)}

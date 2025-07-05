@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Tag, ChevronDown, X } from "lucide-react";
+import "./discount-code.css";
 
 export default function DiscountCodeInput({ onApplyDiscount, loading }) {
   const [discountCode, setDiscountCode] = useState("");
@@ -7,7 +8,6 @@ export default function DiscountCodeInput({ onApplyDiscount, loading }) {
   const [discountMessage, setDiscountMessage] = useState("");
   const [isDiscountApplied, setIsDiscountApplied] = useState(false);
 
-  //  Available discount codes
   const availableCodes = [
     { code: "SAVE10", description: "10% off (Min: Rs.1,000)" },
     { code: "FLAT500", description: "Rs.500 off (Min: Rs.2,000)" },
@@ -31,7 +31,7 @@ export default function DiscountCodeInput({ onApplyDiscount, loading }) {
   const handleRemoveDiscount = () => {
     setDiscountCode("");
     setDiscountMessage("Discount removed.");
-    setIsDiscountApplied(false); //
+    setIsDiscountApplied(false);
     setTimeout(() => setDiscountMessage(""), 3000);
   };
 
@@ -41,49 +41,40 @@ export default function DiscountCodeInput({ onApplyDiscount, loading }) {
   };
 
   return (
-    <div className="space-y-2">
-      <form
-        onSubmit={handleApplyDiscount}
-        className="flex flex-col sm:flex-row items-stretch gap-2"
-      >
-        <div className="relative flex-grow">
-          <div className="flex items-center border border-gray-300 rounded-l px-3 py-2 bg-[#F0F0F0] rounded-2xl">
-            <Tag className="w-5 h-5 text-gray-400 mr-2" />
+    <div className="discount-input-wrapper">
+      <form onSubmit={handleApplyDiscount} className="discount-form">
+        <div className="discount-input-container">
+          <div className="discount-input-box">
+            <Tag className="discount-icon" />
             <input
               type="text"
               placeholder="Add discount code"
-              className="outline-none w-full bg-transparent"
+              className="discount-input"
               value={discountCode}
               onChange={(e) => setDiscountCode(e.target.value)}
               disabled={loading || isDiscountApplied}
             />
-            {/* Dropdown toggle button */}
             <button
               type="button"
               onClick={() => setShowDropdown(!showDropdown)}
-              className="ml-2 p-1 hover:bg-gray-200 rounded"
+              className="dropdown-toggle"
               disabled={isDiscountApplied}
             >
-              <ChevronDown className="w-4 h-4 text-gray-400" />
+              <ChevronDown className="dropdown-icon" />
             </button>
           </div>
 
-          {/* Dropdown with available codes */}
           {showDropdown && (
-            <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
-              <div className="p-2 text-sm text-gray-600 border-b">
-                Available Codes:
-              </div>
+            <div className="discount-dropdown">
+              <div className="dropdown-header">Available Codes:</div>
               {availableCodes.map((item) => (
                 <div
                   key={item.code}
                   onClick={() => selectCode(item.code)}
-                  className="p-3 hover:bg-gray-50 cursor-pointer border-b last:border-b-0"
+                  className="dropdown-item"
                 >
-                  <div className="font-medium text-green-600">{item.code}</div>
-                  <div className="text-xs text-gray-500">
-                    {item.description}
-                  </div>
+                  <div className="dropdown-code">{item.code}</div>
+                  <div className="dropdown-description">{item.description}</div>
                 </div>
               ))}
             </div>
@@ -94,15 +85,15 @@ export default function DiscountCodeInput({ onApplyDiscount, loading }) {
           <button
             type="button"
             onClick={handleRemoveDiscount}
-            className="bg-red-100 text-red-400  px-4 py-2 rounded-2xl hover:bg-red-200 w-full sm:w-auto"
+            className="btn-remove"
           >
-            <X className="inline-block w-3 h-3 mr-1" />
+            <X className="remove-icon" />
             Remove
           </button>
         ) : (
           <button
             type="submit"
-            className="bg-black text-white px-4 py-2 rounded-2xl hover:bg-gray-800 w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn-apply"
             disabled={loading || !discountCode.trim()}
           >
             {loading ? "Applying..." : "Apply"}
@@ -110,28 +101,12 @@ export default function DiscountCodeInput({ onApplyDiscount, loading }) {
         )}
       </form>
 
-      {/* Show available codes as chips */}
-      <div className="flex flex-wrap gap-2">
-        <span className="text-xs text-gray-500">Quick codes:</span>
-        {availableCodes.map((item) => (
-          <button
-            key={item.code}
-            onClick={() => selectCode(item.code)}
-            className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full hover:bg-green-200"
-            disabled={isDiscountApplied}
-          >
-            {item.code}
-          </button>
-        ))}
-      </div>
 
-      {/* Discount message */}
+
       {discountMessage && (
         <div
-          className={`text-sm ${
-            discountMessage.includes("successfully")
-              ? "text-green-600"
-              : "text-red-600"
+          className={`discount-message ${
+            discountMessage.includes("successfully") ? "success" : "error"
           }`}
         >
           {discountMessage}

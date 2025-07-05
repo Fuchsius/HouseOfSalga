@@ -1,5 +1,8 @@
-import { useState } from "react";
+// Header.jsx
+import React, { useState } from "react";
 import { ChevronDown } from "lucide-react";
+
+import "./shop-header.css";
 import Breadcrumb from "../../Components/breadcrumb";
 
 export default function Header({ onApplyEdits }) {
@@ -12,6 +15,7 @@ export default function Header({ onApplyEdits }) {
     "Price: High to Low",
     "Newest",
   ];
+
   const handleApply = () => {
     const appliedFilters = {
       sort: selectedSort,
@@ -22,42 +26,30 @@ export default function Header({ onApplyEdits }) {
 
   const handleClear = () => {
     setSelectedSort("");
-
-    onApplyEdits({
-      sort: "",
-    });
+    onApplyEdits({ sort: "" });
   };
 
   return (
-    <div className="bg-[#F0EADC] border-b border-[#F0EADC] max-w-6xl mx-auto">
-      <div className="py-4 px-4 md:px-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          {/* Breadcrumb - Hidden on mobile */}
-          <div className="hidden md:block flex-shrink-0">
-            <Breadcrumb />
-          </div>
+    <div className="shop-header-container">
+      <div className="shop-header-wrapper">
+        <div className="shop-header-inner">
+          <Breadcrumb paths={["Home", "Shop"]} />
+          <div className="title-sort-container">
+            <h1 className="product-count">Showing 1-10 of 100 Products</h1>
 
-          {/* Title and Sort */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 md:flex-1 md:justify-end">
-            <h1 className="text-lg font-primary text-gray-900 text-center md:text-left">
-              Showing 1-10 of 100 Products
-            </h1>
-
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600 font-primary">
-                Sort by:
-              </span>
-              <div className="relative">
+            <div className="sort-section">
+              <span className="sort-label">Sort by:</span>
+              <div className="dropdown-wrapper">
                 <button
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="flex items-center justify-between w-32 h-8 px-3 text-sm border border-[#F0EADC] rounded-md bg-[#F0EADC] hover:bg-gray-50"
+                  className="dropdown-toggle"
                 >
-                  <span className="truncate">{selectedSort}</span>
-                  <ChevronDown className="w-4 h-4 flex-shrink-0 ml-1" />
+                  <span className="dropdown-value">{selectedSort}</span>
+                  <ChevronDown className="dropdown-icon" />
                 </button>
 
                 {isDropdownOpen && (
-                  <div className="absolute top-full left-0 z-50 w-full mt-1 bg-[#F0EADC] border-[#F0EADC] rounded-md shadow-lg">
+                  <div className="dropdown-menu">
                     {sortOptions.map((option) => (
                       <button
                         key={option}
@@ -65,7 +57,7 @@ export default function Header({ onApplyEdits }) {
                           setSelectedSort(option);
                           setIsDropdownOpen(false);
                         }}
-                        className="w-full px-3 py-2 text-sm text-left hover:bg-gray-50 font-primary"
+                        className="dropdown-item"
                       >
                         {option}
                       </button>
@@ -73,20 +65,17 @@ export default function Header({ onApplyEdits }) {
                   </div>
                 )}
               </div>
-              {/* Apply & Clear buttons */}
-              <div className="flex gap-2">
+
+              <div className="action-buttons">
                 <button
                   onClick={handleApply}
                   disabled={!selectedSort}
-                  className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm disabled:opacity-50"
+                  className="btn-apply"
                 >
                   Apply
                 </button>
-                <button
-                  onClick={handleClear}
-                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
-                >
-                  Clear
+                <button onClick={handleClear} className="btn-clear">
+                  Remove
                 </button>
               </div>
             </div>

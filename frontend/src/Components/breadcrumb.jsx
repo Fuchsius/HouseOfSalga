@@ -1,11 +1,34 @@
-export default function Breadcrumb() {
-  return (
-    <div className="w-full max-w-7xl mx-auto px-0">
-      <nav className="font-primary text-sm text-gray-600 flex items-center flex-wrap py-4">
-        <span className="hover:text-gray-900 cursor-pointer">Home</span>
-        <span className="mx-2">{">"}</span>
-        <span className="text-gray-900 font-medium">Shop</span>
-      </nav>
-    </div>
-  );
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
+import "./breadcrumb.css";
+
+export default function Breadcrumbs({ paths = [] }) {
+    const location = useLocation();
+    const currentPath = location.pathname;
+
+    return (
+        <nav className="breadcrumbs">
+            {paths.map((p, idx) => {
+                const isLast = idx === paths.length - 1;
+                const path = '/' + paths
+                    .slice(0, idx + 1)
+                    .map(part => part.toLowerCase().replace(/\s+/g, '-'))
+                    .join('/');
+
+                return (
+                    <span key={idx}>
+            {isLast ? (
+                // Reload page on current active breadcrumb click
+                <Link to={currentPath} onClick={() => window.location.reload()}>
+                    {p}
+                </Link>
+            ) : (
+                <Link to={path}>{p}</Link>
+            )}
+                        {idx < paths.length - 1 && <span className="sep">{">"}</span>}
+          </span>
+                );
+            })}
+        </nav>
+    );
 }

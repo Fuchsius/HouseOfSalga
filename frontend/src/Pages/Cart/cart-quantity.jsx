@@ -1,3 +1,5 @@
+import "./cart-quantity.css";
+
 export default function CartItemQuantity({
   quantity,
   onIncrease,
@@ -5,20 +7,12 @@ export default function CartItemQuantity({
   disabled,
 }) {
   return (
-    <div className="flex items-center border border-gray-300 rounded">
-      <button
-        onClick={onDecrease}
-        className="px-3 py-1 text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-        disabled={disabled}
-      >
+    <div className="quantity-container">
+      <button onClick={onDecrease} className="quantity-btn" disabled={disabled}>
         -
       </button>
-      <span className="px-3 py-1 text-center w-10">{quantity}</span>
-      <button
-        onClick={onIncrease}
-        className="px-3 py-1 text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-        disabled={disabled}
-      >
+      <span className="quantity-value">{quantity}</span>
+      <button onClick={onIncrease} className="quantity-btn" disabled={disabled}>
         +
       </button>
     </div>

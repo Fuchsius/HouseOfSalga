@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./currency.css";
 
 export default function CurrencyDropdown({
   selectedCurrency,
@@ -15,45 +16,40 @@ export default function CurrencyDropdown({
     { code: "AED", name: "UAE Dirham", symbol: "د.إ", rate: 0.013 },
     { code: "SAR", name: "Saudi Riyal", symbol: "﷼", rate: 0.013 },
   ];
-  // Toggle dropdown only when icon is clicked
+
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
 
   const selectCurrency = (currency) => {
     onCurrencyChange(currency);
-    setIsOpen(false); // Close dropdown after selection
+    setIsOpen(false);
   };
+
   const currentCurrency =
     currencies.find((c) => c.code === selectedCurrency) || currencies[0];
 
   return (
-    <div className="relative w-40">
-      {/* Currency label and icon */}
-      <div className="flex items-center justify-between bg-[#F0EADC]  p-2">
-        <span className="text-gray-700 font-Playfair Display size-[20px] w-[400]font-primary">
-          Currency{currentCurrency.symbol}
+    <div className="currency-dropdown">
+      <div className="currency-header">
+        <span className="currency-label">
+          Currency {currentCurrency.symbol}
         </span>
-
-        {/* Only this icon will trigger the dropdown */}
         <img
-          src="/images/drop-down.png "
-          className={`w-6 h-6 cursor-pointer transition-transform ${
-            isOpen ? "rotate-180" : ""
-          }`}
+          src="/images/drop-down.png"
           alt="Dropdown Icon"
-          onClick={toggleDropdown} // Only icon has click event
+          className={`dropdown-icon ${isOpen ? "rotated" : ""}`}
+          onClick={toggleDropdown}
         />
       </div>
 
-      {/* Dropdown List */}
       {isOpen && (
-        <div className="absolute mt-2 bg-[#F0EADC] border border-[#F0EADC] rounded-lg shadow-lg w-full z-10">
+        <div className="currency-list">
           {currencies.map((currency) => (
             <div
               key={currency.code}
               onClick={() => selectCurrency(currency)}
-              className="px-4 py-2 hover:bg-gray-100 cursor-pointer font-primary"
+              className="currency-item"
             >
               {currency.name} ({currency.symbol})
             </div>

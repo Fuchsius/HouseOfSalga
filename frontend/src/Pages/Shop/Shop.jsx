@@ -1,11 +1,11 @@
+import "./Shop.css";
 import Footer from "../../Components/Footer/Footer";
 import Header from "../../Components/Header/Header";
-
 import ShopHeader from "./shop-header";
-import FilterSidebar from "./filter-sidebar";
-import Pagination from "./pagination";
 import ShopFooter from "./shop-footer";
+import FilterSidebar from "./filter-sidebar";
 import ProductCard from "./product-card";
+import Pagination from "./pagination";
 import { useEffect, useState } from "react";
 
 export default function ShopPage() {
@@ -118,55 +118,46 @@ export default function ShopPage() {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-[#F0EADC] text-lg">
+
+      <div className="page-container">
         <ShopHeader onApplyEdits={handleApplyFilter} />
 
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          {/* Loading State */}
+        <div className="px-4 py-6 mx-auto max-w-7xl">
           {loading && (
-            <div className="flex justify-center items-center py-12">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
-                <p className="text-gray-600">Loading products...</p>
+            <div className="centered">
+              <div>
+                <div className="spinner"></div>
+                <p className="loading-text">Loading products...</p>
               </div>
             </div>
           )}
 
-          {/* Error State */}
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            <div className="error-box">
               <p className="font-bold">Error:</p>
               <p>{error}</p>
-              <button
-                onClick={() => fetchProducts()}
-                className="mt-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-              >
+              <button onClick={() => fetchProducts()} className="retry-btn">
                 Retry
               </button>
             </div>
           )}
 
-          {/* Products Header */}
           {!loading && !error && (
             <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Products
-              </h2>
-              <p className="text-gray-600">{totalProducts} products found</p>
+              <h2 className="section-heading">Products</h2>
+              <p className="subtext">{totalProducts} products found</p>
             </div>
           )}
 
           {/* Desktop Layout */}
-          <div className="xl:grid xl:grid-cols-5 gap-1 hidden">
-            {/* Filter Sidebar - Takes 2 columns */}
+          <div className="gap-1 desktop-grid">
             <div className="col-span-2">
               <FilterSidebar onApplyFilter={handleApplyFilter} />
             </div>
 
-            {/* First 9 products in 3 columns (right side) */}
             <div className="col-span-3">
               {!loading && !error && products.length > 0 ? (
-                <div className="grid grid-cols-3 gap-4">
+                <div className="product-grid-3">
                   {products.slice(0, 9).map((product, index) => (
                     <ProductCard
                       key={`first-${product.id}-${index}`}
@@ -177,13 +168,13 @@ export default function ShopPage() {
               ) : (
                 !loading &&
                 !error && (
-                  <div className="text-center py-12">
-                    <p className="text-gray-600 text-lg">
+                  <div className="py-12 text-center">
+                    <p className="subtext">
                       No products found matching your filters.
                     </p>
                     <button
                       onClick={() => fetchProducts()}
-                      className="mt-4 bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded"
+                      className="mt-4 mobile-toggle-btn"
                     >
                       Show All Products
                     </button>
@@ -192,15 +183,12 @@ export default function ShopPage() {
               )}
             </div>
 
-            {/* Fourth row - 5 products starting from end of filter sidebar */}
+
             {!loading && !error && products.length > 9 && (
               <>
-                {/* Empty space for filter sidebar alignment */}
                 <div className="col-span-2"></div>
-
-                {/* 5 products spanning 3 columns (right side) */}
                 <div className="col-span-5">
-                  <div className="grid grid-cols-5 gap-3 mt-4">
+                  <div className="product-grid-5">
                     {products.slice(9, 14).map((product, index) => (
                       <ProductCard
                         key={`fourth-row-${product.id}-${index + 9}`}
@@ -212,10 +200,9 @@ export default function ShopPage() {
               </>
             )}
 
-            {/* Remaining products in 5 columns spanning full width */}
             {!loading && !error && products.length > 14 && (
               <div className="col-span-5">
-                <div className="grid grid-cols-5 gap-3 mt-4">
+                <div className="product-grid-5">
                   {products.slice(14).map((product, index) => (
                     <ProductCard
                       key={`remaining-${product.id}-${index + 14}`}
@@ -227,12 +214,10 @@ export default function ShopPage() {
             )}
           </div>
 
-          {/* Mobile Layout */}
           <div className="xl:hidden">
-            {/* Mobile Filter Toggle */}
             <div className="mb-4">
               <button
-                className="bg-yellow-400 hover:bg-yellow-500 text-black px-4 py-2 rounded font-primary font-semibold w-full sm:w-auto"
+                className="mobile-toggle-btn"
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
               >
                 {isSidebarOpen ? "Hide Filters" : "Show Filters"} (
@@ -240,16 +225,14 @@ export default function ShopPage() {
               </button>
             </div>
 
-            {/* Mobile Filter Sidebar */}
             {isSidebarOpen && (
-              <div className="mb-6">
+              <div className="sidebar-wrapper">
                 <FilterSidebar onApplyFilter={handleApplyFilter} />
               </div>
             )}
 
-            {/* Mobile Products Grid */}
             {!loading && !error && products.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="mobile-grid">
                 {products.map((product, index) => (
                   <div
                     key={`mobile-${product.id}-${index}`}
@@ -262,13 +245,13 @@ export default function ShopPage() {
             ) : (
               !loading &&
               !error && (
-                <div className="text-center py-12">
-                  <p className="text-gray-600 text-lg">
+                <div className="py-12 text-center">
+                  <p className="subtext">
                     No products found matching your filters.
                   </p>
                   <button
                     onClick={() => fetchProducts()}
-                    className="mt-4 bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded"
+                    className="mt-4 mobile-toggle-btn"
                   >
                     Show All Products
                   </button>
@@ -277,9 +260,8 @@ export default function ShopPage() {
             )}
           </div>
 
-          {/* Pagination */}
           {!loading && !error && products.length > 0 && (
-            <div className="mt-8 flex justify-center">
+            <div className="pagination-container">
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
