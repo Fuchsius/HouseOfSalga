@@ -32,9 +32,9 @@ function App() {
           <Route path="/confirmorder" element={<ConfirmOrder />} />
           <Route path="/confirmorder/:id" element={<ConfirmOrder />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/product" element={<Product />} />
-          <Route path="/product/returns" element={<ProductReturns />} />
-          <Route path="/product/review" element={<ProductReview />} />
+           <Route path='/product/:id' element={<Product />} />
+        <Route path='/product/:id/review' element={<ProductReview />} />
+        <Route path='/product/:id/returns' element={<ProductReturns />} />
           <Route path="/vieworder" element={<ViewOrder />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/dashboard" element={<Dashboard />} />

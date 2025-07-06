@@ -46,9 +46,10 @@ const TrendingSection = () => {
     fetchTrendingProducts();
   }, []);
 
-  const handleClick = (product) => {
-    navigate('/product', { state: { product } });
-  };
+ const handleClick = (product) => {
+  navigate(`/product/${product._id}`);
+};
+
 
   if (loading) return <p>Loading trending products...</p>;
   if (error) return <p>{error}</p>;

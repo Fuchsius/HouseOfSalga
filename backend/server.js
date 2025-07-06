@@ -5,16 +5,16 @@ const cors = require("cors");
 require("dotenv").config();
 
 const authRoutes = require("./routes/auth");
-const reviewRoutes = require("./routes/reviewRoutes");
 const checkoutRoutes = require("./routes/checkout");
 const wishlistRoutes = require("./routes/wishlist");
 //Shop and Cart Routes
-const productRoutes = require("./routes/products");
 const cartRoutes = require("./routes/cart");
 const discountRoutes = require("./routes/discount");
 const personalInfoRoutes = require('./routes/personalInfoRoutes');
 const trendingRoutes = require('./routes/trendingRoutes');
 
+const productRoutes = require('./routes/product.routes');
+const reviewRoutes = require('./routes/review.routes');
 
 const app = express();
 app.use(cors());
@@ -37,11 +37,13 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/checkout", checkoutRoutes);
 app.use("/api/wishlist", wishlistRoutes);
 //shop and cart Routes
-app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/discount", discountRoutes);
 app.use("/api/personal-info", personalInfoRoutes);
 app.use('/api/trending', trendingRoutes);
+
+app.use('/api/products', productRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 app.use('/uploads', express.static('uploads'));
 
