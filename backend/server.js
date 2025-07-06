@@ -13,6 +13,8 @@ const productRoutes = require("./routes/products");
 const cartRoutes = require("./routes/cart");
 const discountRoutes = require("./routes/discount");
 const personalInfoRoutes = require('./routes/personalInfoRoutes');
+const trendingRoutes = require('./routes/trendingRoutes');
+
 
 const app = express();
 app.use(cors());
@@ -39,6 +41,9 @@ app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/discount", discountRoutes);
 app.use("/api/personal-info", personalInfoRoutes);
+app.use('/api/trending', trendingRoutes);
+
+app.use('/uploads', express.static('uploads'));
 
 app.post('/api/personal-info/test', (req, res) => {
   res.json({ message: 'Test route works!' });
