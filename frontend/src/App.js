@@ -15,12 +15,13 @@ import Product from './Pages/Product/Product';
 import ProductReturns from './Pages/ProductReturns/ProductReturns';
 import ProductReview from './Pages/ProductReview/ProductReview';
 import ViewOrder from './Pages/ViewOrder/ViewOrder';
-import Shop from './Pages/Shop/Shop';
 import EmptyWishlist from './Pages/wishlist/EmptyWishlist';
 import WishlistPage from './Pages/wishlistpage/wishlistpage'; // ✅ added
 import PersonalInformation from './Pages/PersonalInformations/PersonalInformation'; // ✅ added
 import Notifications from './Components/Notifications/Notifications';
 import OrderTracking from './Pages/OrderTracking/OrderTracking';
+import ShopPage from "./Pages/Shop/Shop";
+import CartPage from "./Pages/Cart/cart";
 
 function App() {
   return (
@@ -36,7 +37,8 @@ function App() {
         <Route path='/product/:id/review' element={<ProductReview />} />
         <Route path='/product/:id/returns' element={<ProductReturns />} />
           <Route path="/vieworder" element={<ViewOrder />} />
-          <Route path="/shop" element={<Shop />} />
+          <Route path="/shop" element={<ShopPage />} />
+          <Route path="/cart" element={<CartPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/wishlist" element={<EmptyWishlist />} />
