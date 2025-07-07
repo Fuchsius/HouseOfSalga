@@ -27,7 +27,6 @@ function Header() {
     const name = localStorage.getItem('username');
 
     if (location.pathname === '/') {
-      // ✅ Always show Login at SignIn page
       setIsLoggedIn(false);
       setUsername('');
     } else if (token && token.trim() !== '') {
@@ -88,6 +87,8 @@ function Header() {
       setShowCartPopup(false);
       if (type === 'checkout') {
         navigate('/checkout');
+      } else if (type === 'view') {
+        window.location.href = 'http://localhost:3000/cart';
       }
     }
   };
@@ -312,43 +313,76 @@ function Header() {
       )}
 
       {showCartPopup && (
-        <div className="cart-popup">
-          <div className="cart-header">
-            <span className="cart-title">Shopping Cart</span>
-            <span
-              className="cart-close"
-              onClick={() => setShowCartPopup(false)}
-            >
-              ✖
-            </span>
-          </div>
-          <div className="cart-content">
-            <p
-              style={{
-                color: '#000',
-                textAlign: 'center',
-                marginTop: '5px',
-                fontSize: '14px',
-              }}
-            >
-              Cart items will appear here.
-            </p>
-          </div>
-          <div className="cart-footer">
-            <div className="subtotal">Sub Total: $0.00</div>
-            <div className="cart-buttons">
-              <button
-                className="view-cart-btn"
-                onClick={() => handleViewCartOrCheckout('view')}
+        <div
+          className="cart-overlay"
+          onClick={() => setShowCartPopup(false)}
+        >
+          <div
+            className="cart-popup"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="cart-header">
+              <span
+                className="cart-title"
+                style={{
+                  fontSize: '36px',
+                  fontWeight: '700',
+                  flex: 1,
+                  textAlign: 'center'
+                }}
               >
-                View Cart
-              </button>
-              <button
-                className="checkout-btn"
-                onClick={() => handleViewCartOrCheckout('checkout')}
+                Shopping Cart
+              </span>
+              <span
+                className="cart-close"
+                onClick={() => setShowCartPopup(false)}
+                style={{ fontSize: '28px' }}
               >
-                Checkout
-              </button>
+                ✖
+              </span>
+            </div>
+
+            <div className="cart-content">
+              <p
+                style={{
+                  color: '#000',
+                  textAlign: 'center',
+                  marginTop: '5px',
+                  fontSize: '21px',
+                }}
+              >
+                Cart items will appear here.
+              </p>
+            </div>
+
+            <div className="cart-footer">
+              <div
+                className="subtotal"
+                style={{
+                  fontSize: '21px',
+                  fontWeight: '600',
+                  textAlign: 'center',
+                  width: '100%',
+                  marginBottom: '12px'
+                }}
+              >
+                Sub Total: $0.00
+              </div>
+
+              <div className="cart-buttons">
+                <button
+                  className="view-cart-btn"
+                  onClick={() => handleViewCartOrCheckout('view')}
+                >
+                  View Cart
+                </button>
+                <button
+                  className="checkout-btn"
+                  onClick={() => handleViewCartOrCheckout('checkout')}
+                >
+                  Checkout
+                </button>
+              </div>
             </div>
           </div>
         </div>
