@@ -10,14 +10,71 @@
   border-right: none;
   padding-top: 40px;
   padding-left: 3%;
-  margin-top: 30px; /* ✅ Move sidebar down slightly */
-
+  margin-top: 30px;
 }
 
+.sidebar-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
 
+.breadcrumb-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'wilkysta', sans-serif;
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: unset;
+  max-width: 100%;
+  flex-wrap: nowrap;
+  margin-bottom: 17px; /* ✅ spacing below breadcrumbs */
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 14px;
+  color: #6C7275;
+  gap: 4px;
+  font-family: 'wilkysta', sans-serif;
+  white-space: nowrap;
+}
+
+.breadcrumbs .sep {
+  margin: 0 4px;
+  color: #999;
+}
+
+.breadcrumb-link {
+  overflow: visible !important;
+  text-overflow: unset !important;
+  white-space: nowrap;
+  max-width: none;
+  display: inline;
+}
+
+.breadcrumb-link.clickable:hover {
+  text-decoration: underline;
+}
+
+.breadcrumb-current {
+  font-weight: bold;
+}
+
+.breadcrumbs,
+.breadcrumb-link,
+.breadcrumb-current {
+  font-family: 'wilkysta', sans-serif;
+}
+
+/* ✅ Hello User */
 .sidebar h3 {
   position: relative;
-  margin-top: 40px;
+  margin-top: 0; /* ✅ fix overlap */
   margin-bottom: 15px;
   font-size: 34px;
   font-family: wilkysta;
@@ -42,79 +99,9 @@
   color: #000;
   font-size: 16px;
   font-family: wilkysta;
-  margin-top: 0px;
-  margin-bottom: 20px;
+  margin-top: 4px;
+  margin-bottom: 0px;
 }
-
-.sidebar-header {
-  margin-bottom: 20px;
-}
-
-.breadcrumbs {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  font-size: 14px;
-  color: #6C7275;
-  gap: 4px;
-  margin-bottom: 10px;
-  font-family: 'wilkysta', sans-serif;
-}
-
-.breadcrumb-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-family: 'wilkysta', sans-serif;
-  white-space: nowrap;       /* Keep all on one line */
-  overflow: visible;         /* Allow overflow */
-  text-overflow: unset;      /* Disable truncation */
-  max-width: 100%;           /* Allow full width */
-  flex-wrap: nowrap;         /* Don't wrap to new lines */
-}
-
-
-.breadcrumb-link {
-  overflow: visible !important;
-  text-overflow: unset !important;
-  white-space: nowrap;
-  max-width: none;
-  display: inline;
-}
-
-
-
-.breadcrumb-wrapper::-webkit-scrollbar {
-  display: none;                   /* Chrome, Safari, Edge */
-}
-
-.breadcrumbs .sep {
-  margin: 0 4px;
-  color: #999;
-}
-
-
-
-.breadcrumb-link.clickable:hover {
-  text-decoration: underline;
-}
-
-
-
-.breadcrumb-current {
-  font-weight: bold;
-}
-
-.breadcrumbs,
-.breadcrumb-link,
-.breadcrumb-current {
-  font-family: 'wilkysta', sans-serif;
-}
-
-.breadcrumbs{
-  white-space: nowrap;
-}
-
 
 .sidebar .nav-links {
   display: flex;
@@ -129,7 +116,6 @@
   width: 100%;
 }
 
-/* Button inside nav item */
 .sidebar-btn {
   display: flex;
   align-items: center;
@@ -138,7 +124,6 @@
   padding: 12px 16px;
   border: none;
   background: transparent;
- 
   font-size: 18px;
   text-align: left;
   cursor: pointer;
@@ -148,13 +133,13 @@
   border-radius: 0;
   box-sizing: border-box;
 }
+
 .sidebar-btn svg {
-  color: #000; /* black when non-active, non-hover */
+  color: #000;
   width: 20px;
   height: 20px;
   transition: color 0.3s ease;
 }
-
 
 .sidebar-btn:hover {
   background-color: #e6ac06;
@@ -222,16 +207,14 @@
   }
 }
 
-/* Remove scroll wrapper logic */
 .nav-links-wrapper {
   overflow: visible;
 }
-/* ... existing styles ... */
 
 @media (max-width: 670px) {
   .nav-box {
-    width: 100%; /* Changed from 50% to 100% */
-    padding: 30px 20px; /* Reduced padding to save space */
+    width: 100%;
+    padding: 30px 20px;
   }
 
   .sidebar .nav-links {
@@ -247,8 +230,8 @@
   .sidebar-btn {
     justify-content: flex-start;
     width: 100%;
-    padding: 10px 12px; /* Adjusted padding */
-    font-size: 16px; /* Slightly smaller font */
+    padding: 10px 12px;
+    font-size: 16px;
   }
 
   .sidebar .nav-links li.active .sidebar-btn,
@@ -258,20 +241,18 @@
   }
 }
 
-/* New media query for very small screens */
 @media (max-width: 400px) {
   .sidebar-btn {
-    font-size: 14px; /* Smaller font for tiny screens */
+    font-size: 14px;
     padding: 8px 10px;
   }
-  
+
   .nav-box {
-    padding: 20px 15px; /* Less padding */
+    padding: 20px 15px;
   }
 }
 
-
-/* Popup modal background */
+/* Popup Modal */
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -285,7 +266,6 @@
   align-items: center;
 }
 
-/* Popup content box */
 .popup-box {
   background: #F0EADC;
   padding: 25px;
@@ -295,21 +275,18 @@
   max-width: 350px;
 }
 
-/* Popup message text */
 .popup-message {
   font-size: 18px;
   margin-bottom: 20px;
   color: #222;
 }
 
-/* Button group */
 .popup-buttons {
   display: flex;
   justify-content: space-around;
   gap: 20px;
 }
 
-/* YES button (warning style) */
 .btn-warning {
   background-color: #d9534f;
   color: white;
@@ -320,7 +297,6 @@
   cursor: pointer;
 }
 
-/* NO button (light cancel style) */
 .btn-cancel {
   background-color: #f0ad4e;
   color: white;

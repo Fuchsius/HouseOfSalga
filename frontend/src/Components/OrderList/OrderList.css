@@ -246,6 +246,7 @@ margin-left: 0; /* or small padding
   text-align: center;
   display: inline-block;
   transition: background 0.2s ease-in-out;
+
 }
 
 .track-btn:hover {
@@ -266,6 +267,7 @@ margin-left: 0; /* or small padding
   text-align: center;
   display: inline-block;
   transition: background 0.2s ease-in-out;
+  white-space: nowrap;
 }
 
 .continue-btn:hover {
