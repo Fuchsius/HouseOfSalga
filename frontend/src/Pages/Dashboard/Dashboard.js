@@ -60,7 +60,8 @@ const handleSubmitReview = async (formData) => {
       data.append("image", formData.image);
     }
 
-    const res = await fetch("http://localhost:5000/api/reviews", {
+    const res = await fetch("http://localhost:5000/api/order-reviews", {
+
       method: "POST",
       body: data,
     });

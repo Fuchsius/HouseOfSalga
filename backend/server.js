@@ -15,6 +15,8 @@ const trendingRoutes = require('./routes/trendingRoutes');
 
 const productRoutes = require('./routes/product.routes');
 const reviewRoutes = require('./routes/review.routes');
+const orderReviewRoutes = require('./routes/orderReview.routes');
+
 
 const app = express();
 app.use(cors());
@@ -44,7 +46,7 @@ app.use('/api/trending', trendingRoutes);
 
 app.use('/api/products', productRoutes);
 app.use('/api/reviews', reviewRoutes);
-
+app.use('/api/order-reviews', orderReviewRoutes);
 app.use('/uploads', express.static('uploads'));
 
 app.post('/api/personal-info/test', (req, res) => {
