@@ -298,6 +298,25 @@ a.logo {
   }
 }
 
+.user-popup-menu .subtext {
+  margin: 0;
+  padding: 8px 0;
+  font-size: 14px;
+  color: #555;
+  display: block; /* or inline-block */
+  text-align: left; /* align to the same side as other items */
+  padding-left: 10px; /* optional: indent to match menu items */
+}
+.user-popup-menu .greeting {
+  margin: 0;
+  padding: 8px 0;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: left;
+  padding-left: 10px;
+}
+
+
 @media (max-width: 950px) {
   .left-section {
     gap: 60px;
@@ -600,19 +619,19 @@ a.logo {
 /* Add or update this section */
 
 .user-popup-menu .greeting {
-  font-size: 20px;
+  font-size: 25px;
   font-weight: bold;
   margin-bottom: 4px;
 }
 
 .user-popup-menu .subtext {
-  font-size: 15px;
+  font-size: 20px;
   color: #555;
   margin-bottom: 12px;
 }
 
 .user-popup-menu .user-popup-links .user-menu-item {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 500;
 }
 
@@ -624,7 +643,7 @@ a.logo {
   color: #000;
   padding: 20px;
   border: 2px solid #FFC107;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 550;
   text-align: center;
   top: 100px;
@@ -653,11 +672,10 @@ a.logo {
 }
 
 
-
 .cart-popup {
   position: fixed;
   top: 0px;
-  right: 00px;
+  right: 0px;
   width: 600px;
   height: 800px;
   background: #fff;
@@ -671,32 +689,7 @@ a.logo {
   justify-content: space-between;
 }
 
-.cart-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-family: Wilkysta;
-  font-size: 24px;
-  font-weight: 400;
-  line-height: 100%;
-}
-
-.cart-title {
-  color: #000;
-}
-
-.cart-close {
-  cursor: pointer;
-  font-size: 24px;
-  color: #000;
-}
-
-.cart-content {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+/* ... other cart styles unchanged ... */
 
 .cart-footer {
   display: flex;
@@ -705,24 +698,16 @@ a.logo {
   margin-top: 5px;
 }
 
-.subtotal {
-  font-family: Wilkysta;
-  font-size: 16px;
-  font-weight: 400;
-  margin-bottom: 8px;
-}
-
 .cart-buttons {
   display: flex;
-  gap: 10px;
-  justify-content: center;
+  justify-content: center; /* centers horizontally */
+  gap: -55px;               /* space between buttons */
+  margin-top: 24px;        /* optional, space above */
 }
-
-.view-cart-btn {
+.cart-buttons button {
   width: 189px;
   height: 60px;
   border-radius: 12px;
-  background: #F0EADC;
   font-family: Wilkysta;
   font-weight: 400;
   font-size: 20px;
@@ -730,19 +715,32 @@ a.logo {
   text-align: center;
   border: none;
   cursor: pointer;
+  margin-left:10px;
+  margin-right:60px;
+}
+
+
+.view-cart-btn {
+  background: #F0EADC;
+  margin-top:24px;
+  
+
 }
 
 .checkout-btn {
-  width: 189px;
-  height: 60px;
-  border-radius: 12px;
   background: #FFC107;
-  font-family: Wilkysta;
-  font-weight: 400;
-  font-size: 20px;
-  line-height: 100%;
-  text-align: center;
   color: #4D1727;
-  border: none;
-  cursor: pointer;
 }
+.cart-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 9998;
+  display: flex;
+  justify-content: flex-end; /* keep popup on the right */
+}
+
+
