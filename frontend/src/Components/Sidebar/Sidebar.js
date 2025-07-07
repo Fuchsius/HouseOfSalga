@@ -32,9 +32,15 @@ export default function Sidebar({ onMyAccountClick }) {
   }, []);
 
   const signOut = () => {
-    localStorage.removeItem("authToken");
+    // Remove the correct token key
+    localStorage.removeItem("token");
     localStorage.removeItem("username");
+
+    // Redirect to signup page
     navigate("/signup");
+
+    // Force reload to reset app state
+    window.location.reload();
   };
 
   const handleClick = (label, path) => {
