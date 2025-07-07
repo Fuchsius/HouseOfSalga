@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
-
 import Header from './Components/Header/Header';
 import Footer from './Components/Footer/Footer';
 
@@ -28,22 +27,23 @@ function App() {
     <BrowserRouter>
       <div className="App">
         <Routes>
-          <Route path="/" element={<SignIn />} />
+          <Route path="/" element={<Home />} />  {/* <-- Default page */}
           <Route path="/home" element={<Home />} />
+          <Route path="/signin" element={<SignIn />} /> {/* <-- Added back */}
+          <Route path="/signup" element={<SignUp />} />
           <Route path="/confirmorder" element={<ConfirmOrder />} />
           <Route path="/confirmorder/:id" element={<ConfirmOrder />} />
-          <Route path="/signup" element={<SignUp />} />
-           <Route path='/product/:id' element={<Product />} />
-        <Route path='/product/:id/review' element={<ProductReview />} />
-        <Route path='/product/:id/returns' element={<ProductReturns />} />
+          <Route path="/product/:id" element={<Product />} />
+          <Route path="/product/:id/review" element={<ProductReview />} />
+          <Route path="/product/:id/returns" element={<ProductReturns />} />
           <Route path="/vieworder" element={<ViewOrder />} />
           <Route path="/shop" element={<ShopPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/wishlist" element={<EmptyWishlist />} />
-          <Route path="/wishlistpage" element={<WishlistPage />} /> {/* ✅ new route */}
-          <Route path="/personal-info" element={<PersonalInformation />} /> {/* ✅ new route */}
+          <Route path="/wishlistpage" element={<WishlistPage />} /> {/* ✅ */}
+          <Route path="/personal-info" element={<PersonalInformation />} /> {/* ✅ */}
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/order-tracking/:orderId" element={<OrderTracking />} />
           <Route path="/order-tracking" element={<Navigate to="/dashboard" />} />

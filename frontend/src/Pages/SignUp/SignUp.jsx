@@ -76,7 +76,6 @@ function SignUp() {
       const data = await res.json();
 
       if (res.ok) {
-        // ✅ Store username returned from backend instead of formData
         if (data.user && data.user.username) {
           localStorage.setItem('username', data.user.username);
         }
@@ -85,7 +84,7 @@ function SignUp() {
         setMessage('Sign up successful! Redirecting...');
         setTimeout(() => {
           setMessage(null);
-          navigate('/');
+          navigate('/signin'); // 🔷 updated to redirect to Sign In page
         }, 1000);
       } else {
         setMessageType('error');
@@ -171,7 +170,7 @@ function SignUp() {
 
             <p className="signup-text">
               <span className="no-account">Have An Account?</span>{' '}
-              <span className="signup-link" onClick={() => navigate('/')}>Sign In</span>
+              <span className="signup-link" onClick={() => navigate('/signin')}>Sign In</span>
             </p>
           </form>
         </div>
