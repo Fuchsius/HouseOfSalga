@@ -26,7 +26,7 @@ function Header() {
     const token = localStorage.getItem('token');
     const name = localStorage.getItem('username');
 
-    if (location.pathname === '/') {
+    if (location.pathname === '/signin') {
       setIsLoggedIn(false);
       setUsername('');
     } else if (token && token.trim() !== '') {
@@ -160,7 +160,7 @@ function Header() {
               Sign Out
             </span>
           ) : (
-            <Link to="/" className="nav-item hover-link">
+            <Link to="/signin" className="nav-item hover-link">
               Login
             </Link>
           )}
@@ -289,7 +289,7 @@ function Header() {
           </div>
 
           {!isLoggedIn ? (
-            <Link to="/" className="mobile-menu-item">
+            <Link to="/signin" className="mobile-menu-item">
               Login
             </Link>
           ) : (
@@ -306,7 +306,7 @@ function Header() {
         <div className="login-popup action-popup">
           <p>Please log in or create an account to access this feature</p>
           <div className="action-buttons">
-            <button onClick={() => navigate('/')}>Login</button>
+            <button onClick={() => navigate('/signin')}>Login</button>
             <button onClick={() => navigate('/signup')}>Sign Up</button>
           </div>
         </div>
