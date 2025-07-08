@@ -16,6 +16,8 @@ const trendingRoutes = require('./routes/trendingRoutes');
 const productRoutes = require('./routes/product.routes');
 const reviewRoutes = require('./routes/review.routes');
 const orderReviewRoutes = require('./routes/orderReview.routes');
+const testimonialRoutes = require("./routes/testimonialRoutes");
+
 
 
 const app = express();
@@ -48,6 +50,9 @@ app.use('/api/products', productRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/order-reviews', orderReviewRoutes);
 app.use('/uploads', express.static('uploads'));
+app.use("/api/testimonials", testimonialRoutes);
+
+app.use('/public/images', express.static(path.join(__dirname, 'images')));
 
 app.post('/api/personal-info/test', (req, res) => {
   res.json({ message: 'Test route works!' });
