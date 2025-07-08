@@ -47,35 +47,6 @@ const Product = () => {
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('description');
 
-  // Wishlist logic
-  useEffect(() => {
-    // Check if this product is in the wishlist
-    const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
-    setIsFavorite(wishlist.some(item => item._id === product?._id));
-  }, [product]);
-
-  const handleWishlistToggle = () => {
-    let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
-    if (isFavorite) {
-      // Remove from wishlist
-      wishlist = wishlist.filter(item => item._id !== product._id);
-    } else {
-      // Add to wishlist (store minimal product info)
-      wishlist.push({
-        _id: product._id,
-        name: product.name,
-        price: product.price,
-        image: product.images?.[0] || '',
-        size: selectedSize,
-        color: selectedColor,
-      });
-    }
-    localStorage.setItem('wishlist', JSON.stringify(wishlist));
-    setIsFavorite(!isFavorite);
-    // Dispatch custom event for same-tab updates
-    window.dispatchEvent(new Event('wishlistChanged'));
-  };
-
   // Fetch product data
   useEffect(() => {
     const fetchProduct = async () => {
@@ -310,7 +281,7 @@ const Product = () => {
                 />
                 <button
                   className={styles.favoriteButtonTop}
-                  onClick={handleWishlistToggle}
+                  onClick={() => setIsFavorite(!isFavorite)}
                 >
                   {isFavorite ? <FaHeart className={styles.filled} /> : <FaRegHeart />}
                 </button>
