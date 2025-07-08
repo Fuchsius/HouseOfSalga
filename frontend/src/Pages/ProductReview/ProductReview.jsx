@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   FaShoppingCart,
   FaChevronLeft,
@@ -13,7 +13,7 @@ import {
   FaAngleDown,
   FaAngleUp
 } from 'react-icons/fa';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import ProductCard from '../../Components/ProductCard/ProductCard';
 import RatingStars from '../../Components/RatingStars/RatingStars';
 import ProductTabs from '../../Components/ProductTabs/ProductTabs';
@@ -26,6 +26,7 @@ import useRecommendedProducts from '../../hooks/useRecommendedProducts';
 const ProductReview = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // State for product data
   const [product, setProduct] = useState(null);
@@ -38,8 +39,7 @@ const ProductReview = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [isImageLoading, setIsImageLoading] = useState(false);
-  const [loadedImages, setLoadedImages] = useState({});
+  const [isImageLoading, setIsImageLoading] = useState(true);
 
   // State for reviews
   const [rating, setRating] = useState(0);
@@ -54,7 +54,18 @@ const ProductReview = () => {
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyContent, setReplyContent] = useState('');
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const [isLoadingReviews, setIsLoadingReviews] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
+
+
+
+  // Fix image path helper
+const fixImageUrl = (img) => {
+  if (typeof img !== 'string' || !img.trim()) return '/images/placeholder.jpg';
+  if (img.startsWith('http')) return img;
+  img = img.replace(/^\/?assets\//, '');
+  return `/images/${img}`;
+};
 
   // Use the recommended products hook
   const { 
@@ -63,34 +74,7 @@ const ProductReview = () => {
     error: recommendedError 
   } = useRecommendedProducts(product?._id);
 
-  // Memoized product details
-  const productDetails = useMemo(() => {
-    if (!product) return null;
-    return {
-      id: product._id,
-      name: product.name,
-      price: product.price,
-      inStock: product.inStock,
-      averageRating: product.averageRating,
-      images: product.images || [],
-      colors: product.colors || [],
-      sizes: product.sizes || []
-    };
-  }, [product]);
-
-  // Handle image load
-  const handleImageLoad = useCallback((index) => {
-    setLoadedImages(prev => ({ ...prev, [index]: true }));
-    setIsImageLoading(false);
-  }, []);
-
-  // Handle image error
-  const handleImageError = useCallback((index) => {
-    setLoadedImages(prev => ({ ...prev, [index]: false }));
-    setIsImageLoading(false);
-  }, []);
-
-  // Fetch product data
+  // Fetch product when component mounts or ID changes
   useEffect(() => {
     const fetchProduct = async () => {
       setLoading(true);
@@ -98,17 +82,9 @@ const ProductReview = () => {
       try {
         const response = await axios.get(`http://localhost:5000/api/products/${id}`);
         if (response.data.success && response.data.data) {
-          const productData = response.data.data;
-          setProduct(productData);
-          setSelectedSize(productData.sizes?.[0] || null);
-          setSelectedColor(productData.colors?.[0] || null);
-          
-          // Preload images
-          const initialLoaded = {};
-          productData.images?.forEach((_, idx) => {
-            initialLoaded[idx] = false;
-          });
-          setLoadedImages(initialLoaded);
+          setProduct(response.data.data);
+          setSelectedSize(response.data.data.sizes?.[0] || null);
+          setSelectedColor(response.data.data.colors?.[0] || null);
         } else {
           setError(response.data.message || 'Product not found');
         }
@@ -123,58 +99,41 @@ const ProductReview = () => {
     fetchProduct();
   }, [id]);
 
-  // Fetch reviews data
+  // Fetch reviews when product loads
   useEffect(() => {
-    if (!product?._id) return;
-
     const fetchReviews = async () => {
+      if (!product?._id) return;
+      
       try {
+        setIsLoadingReviews(true);
         const [reviewsRes, summaryRes] = await Promise.all([
           axios.get(`http://localhost:5000/api/reviews/${product._id}`),
           axios.get(`http://localhost:5000/api/reviews/summary/${product._id}`)
         ]);
         
-        if (reviewsRes.data.success) {
-          setReviews(reviewsRes.data.data);
-        }
-        if (summaryRes.data.success) {
-          setReviewSummary(summaryRes.data.data);
-        }
-        
-        // Update product rating if changed
-        if (summaryRes.data.success && summaryRes.data.data.averageRating !== product.averageRating) {
-          setProduct(prev => ({
-            ...prev,
-            averageRating: summaryRes.data.data.averageRating
-          }));
-        }
+        setReviews(reviewsRes.data);
+        setReviewSummary(summaryRes.data);
       } catch (err) {
         console.error('Error fetching reviews:', err);
+      } finally {
+        setIsLoadingReviews(false);
       }
     };
 
     fetchReviews();
-  }, [product?._id, product?.averageRating]);
+  }, [product]);
 
-  // Image navigation handler
-  const handleImageNavigation = useCallback((direction) => {
+const handleImageNavigation = (direction) => {
     setIsImageLoading(true);
-    setCurrentImageIndex(prev => {
-      const lastIndex = productDetails?.images?.length - 1 || 0;
-      const newIndex = direction === 'next' 
+    setCurrentImageIndex((prev) => {
+      const lastIndex = product?.images?.length - 1 || 0;
+      return direction === 'next'
         ? prev === lastIndex ? 0 : prev + 1
         : prev === 0 ? lastIndex : prev - 1;
-      
-      if (loadedImages[newIndex]) {
-        setIsImageLoading(false);
-      }
-      
-      return newIndex;
     });
-  }, [productDetails?.images?.length, loadedImages]);
+  };
 
-  // Add to cart handler
-  const handleAddToCart = useCallback(() => {
+  const handleAddToCart = () => {
     if (!product) return;
     navigate('/cart', {
       state: {
@@ -186,10 +145,9 @@ const ProductReview = () => {
         }
       }
     });
-  }, [product, selectedSize, selectedColor, quantity, navigate]);
+  };
 
-  // Buy now handler
-  const handleBuyNow = useCallback(() => {
+  const handleBuyNow = () => {
     if (!product) return;
     navigate('/checkout', {
       state: {
@@ -201,14 +159,17 @@ const ProductReview = () => {
         }
       }
     });
-  }, [product, selectedSize, selectedColor, quantity, navigate]);
+  };
 
-  // Product click handler
-  const handleProductClick = useCallback((clickedProduct) => {
+  const navigateToTab = (tab) => {
+    if (!product?._id) return;
+    navigate(`/product/${product._id}/${tab}`);
+  };
+
+  const handleProductClick = (clickedProduct) => {
     navigate(`/product/${clickedProduct._id || clickedProduct.id}`);
-  }, [navigate]);
+  };
 
-  // Submit review handler
   const handleSubmitReview = async (e) => {
     e.preventDefault();
     if (!rating) {
@@ -219,6 +180,11 @@ const ProductReview = () => {
       alert('Please fill in both title and content.');
       return;
     }
+    if (!product?._id) {
+    alert('Product not loaded. Please try again.');
+    return;
+    }
+
 
     setIsSubmittingReview(true);
     try {
@@ -232,28 +198,19 @@ const ProductReview = () => {
         comment: reviewContent
       });
       
-      if (response.data.success) {
-        // Refresh reviews
+      if (response.status === 201) {
         const [reviewsRes, summaryRes] = await Promise.all([
           axios.get(`http://localhost:5000/api/reviews/${product._id}`),
           axios.get(`http://localhost:5000/api/reviews/summary/${product._id}`)
         ]);
         
-        if (reviewsRes.data.success) {
-          setReviews(reviewsRes.data.data);
-        }
-        if (summaryRes.data.success) {
-          setReviewSummary(summaryRes.data.data);
-          setProduct(prev => ({
-            ...prev,
-            averageRating: summaryRes.data.data.averageRating
-          }));
-        }
+        setReviews(reviewsRes.data);
+        setReviewSummary(summaryRes.data);
         
-        // Reset form
         setRating(0);
         setReviewTitle('');
         setReviewContent('');
+        alert('Thank you for your review!');
       }
     } catch (err) {
       console.error('Error submitting review:', err);
@@ -263,57 +220,40 @@ const ProductReview = () => {
     }
   };
 
-  // Like review handler
   const handleLikeReview = async (reviewId) => {
     try {
       const username = localStorage.getItem('username') || 'Guest User';
       
-      const response = await axios.post(`http://localhost:5000/api/reviews/like/${reviewId}`, {
+      await axios.post(`http://localhost:5000/api/reviews/like/${reviewId}`, {
         user: username
       });
       
-      if (response.data.success) {
-        // Update the specific review
-        setReviews(prev => prev.map(review => {
-          if (review._id === reviewId) {
-            return response.data.data;
-          }
-          return review;
-        }));
-      }
+      const reviewsRes = await axios.get(`http://localhost:5000/api/reviews/${product._id}`);
+      setReviews(reviewsRes.data);
     } catch (err) {
       console.error('Error liking review:', err);
     }
   };
 
-  // Add reply handler
   const handleAddReply = async (reviewId) => {
     try {
       const username = localStorage.getItem('username') || 'Guest User';
       
-      const response = await axios.post(`http://localhost:5000/api/reviews/reply/${reviewId}`, {
+      await axios.post(`http://localhost:5000/api/reviews/reply/${reviewId}`, {
         user: username,
         comment: replyContent
       });
       
-      if (response.data.success) {
-        // Update the specific review
-        setReviews(prev => prev.map(review => {
-          if (review._id === reviewId) {
-            return response.data.data;
-          }
-          return review;
-        }));
-        setReplyingTo(null);
-        setReplyContent('');
-      }
+      const reviewsRes = await axios.get(`http://localhost:5000/api/reviews/${product._id}`);
+      setReviews(reviewsRes.data);
+      setReplyingTo(null);
+      setReplyContent('');
     } catch (err) {
       console.error('Error adding reply:', err);
     }
   };
 
-  // Format date helper
-  const formatDate = useCallback((dateString) => {
+  const formatDate = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();
     const diffInDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
@@ -327,10 +267,9 @@ const ProductReview = () => {
       month: 'short',
       day: 'numeric'
     });
-  }, []);
+  };
 
-  // Calculate rating distribution
-  const ratingDistribution = useMemo(() => {
+  const calculateRatingDistribution = () => {
     const total = reviewSummary.totalReviews || 1;
     return {
       5: Math.round((reviewSummary.breakdown[5] / total) * 100),
@@ -339,14 +278,14 @@ const ProductReview = () => {
       2: Math.round((reviewSummary.breakdown[2] / total) * 100),
       1: Math.round((reviewSummary.breakdown[1] / total) * 100)
     };
-  }, [reviewSummary]);
+  };
 
-  // Toggle show all reviews
-  const toggleShowAllReviews = useCallback(() => {
-    setShowAllReviews(prev => !prev);
-  }, []);
+  const ratingDistribution = calculateRatingDistribution();
 
-  // Loading state
+  const toggleShowAllReviews = () => {
+    setShowAllReviews(!showAllReviews);
+  };
+
   if (loading) {
     return (
       <div className={styles.loadingOverlay}>
@@ -360,7 +299,6 @@ const ProductReview = () => {
     );
   }
 
-  // Error state
   if (error || !product) {
     return (
       <div className={styles.errorContainer}>
@@ -387,30 +325,28 @@ const ProductReview = () => {
       <div className={styles.productPage}>
         <div className={styles.productContainer}>
           <div className={styles.productMain}>
-            {/* Product images section */}
             <div className={styles.productImages}>
               <div className={styles.mainImage}>
-                {isImageLoading && !loadedImages[currentImageIndex] && (
+                {isImageLoading && (
                   <div className={styles.imageLoadingOverlay}>
                     <div className={styles.loadingSpinner}></div>
                   </div>
                 )}
-                {productDetails.images.length > 0 ? (
-                  <img
-                    src={productDetails.images[currentImageIndex]}
-                    alt={productDetails.name}
-                    className={`${styles.productMainImg} ${
-                      isImageLoading && !loadedImages[currentImageIndex] ? styles.hidden : ''
-                    }`}
-                    onLoad={() => handleImageLoad(currentImageIndex)}
-                    onError={() => handleImageError(currentImageIndex)}
-                  />
-                ) : (
-                  <div className={styles.imagePlaceholder}>
-                    No Images Available
-                  </div>
-                )}
-                {productDetails.images.length > 1 && (
+               {product.images?.length > 0 ? (
+                <img
+                  src={fixImageUrl(product.images[currentImageIndex])}
+                  alt={product.name}
+                  className={`${styles.productMainImg} ${isImageLoading ? styles.hidden : ''}`}
+                  onLoad={() => setIsImageLoading(false)}
+                  onError={() => setIsImageLoading(false)}
+                />
+              ) : (
+                <div className={styles.imagePlaceholder}>
+                  No Images Available
+                </div>
+              )}
+
+                {product.images?.length > 1 && (
                   <>
                     <button
                       className={`${styles.navButton} ${styles.prev}`}
@@ -430,15 +366,15 @@ const ProductReview = () => {
                 )}
               </div>
 
-              {productDetails.images.length > 1 && (
+              {product.images?.length > 1 && (
                 <div className={styles.imageDotsContainer}>
-                  {productDetails.images.map((_, index) => (
+                  {product.images.map((_, index) => (
                     <span
                       key={index}
                       className={`${styles.dot} ${currentImageIndex === index ? styles.active : ''}`}
                       onClick={() => {
                         if (index !== currentImageIndex) {
-                          setIsImageLoading(!loadedImages[index]);
+                          setIsImageLoading(true);
                           setCurrentImageIndex(index);
                         }
                       }}
@@ -448,11 +384,10 @@ const ProductReview = () => {
               )}
             </div>
 
-            {/* Product details section */}
             <div className={styles.productDetails}>
               <div className={styles.ratingFavoriteContainer}>
                 <RatingStars 
-                  rating={productDetails.averageRating || 0} 
+                  rating={product.averageRating} 
                   size="large" 
                 />
                 <button
@@ -463,26 +398,26 @@ const ProductReview = () => {
                 </button>
               </div>
 
-              <h1 className={styles.productTitle}>{productDetails.name}</h1>
+              <h1 className={styles.productTitle}>{product.name}</h1>
               <a href="#!" className={styles.viewSaves}>
                 View including taxes
               </a>
 
               <div className={styles.priceStock}>
-                <span className={styles.price}>Rs. {productDetails.price?.toFixed(2)}</span>
+                <span className={styles.price}>Rs. {product.price?.toFixed(2)}</span>
                 <span className={styles.stock}>
-                  {productDetails.inStock ? 'In stock' : 'Out of stock'}
+                  {product.inStock ? 'In stock' : 'Out of stock'}
                 </span>
               </div>
 
               <hr className={styles.divider} />
 
-              {productDetails.colors.length > 0 && (
+              {product.colors?.length > 0 && (
                 <>
                   <div className={styles.colorSelector}>
                     <span className={styles.colorLabel}>Color: {selectedColor}</span>
                     <div className={styles.colorOptions}>
-                      {productDetails.colors.map((color) => (
+                      {product.colors.map((color) => (
                         <div
                           key={color}
                           className={`${styles.colorOptionWrapper} ${
@@ -509,11 +444,11 @@ const ProductReview = () => {
                 </>
               )}
 
-              {productDetails.sizes.length > 0 && (
+              {product.sizes?.length > 0 && (
                 <div className={styles.sizeSelector}>
                   <span>Size: {selectedSize}</span>
                   <div className={styles.sizeOptions}>
-                    {productDetails.sizes.map((size) => (
+                    {product.sizes.map((size) => (
                       <button
                         key={size}
                         className={`${styles.sizeOption} ${
@@ -551,14 +486,14 @@ const ProductReview = () => {
                 <button
                   className={styles.addToCart}
                   onClick={handleAddToCart}
-                  disabled={!productDetails.inStock || isImageLoading}
+                  disabled={!product.inStock || isImageLoading}
                 >
                   <FaShoppingCart /> Add To Cart
                 </button>
                 <button
                   className={styles.buyNow}
                   onClick={handleBuyNow}
-                  disabled={!productDetails.inStock || isImageLoading}
+                  disabled={!product.inStock || isImageLoading}
                 >
                   <FaShoppingBag /> Buy Now
                 </button>
@@ -577,11 +512,10 @@ const ProductReview = () => {
             </div>
           </div>
 
-          {/* Tabs section */}
           <div className={styles.tabsSection}>
             <ProductTabs
               activeTab="review"
-              productId={productDetails.id}
+              productId={product._id}
             />
             
             <div className={styles.tabContent}>
@@ -590,10 +524,12 @@ const ProductReview = () => {
                   <div className={styles.averageRatingBox}>
                     <div className={styles.averageRating}>{reviewSummary.averageRating.toFixed(1)}</div>
                     <div className={styles.ratingStars1}>
-                      <RatingStars 
-                        rating={reviewSummary.averageRating} 
-                        size="medium" 
-                      />
+                      {[...Array(5)].map((_, i) => (
+                        <FaStar
+                          key={i}
+                          className={i < Math.floor(reviewSummary.averageRating) ? `${styles.star} ${styles.filled}` : styles.star}
+                        />
+                      ))}
                     </div>
                     <div className={styles.ratingLabel}>Product Rating</div>
                     <div className={styles.totalReviews}>{reviewSummary.totalReviews} reviews</div>
@@ -608,10 +544,12 @@ const ProductReview = () => {
                           ></div>
                         </div>
                         <div className={styles.stars}>
-                          <RatingStars 
-                            rating={stars} 
-                            size="small" 
-                          />
+                          {[...Array(5)].map((_, i) => (
+                            <FaStar
+                              key={i}
+                              className={i < stars ? `${styles.star} ${styles.filled}` : styles.star}
+                            />
+                          ))}
                         </div>
                         <div className={styles.percentage}>{ratingDistribution[stars]}%</div>
                       </div>
@@ -621,10 +559,16 @@ const ProductReview = () => {
 
                 <div className={styles.reviewsSection}>
                   <h3>Reviews ({reviewSummary.totalReviews})</h3>
-                  {reviews.length === 0 ? (
+                  {isLoadingReviews ? (
+                    <div className={styles.loadingReviews}>
+                      <div className={styles.loadingSpinner}></div>
+                      <p>Loading reviews...</p>
+                    </div>
+                  ) : reviews.length === 0 ? (
                     <p className={styles.noReviews}>No reviews yet. Be the first to review!</p>
                   ) : (
                     <>
+                      {/* Show only the first review by default */}
                       {reviews.slice(0, showAllReviews ? reviews.length : 1).map((review) => (
                         <article key={review._id} className={styles.reviewCard}>
                           <div className={styles.reviewHeader}>
@@ -633,10 +577,12 @@ const ProductReview = () => {
                               <div className={styles.userNameAndRating}>
                                 <span className={styles.userName}>{review.user || 'Anonymous'}</span>
                                 <div className={styles.reviewRating}>
-                                  <RatingStars 
-                                    rating={review.rating} 
-                                    size="small" 
-                                  />
+                                  {[...Array(5)].map((_, i) => (
+                                    <FaStar
+                                      key={i}
+                                      className={i < review.rating ? `${styles.star} ${styles.filled}` : styles.star}
+                                    />
+                                  ))}
                                 </div>
                               </div>
                               <div className={styles.reviewDate}>{formatDate(review.createdAt)}</div>
@@ -649,7 +595,7 @@ const ProductReview = () => {
                           <div className={styles.reviewActions}>
                             <button
                               className={`${styles.likeBtn} ${
-                                review.likes?.includes(localStorage.getItem('username')) ? styles.liked : ''
+                                review.likes?.includes('currentUser') ? styles.liked : ''
                               }`}
                               onClick={() => handleLikeReview(review._id)}
                             >
@@ -711,6 +657,7 @@ const ProductReview = () => {
                         </article>
                       ))}
 
+                      {/* Show "View More" or "View Less" button if there are more than 1 review */}
                       {reviews.length > 1 && (
                         <button className={styles.viewMoreButton} onClick={toggleShowAllReviews}>
                           {showAllReviews ? (
@@ -778,7 +725,6 @@ const ProductReview = () => {
             </div>
           </div>
 
-          {/* Recommended products section */}
           <div className={styles.recommendedProducts}>
             <h2>Recommended</h2>
             <p className={styles.subtitle}>You might want to take a look at these.</p>
