@@ -25,6 +25,7 @@ export default function EmptyWishlist() {
           throw new Error('Failed to fetch wishlist items');
         }
         const data = await response.json();
+        console.log('Fetched wishlist:', data);
         setItems(data);
       } catch (err) {
         setError(err.message);
@@ -39,7 +40,7 @@ export default function EmptyWishlist() {
   const removeFromWishlist = async (itemId) => {
     try {
       const response = await fetch(`http://localhost:5000/api/wishlist/${itemId}`, {
-        method: 'DELETE',
+        method: 'DELETE'
       });
       if (!response.ok) {
         throw new Error('Failed to remove item from wishlist');
@@ -58,11 +59,25 @@ export default function EmptyWishlist() {
   };
 
   if (loading) {
-    return <div className="wishlist-layout"><Header /><div className="wishlist-page"><p>Loading wishlist...</p></div><Footer /></div>;
+    return (
+      <div className="wishlist-layout">
+        <Header />
+        <div className="wishlist-page"><p>Loading wishlist...</p></div>
+        <Footer />
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="wishlist-layout"><Header /><div className="wishlist-page"><p className="error-text">Error: {error}</p></div><Footer /></div>;
+    return (
+      <div className="wishlist-layout">
+        <Header />
+        <div className="wishlist-page">
+          <p className="error-text">Error: {error}</p>
+        </div>
+        <Footer />
+      </div>
+    );
   }
 
   return (
@@ -90,7 +105,12 @@ export default function EmptyWishlist() {
           </div>
           <h2>My wishlist</h2>
           {items.length === 0 ? (
-            <p className="empty-text">Your wishlist is empty.</p>
+            <>
+              <div className="empty-wishlist-header">
+                <FaRegHeart className="empty-wishlist-heart" />
+              </div>
+              <p className="empty-text">Your wishlist is empty.</p>
+            </>
           ) : (
             <div className="wishlist-grid">
               {items.map((product) => {
