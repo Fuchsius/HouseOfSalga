@@ -8,7 +8,8 @@ const {
   deleteProduct,
   getRecommendedProducts,
   getDefaultProduct,
-  setDefaultProduct
+  setDefaultProduct,
+  getNewArrivals
 } = require('../controllers/product.controller');
 
 router.route('/')
@@ -23,6 +24,9 @@ router.route('/set-default/:id')
 
 router.route('/recommended/:productId')
   .get(getRecommendedProducts);
+
+router.route('/new-arrivals')
+  .get(getNewArrivals);
 
 router.route('/:id')
   .get(getProductById)
