@@ -2,110 +2,76 @@ const Review = require('../models/Review');
 const Product = require('../models/Product');
 const mongoose = require('mongoose');
 
-// Helper function to validate product ID
-const isValidProductId = (id) => {
-  if (!id) return false;
-  return mongoose.Types.ObjectId.isValid(id) && 
-         (new mongoose.Types.ObjectId(id)).toString() === id;
-};
-
 // ---------------------------
 // Create a new review
 // ---------------------------
 exports.createReview = async (req, res) => {
   try {
-    const { productId, user, rating, comment, title } = req.body;
+    const { productId, user, rating, title, comment } = req.body;
 
-    // Validate input
-    if (!isValidProductId(productId)) {
-      return res.status(400).json({ success: false, message: 'Invalid product ID format' });
+    // Validate product ID and required fields
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({ message: 'Invalid product ID' });
     }
-    if (!user || !rating || !title || !comment) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'User, title, comment, and rating are required' 
-      });
-    }
-    if (rating < 1 || rating > 5) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Rating must be between 1 and 5' 
-      });
+    if (!user || !rating || !title) {
+      return res.status(400).json({ message: 'User, rating, and title are required' });
     }
 
     // Check if product exists
-    const product = await Product.findById(productId);
-    if (!product) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Product not found' 
-      });
+    const productExists = await Product.findById(productId);
+    if (!productExists) {
+      return res.status(404).json({ message: 'Product not found' });
     }
 
-    // Create review
+    // Create and save the review
     const review = new Review({
       productId,
       user,
-      title,
       rating,
-      comment
+      title,
+      comment: comment || ''
     });
 
     await review.save();
 
-    // Update product rating stats
-    await updateProductRatingStats(productId);
+    // Recalculate average rating and review count
+    const reviews = await Review.find({ productId });
+    const total = reviews.reduce((acc, r) => acc + r.rating, 0);
+    const average = total / reviews.length;
 
-    res.status(201).json({ 
-      success: true, 
-      data: review 
+    await Product.findByIdAndUpdate(productId, {
+      averageRating: average,
+      reviewCount: reviews.length
     });
 
+    res.status(201).json(review);
   } catch (err) {
     console.error('Create Review Error:', err);
-    res.status(500).json({ 
-      success: false, 
-      error: 'Failed to create review',
-      details: process.env.NODE_ENV === 'development' ? err.message : undefined
-    });
+    res.status(500).json({ error: 'Failed to create review' });
   }
 };
 
 // ---------------------------
-// Get all reviews for a product
+// Get all reviews for a specific product
 // ---------------------------
 exports.getReviewsForProduct = async (req, res) => {
   try {
     const { productId } = req.params;
 
-    if (!isValidProductId(productId)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Invalid product ID format' 
-      });
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({ message: 'Invalid product ID' });
     }
 
-    const reviews = await Review.find({ productId })
-      .sort({ createdAt: -1 })
-      .lean();
-
-    res.json({ 
-      success: true, 
-      data: reviews 
-    });
-
+    const reviews = await Review.find({ productId }).sort({ createdAt: -1 });
+    res.json(reviews);
   } catch (err) {
     console.error('Get Reviews Error:', err);
-    res.status(500).json({ 
-      success: false, 
-      error: 'Failed to fetch reviews',
-      details: process.env.NODE_ENV === 'development' ? err.message : undefined
-    });
+    res.status(500).json({ error: 'Failed to fetch reviews' });
   }
 };
 
 // ---------------------------
-// Like/unlike a review
+// Like or unlike a review
 // ---------------------------
 exports.toggleLike = async (req, res) => {
   try {
@@ -113,51 +79,32 @@ exports.toggleLike = async (req, res) => {
     const { user } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(reviewId)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Invalid review ID' 
-      });
+      return res.status(400).json({ message: 'Invalid review ID' });
     }
     if (!user) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'User is required' 
-      });
+      return res.status(400).json({ message: 'User is required' });
     }
 
     const review = await Review.findById(reviewId);
-    if (!review) {
-      return res.status(404).json({ 
-        success: false, 
-        error: 'Review not found' 
-      });
-    }
+    if (!review) return res.status(404).json({ error: 'Review not found' });
 
-    const userIndex = review.likes.indexOf(user);
-    if (userIndex === -1) {
-      review.likes.push(user);
+    const alreadyLiked = review.likes.includes(user);
+    if (alreadyLiked) {
+      review.likes = review.likes.filter(u => u !== user);
     } else {
-      review.likes.splice(userIndex, 1);
+      review.likes.push(user);
     }
 
     await review.save();
-    res.json({ 
-      success: true, 
-      data: review 
-    });
-
+    res.json(review);
   } catch (err) {
     console.error('Toggle Like Error:', err);
-    res.status(500).json({ 
-      success: false, 
-      error: 'Failed to toggle like',
-      details: process.env.NODE_ENV === 'development' ? err.message : undefined
-    });
+    res.status(500).json({ error: 'Failed to toggle like' });
   }
 };
 
 // ---------------------------
-// Add reply to review
+// Add a reply to a review
 // ---------------------------
 exports.addReply = async (req, res) => {
   try {
@@ -165,56 +112,34 @@ exports.addReply = async (req, res) => {
     const { user, comment } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(reviewId)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Invalid review ID' 
-      });
+      return res.status(400).json({ message: 'Invalid review ID' });
     }
     if (!user || !comment) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'User and comment are required' 
-      });
+      return res.status(400).json({ message: 'User and comment are required' });
     }
 
     const review = await Review.findById(reviewId);
-    if (!review) {
-      return res.status(404).json({ 
-        success: false, 
-        error: 'Review not found' 
-      });
-    }
+    if (!review) return res.status(404).json({ error: 'Review not found' });
 
     review.replies.push({ user, comment });
     await review.save();
 
-    res.status(201).json({ 
-      success: true, 
-      data: review 
-    });
-
+    res.status(201).json(review);
   } catch (err) {
     console.error('Add Reply Error:', err);
-    res.status(500).json({ 
-      success: false, 
-      error: 'Failed to add reply',
-      details: process.env.NODE_ENV === 'development' ? err.message : undefined
-    });
+    res.status(500).json({ error: 'Failed to add reply' });
   }
 };
 
 // ---------------------------
-// Get review summary
+// Get review summary for a product
 // ---------------------------
 exports.getReviewSummary = async (req, res) => {
   try {
     const { productId } = req.params;
 
-    if (!isValidProductId(productId)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Invalid product ID format' 
-      });
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({ message: 'Invalid product ID' });
     }
 
     const reviews = await Review.find({ productId });
@@ -228,38 +153,14 @@ exports.getReviewSummary = async (req, res) => {
     if (reviews.length > 0) {
       const total = reviews.reduce((sum, r) => sum + r.rating, 0);
       summary.averageRating = parseFloat((total / reviews.length).toFixed(1));
-      
       reviews.forEach(r => {
-        const rating = Math.floor(r.rating); // Handle cases where rating might be a float
-        if (rating >= 1 && rating <= 5) {
-          summary.breakdown[rating] += 1;
-        }
+        summary.breakdown[r.rating] += 1;
       });
     }
 
-    res.json({ 
-      success: true, 
-      data: summary 
-    });
-
+    res.json(summary);
   } catch (err) {
     console.error('Get Review Summary Error:', err);
-    res.status(500).json({ 
-      success: false, 
-      error: 'Failed to fetch summary',
-      details: process.env.NODE_ENV === 'development' ? err.message : undefined
-    });
+    res.status(500).json({ error: 'Failed to fetch summary' });
   }
 };
-
-// Helper function to update product rating stats
-async function updateProductRatingStats(productId) {
-  const reviews = await Review.find({ productId });
-  const total = reviews.reduce((sum, r) => sum + r.rating, 0);
-  const average = reviews.length > 0 ? total / reviews.length : 0;
-
-  await Product.findByIdAndUpdate(productId, {
-    averageRating: parseFloat(average.toFixed(1)),
-    reviewCount: reviews.length
-  });
-}
