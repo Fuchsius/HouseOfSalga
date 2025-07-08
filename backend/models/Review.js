@@ -5,7 +5,13 @@ const reviewSchema = new mongoose.Schema({
   user: { type: String, default: 'Anonymous' },
   title: { type: String, required: true },
   comment: { type: String, required: true },
-  rating: { type: Number, required: true, min: 1, max: 5 }
+  rating: { type: Number, required: true, min: 1, max: 5 },
+  likes: [{ type: String }],
+  replies: [{
+    user: { type: String, required: true },
+    comment: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now }
+  }]
 }, {
   timestamps: true
 });
