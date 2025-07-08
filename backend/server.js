@@ -8,8 +8,7 @@ const authRoutes = require("./routes/auth");
 const checkoutRoutes = require("./routes/checkout");
 const wishlistRoutes = require("./routes/wishlist");
 const wishlistRoutes = require("./routes/wishlistUser");
-const recentlyViewRoutes = require('./routes/recentlyview');
-const recentlyViewedRoutes = require('./routes/recentlyViewed');
+
 //Shop and Cart Routes
 const cartRoutes = require("./routes/cart");
 const discountRoutes = require("./routes/discount");
