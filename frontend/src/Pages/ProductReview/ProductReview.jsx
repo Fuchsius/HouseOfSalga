@@ -57,15 +57,27 @@ const ProductReview = () => {
   const [isLoadingReviews, setIsLoadingReviews] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
 
+  // Fix image path helper - updated to match the Product page version
+  const fixImageUrl = (img) => {
+    if (typeof img !== 'string' || !img.trim()) {
+      return '/images/placeholder.jpg';
+    }
 
+    if (img.startsWith('http')) {
+      return img;
+    }
 
-  // Fix image path helper
-const fixImageUrl = (img) => {
-  if (typeof img !== 'string' || !img.trim()) return '/images/placeholder.jpg';
-  if (img.startsWith('http')) return img;
-  img = img.replace(/^\/?assets\//, '');
-  return `/images/${img}`;
-};
+    // If already starts with /images, use as is
+    if (img.startsWith('/images')) {
+      return img;
+    }
+
+    // Remove known wrong prefixes like /assets/
+    img = img.replace(/^\/?assets\//, '');
+
+    // Serve from /images directory
+    return `/images/${img}`;
+  };
 
   // Use the recommended products hook
   const { 
@@ -82,9 +94,18 @@ const fixImageUrl = (img) => {
       try {
         const response = await axios.get(`http://localhost:5000/api/products/${id}`);
         if (response.data.success && response.data.data) {
-          setProduct(response.data.data);
-          setSelectedSize(response.data.data.sizes?.[0] || null);
-          setSelectedColor(response.data.data.colors?.[0] || null);
+          const productData = response.data.data;
+          
+          // Process images using fixImageUrl before setting state
+          const processedProduct = {
+            ...productData,
+            images: (productData.images || []).map(fixImageUrl),
+            averageRating: productData.averageRating || 0
+          };
+          
+          setProduct(processedProduct);
+          setSelectedSize(productData.sizes?.[0] || null);
+          setSelectedColor(productData.colors?.[0] || null);
         } else {
           setError(response.data.message || 'Product not found');
         }
@@ -113,6 +134,14 @@ const fixImageUrl = (img) => {
         
         setReviews(reviewsRes.data);
         setReviewSummary(summaryRes.data);
+        
+        // Update product's average rating if it changed
+        if (summaryRes.data.averageRating !== product.averageRating) {
+          setProduct(prev => ({
+            ...prev,
+            averageRating: summaryRes.data.averageRating
+          }));
+        }
       } catch (err) {
         console.error('Error fetching reviews:', err);
       } finally {
@@ -123,7 +152,7 @@ const fixImageUrl = (img) => {
     fetchReviews();
   }, [product]);
 
-const handleImageNavigation = (direction) => {
+  const handleImageNavigation = (direction) => {
     setIsImageLoading(true);
     setCurrentImageIndex((prev) => {
       const lastIndex = product?.images?.length - 1 || 0;
@@ -167,7 +196,15 @@ const handleImageNavigation = (direction) => {
   };
 
   const handleProductClick = (clickedProduct) => {
-    navigate(`/product/${clickedProduct._id || clickedProduct.id}`);
+    // Ensure images are processed before navigation
+    const processedProduct = {
+      ...clickedProduct,
+      images: (clickedProduct.images || []).map(fixImageUrl)
+    };
+    
+    navigate(`/product/${clickedProduct._id || clickedProduct.id}`, {
+      state: { product: processedProduct }
+    });
   };
 
   const handleSubmitReview = async (e) => {
@@ -181,10 +218,9 @@ const handleImageNavigation = (direction) => {
       return;
     }
     if (!product?._id) {
-    alert('Product not loaded. Please try again.');
-    return;
+      alert('Product not loaded. Please try again.');
+      return;
     }
-
 
     setIsSubmittingReview(true);
     try {
@@ -199,14 +235,24 @@ const handleImageNavigation = (direction) => {
       });
       
       if (response.status === 201) {
-        const [reviewsRes, summaryRes] = await Promise.all([
+        // Refresh both reviews and product data
+        const [reviewsRes, summaryRes, productRes] = await Promise.all([
           axios.get(`http://localhost:5000/api/reviews/${product._id}`),
-          axios.get(`http://localhost:5000/api/reviews/summary/${product._id}`)
+          axios.get(`http://localhost:5000/api/reviews/summary/${product._id}`),
+          axios.get(`http://localhost:5000/api/products/${product._id}`)
         ]);
         
         setReviews(reviewsRes.data);
         setReviewSummary(summaryRes.data);
         
+        // Update product with new average rating
+        const updatedProduct = {
+          ...productRes.data.data,
+          images: (productRes.data.data.images || []).map(fixImageUrl)
+        };
+        setProduct(updatedProduct);
+        
+        // Reset form
         setRating(0);
         setReviewTitle('');
         setReviewContent('');
@@ -332,19 +378,22 @@ const handleImageNavigation = (direction) => {
                     <div className={styles.loadingSpinner}></div>
                   </div>
                 )}
-               {product.images?.length > 0 ? (
-                <img
-                  src={fixImageUrl(product.images[currentImageIndex])}
-                  alt={product.name}
-                  className={`${styles.productMainImg} ${isImageLoading ? styles.hidden : ''}`}
-                  onLoad={() => setIsImageLoading(false)}
-                  onError={() => setIsImageLoading(false)}
-                />
-              ) : (
-                <div className={styles.imagePlaceholder}>
-                  No Images Available
-                </div>
-              )}
+                {product.images?.length > 0 ? (
+                  <img
+                    src={product.images[currentImageIndex]}
+                    alt={product.name}
+                    className={`${styles.productMainImg} ${isImageLoading ? styles.hidden : ''}`}
+                    onLoad={() => setIsImageLoading(false)}
+                    onError={(e) => {
+                      setIsImageLoading(false);
+                      e.target.src = '/images/placeholder.jpg';
+                    }}
+                  />
+                ) : (
+                  <div className={styles.imagePlaceholder}>
+                    No Images Available
+                  </div>
+                )}
 
                 {product.images?.length > 1 && (
                   <>
@@ -737,14 +786,22 @@ const handleImageNavigation = (direction) => {
               <p className={styles.errorText}>{recommendedError}</p>
             ) : recommendedProducts.length > 0 ? (
               <div className={styles.productGrid}>
-                {recommendedProducts.map((item) => (
-                  <ProductCard
-                    key={item._id}
-                    product={item}
-                    variant="small"
-                    onClick={() => handleProductClick(item)}
-                  />
-                ))}
+                {recommendedProducts.map((item) => {
+                  // Process recommended product images before rendering
+                  const processedItem = {
+                    ...item,
+                    images: (item.images || []).map(fixImageUrl)
+                  };
+                  
+                  return (
+                    <ProductCard
+                      key={processedItem._id}
+                      product={processedItem}
+                      variant="small"
+                      onClick={() => handleProductClick(processedItem)}
+                    />
+                  );
+                })}
               </div>
             ) : (
               <div className={styles.noRecommendations}>
