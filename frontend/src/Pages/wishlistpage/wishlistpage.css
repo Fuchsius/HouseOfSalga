@@ -205,11 +205,21 @@ h2 {
 
 .product-list {
   display: flex;
-  flex-wrap: wrap; /* Wrap to next line on smaller screens */
-  justify-content: center; /* ✅ Center horizontally */
-  gap: 20px;
-  padding-bottom: 10px;
+  flex-direction: row;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
   scrollbar-width: thin;
+}
+
+.product-list .product-card {
+  min-width: 220px;
+  max-width: 250px;
+  width: 98%;
+  padding: 16px;
+  border-radius: 8px;
+  flex: 0 0 auto;
+  margin: 0;
 }
 
 .product-list::-webkit-scrollbar {
