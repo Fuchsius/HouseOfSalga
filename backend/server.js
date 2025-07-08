@@ -7,6 +7,9 @@ require("dotenv").config();
 const authRoutes = require("./routes/auth");
 const checkoutRoutes = require("./routes/checkout");
 const wishlistRoutes = require("./routes/wishlist");
+const wishlistRoutes = require("./routes/wishlistUser");
+const recentlyViewRoutes = require('./routes/recentlyview');
+const recentlyViewedRoutes = require('./routes/recentlyViewed');
 //Shop and Cart Routes
 const cartRoutes = require("./routes/cart");
 const discountRoutes = require("./routes/discount");
@@ -47,7 +50,9 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/discount", discountRoutes);
 app.use("/api/personal-info", personalInfoRoutes);
 app.use('/api/trending', trendingRoutes);
-
+app.use("/api/wishlist", wishlistRoutes);
+app.use('/api/recently-viewed', recentlyViewedRoutes);
+app.use('/api/recentlyview', recentlyViewRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/order-reviews', orderReviewRoutes);
