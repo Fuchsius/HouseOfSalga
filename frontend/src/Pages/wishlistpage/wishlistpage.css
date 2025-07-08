@@ -48,7 +48,7 @@ h2 {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin-top: 25px; /* Push down to match Hello User */
+  margin-top: 25px;
 }
 
 /* ===== Wishlist: Empty State ===== */
@@ -94,7 +94,7 @@ h2 {
   font-size: 14px;
   font-family: 'Poppins', sans-serif;
   margin-bottom: 20px;
-  width: 532px;
+  max-width: 100%;
   color: #444;
 }
 
@@ -108,9 +108,8 @@ h2 {
   font-size: 14px;
   cursor: pointer;
   transition: background 0.2s ease;
-  width: 532px;
-  display: block;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 532px;
   text-align: center;
 }
 
@@ -205,8 +204,8 @@ h2 {
 
 .product-list {
   display: flex;
-  flex-wrap: wrap; /* Wrap to next line on smaller screens */
-  justify-content: center; /* ✅ Center horizontally */
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 20px;
   padding-bottom: 10px;
   scrollbar-width: thin;
@@ -292,10 +291,12 @@ h2 {
 @media (max-width: 768px) {
   .main-layout {
     flex-direction: column;
+    gap: 30px;
+    padding: 0 10px;
   }
 
   .wishlist-content {
-    padding: 20px;
+    padding: 20px 10px;
   }
 
   .wishlist-box {
@@ -306,21 +307,6 @@ h2 {
   .wishlist-box p,
   .wishlist-box button {
     width: 100%;
-  }
-
-  .product-list {
-    justify-content: center;
-  }
-
-  .product-card {
-    width: 100%;
-    max-width: 160px;
-    margin: auto;
-  }
-
-  .recently-viewed {
-    margin: 30px 10px;
-    width: auto;
   }
 
   .wishlist-item {
@@ -334,9 +320,20 @@ h2 {
     align-self: flex-end;
     margin-top: 10px;
   }
+
+  .product-card {
+    width: 100%;
+    max-width: 160px;
+    margin: auto;
+  }
+
+  .recently-viewed {
+    margin: 30px 10px;
+    width: auto;
+  }
 }
 
-
+/* ===== Sidebar Accessibility ===== */
 .sidebar,
 .sidebar * {
   box-sizing: border-box;
@@ -344,10 +341,10 @@ h2 {
 
 .sidebar {
   position: relative;
-  overflow: hidden; /* clips anything that tries to overflow */
-  width: 300px; /* adjust as needed */
+  overflow: hidden;
+  width: 300px;
   padding: 20px;
-  border-radius: 6px; /* optional */
+  border-radius: 6px;
 }
 
 .sidebar a,
@@ -359,20 +356,77 @@ h2 {
   transition: background-color 0.2s ease;
 }
 
-/* Use inset box-shadow to keep focus ring fully inside */
 .sidebar a:focus-visible,
 .sidebar button:focus-visible,
 .sidebar .menu-item:focus-visible {
-  outline: none;
   box-shadow: inset 0 0 0 2px #2fa600;
   background-color: #e6f3d7;
   border-radius: 4px;
 }
 
-/* Optional: remove box-shadow and outline on hover so no overflow */
 .sidebar a:hover,
 .sidebar button:hover,
 .sidebar .menu-item:hover {
   box-shadow: none;
   outline: none;
+}
+@media (max-width: 768px) {
+  .wishlist-item {
+    position: relative; /* So we can absolutely position inside */
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .wishlist-remove {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    margin-left: 0;
+  }
+
+  .wishlist-price,
+  .wishlist-add-btn {
+    align-self: flex-end;
+    margin-top: 10px;
+  }
+}
+@media (max-width: 768px) {
+  .wishlist-item {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    width: 100%;
+    max-width: 320px;
+    margin: auto;
+  }
+
+  .wishlist-remove {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    margin-left: 0;
+  }
+
+  .wishlist-details {
+    align-items: center;
+  }
+
+  .wishlist-price {
+    font-size: 18px;
+    margin-top: 10px;
+    align-self: center;
+    text-align: center;
+  }
+
+  .wishlist-add-btn {
+    align-self: center;
+    margin-top: 10px;
+  }
+
+  .wishlist-box p,
+  .wishlist-box button {
+    width: 100%;
+  }
 }
