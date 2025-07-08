@@ -356,3 +356,25 @@
     font-size: 13px;
   }
 }
+
+/* Phone input field styling */
+input[name="phone"] {
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #fff;
+  transition: border-color 0.3s ease;
+  font-family: "Wilkysta", sans-serif;
+}
+input[name="phone"]:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+/* Error message styling */
+.error {
+  color: #e63946;
+  font-size: 0.97em;
+  margin-top: 2px;
+}
