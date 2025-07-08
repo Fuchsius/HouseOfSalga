@@ -2,12 +2,15 @@ const express = require('express');
 const router = express.Router();
 const WishlistItem = require('../models/WishlistItem');
 
+// GET all wishlist items (NO authentication)
 router.get('/', async (req, res) => {
+    console.log("GET /api/wishlist called"); // Debug log
     try {
         const items = await WishlistItem.find().sort({ createdAt: -1 });
         res.json(items);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Error fetching wishlist:', error);
+        res.status(500).json({ error: 'Failed to fetch wishlist' });
     }
 });
 
