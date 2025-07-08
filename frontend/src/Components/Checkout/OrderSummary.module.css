@@ -1,0 +1,61 @@
+.summary-card {
+  background: none;
+  border-radius: 12px;
+  box-shadow: none;
+  border: 1px solid #e7dec9;
+  padding: 32px 24px 24px 24px;
+  min-width: 320px;
+  max-width: 340px;
+  margin-left: auto;
+  margin-right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  font-family: 'Playfair Display', serif;
+}
+
+.summary-currency {
+  font-size: 1rem;
+  color: #888;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.summary-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 18px;
+  color: #222;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.05rem;
+  margin-bottom: 10px;
+}
+.summary-label {
+  color: #7a6e57;
+}
+.summary-value {
+  color: #222;
+  font-weight: 500;
+}
+
+.summary-divider {
+  border: none;
+  border-top: 1px solid #e7dec9;
+  margin: 14px 0 14px 0;
+}
+
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.18rem;
+  font-weight: 700;
+  color: #222;
+  margin-top: 8px;
+} 
