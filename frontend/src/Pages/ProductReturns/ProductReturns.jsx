@@ -22,11 +22,25 @@ import useRecommendedProducts from '../../hooks/useRecommendedProducts';
 // Styles
 import styles from './ProductReturns.module.css';
 
-// Fix image path helper
+// Fix image path helper - updated to match the Product page version
 const fixImageUrl = (img) => {
-  if (typeof img !== 'string' || !img.trim()) return '/images/placeholder.jpg';
-  if (img.startsWith('http')) return img;
+  if (typeof img !== 'string' || !img.trim()) {
+    return '/images/placeholder.jpg';
+  }
+
+  if (img.startsWith('http')) {
+    return img;
+  }
+
+  // If already starts with /images, use as is
+  if (img.startsWith('/images')) {
+    return img;
+  }
+
+  // Remove known wrong prefixes like /assets/
   img = img.replace(/^\/?assets\//, '');
+
+  // Serve from /images directory
   return `/images/${img}`;
 };
 
@@ -62,7 +76,15 @@ const ProductReturns = () => {
       try {
         const response = await axios.get(`http://localhost:5000/api/products/${id}`);
         if (response.data.success && response.data.data) {
-          setProduct(response.data.data);
+          const productData = response.data.data;
+          
+          // Process images using fixImageUrl before setting state
+          const processedProduct = {
+            ...productData,
+            images: (productData.images || []).map(fixImageUrl)
+          };
+          
+          setProduct(processedProduct);
           setIsDefaultFallback(false);
         } else {
           await fetchDefaultProduct();
@@ -79,7 +101,15 @@ const ProductReturns = () => {
       try {
         const defaultResponse = await axios.get('http://localhost:5000/api/products/default');
         if (defaultResponse.data.success && defaultResponse.data.data) {
-          setProduct(defaultResponse.data.data);
+          const productData = defaultResponse.data.data;
+          
+          // Process images for default product as well
+          const processedProduct = {
+            ...productData,
+            images: (productData.images || []).map(fixImageUrl)
+          };
+          
+          setProduct(processedProduct);
           setIsDefaultFallback(true);
         }
       } catch (defaultErr) {
@@ -143,8 +173,14 @@ const ProductReturns = () => {
   };
 
   const handleProductClick = (clickedProduct) => {
+    // Ensure images are processed before navigation
+    const processedProduct = {
+      ...clickedProduct,
+      images: (clickedProduct.images || []).map(fixImageUrl)
+    };
+    
     navigate(`/product/${clickedProduct._id || clickedProduct.id}`, {
-      state: { product: clickedProduct }
+      state: { product: processedProduct }
     });
   };
 
@@ -203,11 +239,14 @@ const ProductReturns = () => {
                 )}
                 {product.images?.length > 0 ? (
                   <img
-                    src={fixImageUrl(product.images[currentImageIndex])}
+                    src={product.images[currentImageIndex]}
                     alt={product.name}
                     className={`${styles.productMainImg} ${isImageLoading ? styles.hidden : ''}`}
                     onLoad={() => setIsImageLoading(false)}
-                    onError={() => setIsImageLoading(false)}
+                    onError={(e) => {
+                      setIsImageLoading(false);
+                      e.target.src = '/images/placeholder.jpg';
+                    }}
                   />
                 ) : (
                   <div className={styles.imagePlaceholder}>No Images Available</div>
@@ -346,7 +385,7 @@ const ProductReturns = () => {
 
               <div className={styles.secureCheckout}>
                 <div className={styles.secureIcons}>
-                  <img src={fixImageUrl('product/trustbag.png')} alt="Secure Payment" loading="lazy" />
+                  <img src="/images/product/trustbag.png" alt="Secure Payment" loading="lazy" />
                 </div>
                 <p>Guarantee safe & secure checkout</p>
               </div>
@@ -389,14 +428,22 @@ const ProductReturns = () => {
             ) : (
               <div className={styles.productGrid}>
                 {recommendedProducts.length > 0 ? (
-                  recommendedProducts.map((item) => (
-                    <ProductCard
-                      key={item._id}
-                      product={item}
-                      variant="small"
-                      onClick={() => handleProductClick(item)}
-                    />
-                  ))
+                  recommendedProducts.map((item) => {
+                    // Process recommended product images before rendering
+                    const processedItem = {
+                      ...item,
+                      images: (item.images || []).map(fixImageUrl)
+                    };
+                    
+                    return (
+                      <ProductCard
+                        key={processedItem._id}
+                        product={processedItem}
+                        variant="small"
+                        onClick={() => handleProductClick(processedItem)}
+                      />
+                    );
+                  })
                 ) : (
                   <div className={styles.noRecommendations}>
                     <p>No recommended products available at this time</p>
