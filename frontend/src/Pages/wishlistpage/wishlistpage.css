@@ -33,35 +33,22 @@ h2 {
 }
 
 /* ===== Layout ===== */
-.wishlist-container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Center main-layout block */
-}
-
 .main-layout {
   display: flex;
   gap: 130px;
+  padding: 0 20px;
   flex-direction: row;
   align-items: flex-start;
-  width: 100%;
-  max-width: 1200px; /* Limit total width */
-  margin: 0 auto;     /* Center the layout */
-  padding: 0 20px;
-  box-sizing: border-box;
 }
 
 .wishlist-content {
   flex: 1;
-  max-width: 800px;
-  width: 100%;
   padding: 40px 60px 40px 0px;
   background-color: #f5eddf;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin-top: 25px;
+  margin-top: 25px; /* Push down to match Hello User */
 }
 
 /* ===== Wishlist: Empty State ===== */
@@ -205,10 +192,8 @@ h2 {
 
 /* ===== Recently Viewed ===== */
 .recently-viewed {
-  margin: 40px auto;
-  width: 100%;
-  max-width: 800px;
-  padding: 0 20px;
+  margin: 40px 20px;
+  width: calc(100% - 40px);
 }
 
 .recently-viewed h3 {
@@ -307,8 +292,6 @@ h2 {
 @media (max-width: 768px) {
   .main-layout {
     flex-direction: column;
-    align-items: center;
-    gap: 40px;
   }
 
   .wishlist-content {
@@ -337,7 +320,7 @@ h2 {
 
   .recently-viewed {
     margin: 30px 10px;
-    width: 100%;
+    width: auto;
   }
 
   .wishlist-item {
@@ -353,7 +336,7 @@ h2 {
   }
 }
 
-/* ===== Sidebar (unchanged) ===== */
+
 .sidebar,
 .sidebar * {
   box-sizing: border-box;
@@ -361,10 +344,10 @@ h2 {
 
 .sidebar {
   position: relative;
-  overflow: hidden;
-  width: 300px;
+  overflow: hidden; /* clips anything that tries to overflow */
+  width: 300px; /* adjust as needed */
   padding: 20px;
-  border-radius: 6px;
+  border-radius: 6px; /* optional */
 }
 
 .sidebar a,
@@ -376,6 +359,7 @@ h2 {
   transition: background-color 0.2s ease;
 }
 
+/* Use inset box-shadow to keep focus ring fully inside */
 .sidebar a:focus-visible,
 .sidebar button:focus-visible,
 .sidebar .menu-item:focus-visible {
@@ -385,6 +369,7 @@ h2 {
   border-radius: 4px;
 }
 
+/* Optional: remove box-shadow and outline on hover so no overflow */
 .sidebar a:hover,
 .sidebar button:hover,
 .sidebar .menu-item:hover {
