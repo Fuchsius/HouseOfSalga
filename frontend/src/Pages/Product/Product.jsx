@@ -27,15 +27,18 @@ const Product = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Product state
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isDefaultFallback, setIsDefaultFallback] = useState(false);
 
+  // Recommended products state
   const [recommendedProducts, setRecommendedProducts] = useState([]);
   const [recommendedLoading, setRecommendedLoading] = useState(false);
   const [recommendedError, setRecommendedError] = useState(null);
 
+  // User selections
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -44,56 +47,52 @@ const Product = () => {
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('description');
 
-  const fixImageUrl = (img) => {
-  if (typeof img !== 'string' || !img.trim()) {
-    return '/images/placeholder.jpg';
-  }
+  // Wishlist logic
+  useEffect(() => {
+    // Check if this product is in the wishlist
+    const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+    setIsFavorite(wishlist.some(item => item._id === product?._id));
+  }, [product]);
 
-  if (img.startsWith('http')) {
-    return img;
-  }
+  const handleWishlistToggle = () => {
+    let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+    if (isFavorite) {
+      // Remove from wishlist
+      wishlist = wishlist.filter(item => item._id !== product._id);
+    } else {
+      // Add to wishlist (store minimal product info)
+      wishlist.push({
+        _id: product._id,
+        name: product.name,
+        price: product.price,
+        image: product.images?.[0] || '',
+        size: selectedSize,
+        color: selectedColor,
+      });
+    }
+    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+    setIsFavorite(!isFavorite);
+    // Dispatch custom event for same-tab updates
+    window.dispatchEvent(new Event('wishlistChanged'));
+  };
 
-  // If already starts with /images, use as is
-  if (img.startsWith('/images')) {
-    return img;
-  }
-
-  // Remove known wrong prefixes like /assets/
-  img = img.replace(/^\/?assets\//, '');
-
-  // Serve from /images directory
-  return `/images/${img}`;
-};
-
-
+  // Fetch product data
   useEffect(() => {
     const fetchProduct = async () => {
       setLoading(true);
       setError(null);
-
+      
       try {
         const response = await axios.get(`http://localhost:5000/api/products/${id}`);
-
+        
         if (response.data.success && response.data.data) {
           const productData = response.data.data;
-
-          const updatedProduct = {
-            ...productData,
-            name: productData.name || 'Unnamed Product',
-            price: productData.price ?? 0,
-            description: productData.description || 'No description available.',
-            inStock: productData.inStock ?? false,
-            sizes: productData.sizes || [],
-            colors: productData.colors || [],
-            images: (productData.images || []).map(fixImageUrl)
-          };
-
-          console.log("✅ Final product data:", updatedProduct);
-          setProduct(updatedProduct);
+          setProduct(productData);
           setIsDefaultFallback(false);
-
-          setSelectedSize(updatedProduct.sizes[0] || null);
-          setSelectedColor(updatedProduct.colors[0] || null);
+          
+          // Set default selections
+          setSelectedSize(productData.sizes?.[0] || null);
+          setSelectedColor(productData.colors?.[0] || null);
         } else {
           setError(response.data.message || 'Product not found');
         }
@@ -107,26 +106,30 @@ const Product = () => {
     fetchProduct();
   }, [id]);
 
+  // Fetch recommended products when product data is available
   useEffect(() => {
     const fetchRecommendedProducts = async () => {
       if (!product?._id) return;
-
+      
       setRecommendedLoading(true);
       setRecommendedError(null);
-
+      
       try {
-        const response = await axios.get(`http://localhost:5000/api/products/recommended/${product._id}`);
+        const response = await axios.get(
+          `http://localhost:5000/api/products/recommended/${product._id}`
+        );
+        
         if (response.data.success) {
-          const fixedRecommended = response.data.data.map(p => ({
-            ...p,
-            images: (p.images || []).map(fixImageUrl)
-          }));
-          setRecommendedProducts(fixedRecommended);
+          setRecommendedProducts(response.data.data);
         } else {
           setRecommendedError(response.data.message || 'Failed to load recommendations');
         }
       } catch (err) {
-        setRecommendedError(err.response?.data?.message || err.message || 'Error loading recommendations');
+        setRecommendedError(
+          err.response?.data?.message || 
+          err.message || 
+          'Error loading recommendations'
+        );
       } finally {
         setRecommendedLoading(false);
       }
@@ -135,9 +138,11 @@ const Product = () => {
     fetchRecommendedProducts();
   }, [product]);
 
+  // Handle tab changes based on route
   useEffect(() => {
     const pathParts = location.pathname.split('/');
     const tabFromRoute = pathParts[pathParts.length - 1];
+    
     if (['description', 'reviews', 'returns'].includes(tabFromRoute)) {
       setActiveTab(tabFromRoute);
     } else {
@@ -145,6 +150,7 @@ const Product = () => {
     }
   }, [location.pathname]);
 
+  // Image navigation handlers
   const handleImageNavigation = (direction) => {
     setIsImageLoading(true);
     setCurrentImageIndex(prev => {
@@ -155,6 +161,7 @@ const Product = () => {
     });
   };
 
+  // Cart and checkout handlers
   const handleAddToCart = () => {
     navigate('/cart', {
       state: {
@@ -181,11 +188,13 @@ const Product = () => {
     });
   };
 
+  // Navigate between tabs
   const navigateToTab = (tab) => {
     if (!product?._id) return;
     navigate(`/product/${product._id}/${tab}`);
   };
 
+  // Loading state
   if (loading) {
     return (
       <div className={styles.loadingOverlay}>
@@ -199,6 +208,7 @@ const Product = () => {
     );
   }
 
+  // Error state
   if (error || !product) {
     return (
       <div className={styles.errorContainer}>
@@ -207,7 +217,7 @@ const Product = () => {
           <FaExclamationTriangle className={styles.errorIcon} />
           <h2>Product Not Found</h2>
           <p>{error || 'We couldn\'t find the product you\'re looking for.'}</p>
-          <button
+          <button 
             className={styles.continueShopping}
             onClick={() => navigate('/')}
           >
@@ -223,8 +233,16 @@ const Product = () => {
     <>
       <Header />
       <div className={styles.productPage}>
+        {isDefaultFallback && (
+          <div className={styles.defaultProductWarning}>
+            <FaExclamationTriangle />
+            <span>Showing a similar product as the requested item wasn't found</span>
+          </div>
+        )}
+
         <div className={styles.productContainer}>
           <div className={styles.productMain}>
+            {/* Image Gallery */}
             <div className={styles.productImages}>
               <div className={styles.mainImage}>
                 {isImageLoading && (
@@ -238,10 +256,7 @@ const Product = () => {
                     alt={product.name}
                     className={`${styles.productMainImg} ${isImageLoading ? styles.hidden : ''}`}
                     onLoad={() => setIsImageLoading(false)}
-                    onError={(e) => {
-                      setIsImageLoading(false);
-                      e.target.src = '/images/placeholder.jpg';
-                    }}
+                    onError={() => setIsImageLoading(false)}
                   />
                 ) : (
                   <div className={styles.imagePlaceholder}>No Images Available</div>
@@ -265,6 +280,8 @@ const Product = () => {
                   </>
                 )}
               </div>
+
+              {/* Image Navigation Dots */}
               {product.images?.length > 1 && (
                 <div className={styles.imageDotsContainer}>
                   {product.images.map((_, index) => (
@@ -283,6 +300,7 @@ const Product = () => {
               )}
             </div>
 
+            {/* Product Details */}
             <div className={styles.productDetails}>
               <div className={styles.ratingFavoriteContainer}>
                 <RatingStars 
@@ -292,7 +310,7 @@ const Product = () => {
                 />
                 <button
                   className={styles.favoriteButtonTop}
-                  onClick={() => setIsFavorite(!isFavorite)}
+                  onClick={handleWishlistToggle}
                 >
                   {isFavorite ? <FaHeart className={styles.filled} /> : <FaRegHeart />}
                 </button>
@@ -312,7 +330,8 @@ const Product = () => {
 
               <hr className={styles.divider} />
 
-              {product.colors.length > 0 && (
+              {/* Color Selector */}
+              {product.colors?.length > 0 && (
                 <>
                   <div className={styles.colorSelector}>
                     <span className={styles.colorLabel}>Color: {selectedColor}</span>
@@ -344,7 +363,8 @@ const Product = () => {
                 </>
               )}
 
-              {product.sizes.length > 0 && (
+              {/* Size Selector */}
+              {product.sizes?.length > 0 && (
                 <div className={styles.sizeSelector}>
                   <span>Size: {selectedSize}</span>
                   <div className={styles.sizeOptions}>
@@ -363,17 +383,27 @@ const Product = () => {
                 </div>
               )}
 
+              {/* Quantity Selector */}
               <div className={styles.quantityControl}>
                 <div className={styles.quantitySelector}>
                   <button 
                     onClick={() => setQuantity(Math.max(1, quantity - 1))} 
+                    aria-label="Decrease quantity"
                     disabled={quantity <= 1}
-                  >-</button>
-                  <span>{quantity}</span>
-                  <button onClick={() => setQuantity(quantity + 1)}>+</button>
+                  >
+                    -
+                  </button>
+                  <span aria-live="polite">{quantity}</span>
+                  <button 
+                    onClick={() => setQuantity(quantity + 1)} 
+                    aria-label="Increase quantity"
+                  >
+                    +
+                  </button>
                 </div>
               </div>
 
+              {/* Action Buttons */}
               <div className={styles.productActions}>
                 <button 
                   className={styles.addToCart} 
@@ -391,6 +421,7 @@ const Product = () => {
                 </button>
               </div>
 
+              {/* Secure Checkout Badge */}
               <div className={styles.secureCheckout}>
                 <div className={styles.secureIcons}>
                   <img 
@@ -404,6 +435,7 @@ const Product = () => {
             </div>
           </div>
 
+          {/* Product Tabs */}
           <div className={styles.tabsSection}>
             <ProductTabs 
               activeTab={activeTab} 
@@ -420,6 +452,7 @@ const Product = () => {
               {activeTab === 'reviews' && (
                 <div className={styles.reviewsContent}>
                   <h2>Customer Reviews</h2>
+                  {/* Reviews content would go here */}
                 </div>
               )}
               {activeTab === 'returns' && (
@@ -431,10 +464,11 @@ const Product = () => {
             </div>
           </div>
 
+          {/* Recommended Products */}
           <div className={styles.recommendedProducts}>
             <h2>Recommended</h2>
             <p className={styles.subtitle}>You might want to take a look at these.</p>
-
+            
             {recommendedLoading ? (
               <div className={styles.loadingRecommendations}>
                 <div className={styles.loadingSpinner}></div>
