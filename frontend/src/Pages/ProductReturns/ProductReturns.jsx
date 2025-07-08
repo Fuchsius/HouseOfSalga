@@ -22,37 +22,24 @@ import useRecommendedProducts from '../../hooks/useRecommendedProducts';
 // Styles
 import styles from './ProductReturns.module.css';
 
-/**
- * Product Returns Page Component
- * 
- * Features:
- * - Displays detailed product information with focus on returns policy
- * - Image gallery with loading states
- * - Color/size selection
- * - Add to cart functionality
- * - Recommended products section
- * - Fallback to default product when requested product not found
- * 
- * State Management:
- * - Handles loading/error states
- * - Manages user selections (size, color, quantity)
- * - Tracks favorite status
- * 
- * @returns {JSX.Element} The product returns page
- */
+// Fix image path helper
+const fixImageUrl = (img) => {
+  if (typeof img !== 'string' || !img.trim()) return '/images/placeholder.jpg';
+  if (img.startsWith('http')) return img;
+  img = img.replace(/^\/?assets\//, '');
+  return `/images/${img}`;
+};
+
 const ProductReturns = () => {
-  // Router Hooks
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Product State
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isDefaultFallback, setIsDefaultFallback] = useState(false);
 
-  // User Selection State
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -61,46 +48,33 @@ const ProductReturns = () => {
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('returns');
 
-  // Recommended Products Hook
   const {
     recommended: recommendedProducts,
     loading: recommendedLoading,
     error: recommendedError
   } = useRecommendedProducts(product?._id);
 
-  /**
-   * Fetches product data from API
-   * Attempts to fetch requested product first, falls back to default product if not found
-   */
   useEffect(() => {
     const fetchProduct = async () => {
       setLoading(true);
       setError(null);
-      
+
       try {
-        // Try to fetch requested product
         const response = await axios.get(`http://localhost:5000/api/products/${id}`);
-        
         if (response.data.success && response.data.data) {
           setProduct(response.data.data);
           setIsDefaultFallback(false);
         } else {
-          // Fallback to default product if requested product not found
           await fetchDefaultProduct();
         }
       } catch (err) {
-        console.error('Error fetching product:', err);
         setError(err.response?.data?.message || err.message || 'Error fetching product');
-        // Try to fetch default product as fallback
         await fetchDefaultProduct();
       } finally {
         setLoading(false);
       }
     };
 
-    /**
-     * Fetches default product as fallback
-     */
     const fetchDefaultProduct = async () => {
       try {
         const defaultResponse = await axios.get('http://localhost:5000/api/products/default');
@@ -116,9 +90,6 @@ const ProductReturns = () => {
     fetchProduct();
   }, [id]);
 
-  /**
-   * Sets default selections when product data is available
-   */
   useEffect(() => {
     if (product) {
       if (product.colors?.length) setSelectedColor(product.colors[0]);
@@ -126,13 +97,9 @@ const ProductReturns = () => {
     }
   }, [product]);
 
-  /**
-   * Handles image navigation
-   * @param {string} direction - 'prev' or 'next'
-   */
   const handleImageNavigation = (direction) => {
     setIsImageLoading(true);
-    setCurrentImageIndex(prev => {
+    setCurrentImageIndex((prev) => {
       const lastIndex = product?.images?.length - 1 || 0;
       return direction === 'next'
         ? prev === lastIndex ? 0 : prev + 1
@@ -140,9 +107,6 @@ const ProductReturns = () => {
     });
   };
 
-  /**
-   * Adds current product to cart and navigates to cart page
-   */
   const handleAddToCart = () => {
     if (!product) return;
     navigate('/cart', {
@@ -157,9 +121,6 @@ const ProductReturns = () => {
     });
   };
 
-  /**
-   * Proceeds directly to checkout with current product
-   */
   const handleBuyNow = () => {
     if (!product) return;
     navigate('/checkout', {
@@ -174,10 +135,6 @@ const ProductReturns = () => {
     });
   };
 
-  /**
-   * Navigates to different product tabs
-   * @param {string} tab - The tab to navigate to
-   */
   const navigateToTab = (tab) => {
     if (!product?._id) return;
     navigate(`/product/${product._id}/${tab}`, {
@@ -185,17 +142,12 @@ const ProductReturns = () => {
     });
   };
 
-  /**
-   * Handles clicking on recommended products
-   * @param {Object} clickedProduct - The product that was clicked
-   */
   const handleProductClick = (clickedProduct) => {
     navigate(`/product/${clickedProduct._id || clickedProduct.id}`, {
       state: { product: clickedProduct }
     });
   };
 
-  // Loading State
   if (loading) {
     return (
       <div className={styles.loadingOverlay}>
@@ -209,7 +161,6 @@ const ProductReturns = () => {
     );
   }
 
-  // Error State (when no product is available)
   if (error && !product) {
     return (
       <div className={styles.errorContainer}>
@@ -234,7 +185,6 @@ const ProductReturns = () => {
     <>
       <Header />
       <div className={styles.productPage}>
-        {/* Fallback Warning Banner */}
         {isDefaultFallback && (
           <div className={styles.defaultProductWarning}>
             <FaExclamationTriangle />
@@ -243,9 +193,7 @@ const ProductReturns = () => {
         )}
 
         <div className={styles.productContainer}>
-          {/* Main Product Section */}
           <div className={styles.productMain}>
-            {/* Image Gallery */}
             <div className={styles.productImages}>
               <div className={styles.mainImage}>
                 {isImageLoading && (
@@ -255,7 +203,7 @@ const ProductReturns = () => {
                 )}
                 {product.images?.length > 0 ? (
                   <img
-                    src={product.images[currentImageIndex]}
+                    src={fixImageUrl(product.images[currentImageIndex])}
                     alt={product.name}
                     className={`${styles.productMainImg} ${isImageLoading ? styles.hidden : ''}`}
                     onLoad={() => setIsImageLoading(false)}
@@ -284,7 +232,6 @@ const ProductReturns = () => {
                 )}
               </div>
 
-              {/* Image Navigation Dots */}
               {product.images?.length > 1 && (
                 <div className={styles.imageDotsContainer}>
                   {product.images.map((_, index) => (
@@ -303,7 +250,6 @@ const ProductReturns = () => {
               )}
             </div>
 
-            {/* Product Details */}
             <div className={styles.productDetails}>
               <div className={styles.ratingFavoriteContainer}>
                 <RatingStars rating={product.averageRating || product.rating} size="large" />
@@ -317,12 +263,6 @@ const ProductReturns = () => {
 
               <h1 className={styles.productTitle}>{product.name}</h1>
 
-              {isDefaultFallback && (
-                <div className={styles.defaultProductNote}>
-                  You might also like this similar product
-                </div>
-              )}
-
               <div className={styles.priceStock}>
                 <span className={styles.price}>Rs. {product.price?.toFixed(2)}</span>
                 <span className={styles.stock}>
@@ -332,7 +272,6 @@ const ProductReturns = () => {
 
               <hr className={styles.divider} />
 
-              {/* Color Selector */}
               {product.colors?.length > 0 && (
                 <>
                   <div className={styles.colorSelector}>
@@ -363,7 +302,6 @@ const ProductReturns = () => {
                 </>
               )}
 
-              {/* Size Selector */}
               {product.sizes?.length > 0 && (
                 <div className={styles.sizeSelector}>
                   <span>Size: {selectedSize}</span>
@@ -381,27 +319,14 @@ const ProductReturns = () => {
                 </div>
               )}
 
-              {/* Quantity Selector */}
               <div className={styles.quantityControl}>
                 <div className={styles.quantitySelector}>
-                  <button 
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    disabled={quantity <= 1}
-                    aria-label="Decrease quantity"
-                  >
-                    -
-                  </button>
+                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} disabled={quantity <= 1}>-</button>
                   <span aria-live="polite">{quantity}</span>
-                  <button 
-                    onClick={() => setQuantity(quantity + 1)}
-                    aria-label="Increase quantity"
-                  >
-                    +
-                  </button>
+                  <button onClick={() => setQuantity(quantity + 1)}>+</button>
                 </div>
               </div>
 
-              {/* Action Buttons */}
               <div className={styles.productActions}>
                 <button
                   className={styles.addToCart}
@@ -419,21 +344,15 @@ const ProductReturns = () => {
                 </button>
               </div>
 
-              {/* Secure Checkout Badge */}
               <div className={styles.secureCheckout}>
                 <div className={styles.secureIcons}>
-                  <img 
-                    src="/images/product/trustbag.png" 
-                    alt="Secure Payment" 
-                    loading="lazy" 
-                  />
+                  <img src={fixImageUrl('product/trustbag.png')} alt="Secure Payment" loading="lazy" />
                 </div>
                 <p>Guarantee safe & secure checkout</p>
               </div>
             </div>
           </div>
 
-          {/* Tabs Section */}
           <div className={styles.tabsSection}>
             <ProductTabs
               activeTab={activeTab}
@@ -444,20 +363,7 @@ const ProductReturns = () => {
               <div className={styles.returnsContent}>
                 <h2>RETURN POLICY</h2>
                 <div className={styles.policySection}>
-                  <p>
-                    {product.returnsInfo?.trim() || `
-                      Our dispatch head time is 7 working days for orders that include both ready-to-strip 
-                      and made-on-order pieces. If you would like the ready-to-strip pieces to be dispatched 
-                      early, please mention in the NOTES section of checkout.
-                    `}
-                  </p>
-                  <p>
-                    Returns must be initiated within 3 days of delivery. Returns include exchange of size, 
-                    style or credit note only.
-                  </p>
-                  <p>
-                    COD, returns and exchanges are not possible on customized garments.
-                  </p>
+                  <p>{product.returnsInfo?.trim() || 'Returns accepted within 30 days of purchase. Exchange of size and style available.'}</p>
                 </div>
 
                 <h2>SHIPPING POLICY</h2>
@@ -470,11 +376,9 @@ const ProductReturns = () => {
             </div>
           </div>
 
-          {/* Recommended Products Section */}
           <div className={styles.recommendedProducts}>
             <h2>Recommended</h2>
             <p className={styles.subtitle}>You might want to take a look at these.</p>
-            
             {recommendedLoading ? (
               <div className={styles.loadingRecommendations}>
                 <div className={styles.loadingSpinner}></div>
