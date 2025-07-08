@@ -35,11 +35,21 @@ h2 {
 /* ===== Layout ===== */
 .main-layout {
   display: flex;
-  gap: 130px;
-  padding: 0 20px;
   flex-direction: row;
   align-items: flex-start;
+  gap: 80px;
+  max-width: 1200px;         /* Limit width for large screens */
+  margin: 0 auto;            /* Center horizontally */
+  padding: 0 20px;
+  width: 100%;
 }
+.wishlist-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 
 .wishlist-content {
   flex: 1;
@@ -336,7 +346,7 @@ h2 {
   }
 }
 
-/* ===== Sidebar styles and focus fix ===== */
+
 .sidebar,
 .sidebar * {
   box-sizing: border-box;
@@ -375,4 +385,22 @@ h2 {
 .sidebar .menu-item:hover {
   box-shadow: none;
   outline: none;
+}
+
+@media (max-width: 768px) {
+  .main-layout {
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    padding: 0 15px;
+  }
+
+  .wishlist-content {
+    width: 100%;
+    padding: 20px 0;
+  }
+
+  .sidebar {
+    width: 100%;
+  }
 }
