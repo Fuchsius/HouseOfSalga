@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './CheckoutForm.module.css';
 import CardIcons from './CardIcons';
 import { FaMapMarkerAlt, FaTimes } from 'react-icons/fa';
@@ -17,11 +17,52 @@ export default function CheckoutForm() {
   const [message, setMessage] = useState('');
   const [showDelivery, setShowDelivery] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
+  const [phoneError, setPhoneError] = useState('');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      alert('No userId found. Please log in again.');
+      return;
+    }
+    fetch(`http://localhost:5000/api/personal-info/userid/${userId}`)
+      .then(res => res.ok ? res.json() : null)
+      .then(async data => {
+        if (data) {
+          setForm(form => ({
+            ...form,
+            firstName: data.firstName || '',
+            lastName: data.lastName || '',
+            country: data.country || '',
+            company: data.company || '',
+            address: data.streetAddress || '',
+            apt: data.apartment || '',
+            city: data.city || '',
+            state: data.state || '',
+            phone: data.phone || '',
+            postal: data.postalCode || ''
+          }));
+        } else {
+          alert('No personal info found for this user. Please fill out your details.');
+        }
+      })
+      .catch(err => {
+        alert('Failed to fetch personal info.');
+        console.error(err);
+      });
+  }, []);
 
   const handleChange = e => {
     const { name, value, type, checked } = e.target;
-    setForm({ ...form, [name]: type === 'checkbox' ? checked : value });
+    if (name === 'phone') {
+      // Only allow digits
+      const digits = value.replace(/\D/g, '');
+      setForm({ ...form, [name]: digits });
+      setPhoneError('');
+    } else {
+      setForm({ ...form, [name]: type === 'checkbox' ? checked : value });
+    }
   };
 
   const handleContinue = e => {
@@ -31,11 +72,50 @@ export default function CheckoutForm() {
 
   const handleSubmit = async e => {
     e.preventDefault();
+    // Phone validation
+    if (form.phone.length !== 10) {
+      setPhoneError('Phone number must be exactly 10 digits.');
+      return;
+    }
     // Prepare order data
     const orderData = {
       ...form,
       shippingAddress: form.shippingAddress === 'different' ? form.differentShippingAddress : form.address
     };
+
+    // Also update personal info in the database
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      // Prepare the data to update
+      const updatedInfo = {
+        userId,
+        firstName: form.firstName,
+        lastName: form.lastName,
+        country: form.country,
+        company: form.company,
+        streetAddress: form.address,
+        apartment: form.apt,
+        city: form.city,
+        state: form.state,
+        phone: form.phone,
+        postalCode: form.postal,
+        deliveryInstructions: '', // add if you have this field in your form
+        defaultShipping: false,
+        defaultBilling: false
+      };
+      // Fetch the personal info record to get its _id
+      const res = await fetch(`http://localhost:5000/api/personal-info/userid/${userId}`);
+      const data = await res.json();
+      if (data && data._id) {
+        // Update the record
+        await fetch(`http://localhost:5000/api/personal-info/${data._id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedInfo)
+        });
+      }
+    }
+
     try {
       const res = await fetch('http://localhost:5000/api/checkout', {
         method: 'POST',
@@ -108,7 +188,8 @@ export default function CheckoutForm() {
           </div>
           <div className={styles['form-row']}>
             <label htmlFor="phone">Phone</label>
-            <input id="phone" name="phone" placeholder="Phone" value={form.phone} onChange={handleChange} required />
+            <input id="phone" name="phone" placeholder="Phone" value={form.phone} onChange={handleChange} required maxLength={10} />
+            {phoneError && <div style={{ color: 'red', fontSize: '0.95em' }}>{phoneError}</div>}
           </div>
         </div>
         {!showDelivery && (
