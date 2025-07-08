@@ -267,13 +267,13 @@ exports.getRecommendedProducts = async (req, res) => {
     .limit(4);
 
     // If not enough products in same category, get most rated products
-    if (recommended.length < 4) {
+    if (recommended.length < 5) {
       const additionalProducts = await Product.find({
         _id: { $ne: productId },
         category: { $ne: current.category }
       })
       .sort({ reviewCount: -1, averageRating: -1 })
-      .limit(4 - recommended.length);
+      .limit(5 - recommended.length);
       
       recommended = [...recommended, ...additionalProducts];
     }
