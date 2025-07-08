@@ -159,6 +159,48 @@ const Product = () => {
     });
   };
 
+  // Wishlist handler
+  const handleAddToWishlist = () => {
+    if (!product) return;
+    const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+    // Prevent duplicates (by _id or name)
+    const exists = wishlist.some(item => item._id === product._id || item.name === product.name);
+    if (!exists) {
+      wishlist.push({
+        ...product,
+        selectedSize,
+        selectedColor,
+        quantity
+      });
+      localStorage.setItem('wishlist', JSON.stringify(wishlist));
+      window.dispatchEvent(new Event('wishlistChanged'));
+      setIsFavorite(true);
+      alert('Added to wishlist!');
+    } else {
+      alert('Already in wishlist!');
+    }
+  };
+
+  // Save to recently viewed in localStorage
+  useEffect(() => {
+    if (!product?._id) return;
+    const maxRecentlyViewed = 8;
+    let recentlyViewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+    // Remove if already exists
+    recentlyViewed = recentlyViewed.filter(p => p._id !== product._id);
+    // Add to front
+    recentlyViewed.unshift({
+      _id: product._id,
+      name: product.name,
+      image: product.images?.[0] || '',
+      price: product.price,
+      // Add more fields if needed
+    });
+    // Keep only latest 8
+    recentlyViewed = recentlyViewed.slice(0, maxRecentlyViewed);
+    localStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewed));
+  }, [product]);
+
   // Navigate between tabs
   const navigateToTab = (tab) => {
     if (!product?._id) return;
@@ -279,10 +321,17 @@ const Product = () => {
                   rating={product.averageRating || product.rating} 
                   size="large" 
                 />
-                <button
+                <button>
                   className={styles.favoriteButtonTop}
+
                   onClick={() => setIsFavorite(!isFavorite)}
-                >
+
+                  onClick={handleAddToWishlist}
+
+                  onClick={handleAddToWishlist}
+
+                  onClick={handleAddToWishlist}
+
                   {isFavorite ? <FaHeart className={styles.filled} /> : <FaRegHeart />}
                 </button>
               </div>
