@@ -48,7 +48,7 @@ export default function ShopPage() {
       const hasFilters = queryParams.toString().length > 0;
       const url = hasFilters
         ? `http://localhost:5000/api/products?${queryParams.toString()}`
-        : "http://localhost:5000/api/products/all";
+        : "http://localhost:5000/api/products";
 
       console.log("Fetching from URL:", url);
 
