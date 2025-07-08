@@ -157,6 +157,26 @@ exports.getAllProducts = async (req, res) => {
   }
 };
 
+// @desc Get new arrivals
+exports.getNewArrivals = async (req, res) => {
+  try {
+    const products = await Product.find({})
+      .sort({ createdAt: -1 })
+      .limit(8);
+    
+    res.json({ 
+      success: true, 
+      data: products 
+    });
+  } catch (err) {
+    console.error('Error fetching new arrivals:', err);
+    res.status(500).json({ 
+      success: false,
+      error: 'Internal server error' 
+    });
+  }
+};
+
 // @desc Update a product
 exports.updateProduct = async (req, res) => {
   try {
