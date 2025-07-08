@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../../Components/Header/Header';
 import Footer from '../../Components/Footer/Footer';
 import Sidebar from '../../Components/Sidebar/Sidebar'; 
 import './PersonalInformation.css';
+import { useParams } from 'react-router-dom';
 
 const PersonalInformation = () => {
   const [formData, setFormData] = useState({
+    username: '',
     firstName: '',
     lastName: '',
     country: '',
@@ -24,13 +26,62 @@ const PersonalInformation = () => {
   const [errors, setErrors] = useState({});
   const [isEditing, setIsEditing] = useState(true); // true = editable
 
+  const { id: routeUserId } = useParams();
+
+  useEffect(() => {
+    const userId = routeUserId || localStorage.getItem('userId');
+    if (!userId || !/^[0-9a-fA-F]{24}$/.test(userId)) {
+      alert('Invalid or missing userId. Please log in again.');
+      return;
+    }
+    fetch(`http://localhost:5000/api/personal-info/userid/${userId}`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data) {
+          setFormData({
+            username: data.username || '',
+            firstName: data.firstName || '',
+            lastName: data.lastName || '',
+            country: data.country || '',
+            company: data.company || '',
+            streetAddress: data.streetAddress || '',
+            apartment: data.apartment || '',
+            city: data.city || '',
+            state: data.state || '',
+            phone: data.phone || '',
+            postalCode: data.postalCode || '',
+            deliveryInstructions: data.deliveryInstructions || '',
+            defaultShipping: data.defaultShipping || false,
+            defaultBilling: data.defaultBilling || false,
+          });
+          setIsEditing(false);
+        } else {
+          alert('No personal info found for this user. Please fill out the form.');
+        }
+      })
+      .catch(err => {
+        alert('Failed to fetch personal info.');
+        console.error(err);
+      });
+  }, [routeUserId]);
+
   const handleInputChange = (e) => {
     if (!isEditing) return; // block input if not editing
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
+    if (name === 'phone') {
+      // Only allow digits
+      const digits = value.replace(/\D/g, '');
+      setFormData(prev => ({
+        ...prev,
+        [name]: digits,
+      }));
+      setErrors(prev => ({ ...prev, phone: '' }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: type === 'checkbox' ? checked : value,
+      }));
+    }
   };
 
   const validate = () => {
@@ -42,6 +93,7 @@ const PersonalInformation = () => {
     if (!formData.city.trim()) newErrors.city = 'City is required';
     if (!formData.state.trim()) newErrors.state = 'State is required';
     if (!formData.phone.trim()) newErrors.phone = 'Phone is required';
+    else if (formData.phone.length !== 10) newErrors.phone = 'Phone number must be exactly 10 digits';
     if (!formData.postalCode.trim()) newErrors.postalCode = 'Postal Code is required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -52,21 +104,52 @@ const PersonalInformation = () => {
       alert('Please fill in all required fields.');
       return;
     }
+    const userId = routeUserId || localStorage.getItem('userId');
+    if (!userId || !/^[0-9a-fA-F]{24}$/.test(userId)) {
+      alert('Invalid or missing userId. Please log in again.');
+      return;
+    }
     try {
+      const dataToSend = { ...formData, userId };
       const response = await fetch('http://localhost:5000/api/personal-info', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSend),
       });
-
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
+      if (!response.ok) {
+        const error = await response.json();
+        alert('Failed to save form: ' + (error.error || response.statusText));
+        return;
+      }
       const resData = await response.json();
       alert(resData.message || 'Form saved successfully!');
-      setIsEditing(false); // switch to readonly after save
+      setIsEditing(false);
+      // Refetch to update UI
+      fetch(`http://localhost:5000/api/personal-info/userid/${userId}`)
+        .then(res => res.ok ? res.json() : null)
+        .then(data => {
+          if (data) {
+            setFormData({
+              username: data.username || '',
+              firstName: data.firstName || '',
+              lastName: data.lastName || '',
+              country: data.country || '',
+              company: data.company || '',
+              streetAddress: data.streetAddress || '',
+              apartment: data.apartment || '',
+              city: data.city || '',
+              state: data.state || '',
+              phone: data.phone || '',
+              postalCode: data.postalCode || '',
+              deliveryInstructions: data.deliveryInstructions || '',
+              defaultShipping: data.defaultShipping || false,
+              defaultBilling: data.defaultBilling || false,
+            });
+          }
+        });
     } catch (error) {
-      console.error('Error saving form:', error);
-      alert('Failed to save form. Please try again later.');
+      alert('Failed to save form (network error).');
+      console.error(error);
     }
   };
 
@@ -77,6 +160,7 @@ const PersonalInformation = () => {
   const handleClear = () => {
     // Clear form and errors regardless of editing state
     setFormData({
+      username: '',
       firstName: '',
       lastName: '',
       country: '',
@@ -113,6 +197,10 @@ const PersonalInformation = () => {
               <div className="form-section">
                 <div className="form">
                   {/* Form Rows (same as before) */}
+                  <div className="form-row">
+                    {/* Remove the username field from the form JSX */}
+                  </div>
+
                   <div className="form-row">
                     <div className="form-group">
                       <label className="label">
@@ -239,12 +327,11 @@ const PersonalInformation = () => {
                         Phone* {errors.phone && <span className="error">{errors.phone}</span>}
                       </label>
                       <input
-                        type="tel"
+                        type="text"
                         name="phone"
-                        placeholder="Phone"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        className={`input ${errors.phone ? 'input-error' : ''}`}
+                        maxLength={10}
                         {...inputProps}
                       />
                     </div>
