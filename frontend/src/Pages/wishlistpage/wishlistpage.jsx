@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import './wishlistpage.css';
 
 // ✅ Header & Footer imports
 import Header from '../../Components/Header/Header';
 import Footer from '../../Components/Footer/Footer';
+
 import Sidebar from '../../Components/Sidebar/Sidebar';
 
 import {
@@ -18,66 +20,104 @@ import winterJersey from '../../images/winter-jersey.png';
 import overCoat from '../../images/over-coat.png';
 import summerDress from '../../images/summer-dress.png';
 import fullKit from '../../images/full-kit.png';
-import wishlist1 from '../../images/wishlist1.png';
-import wishlist2 from '../../images/wishlist2.png';
-import wishlist3 from '../../images/wishlist3.png';
-import wishlist4 from '../../images/wishlist4.png';
-
-const recentlyViewed = [
-  { name: 'Black Pant', price: 'Rs 2500.00', image: blackPant },
-  { name: 'Winter Jersey', price: 'Rs 3500.00', image: winterJersey },
-  { name: 'Over Coat', price: 'Rs 8000.00', image: overCoat },
-  { name: 'Summer dress', price: 'Rs 4500.00', image: summerDress },
-  { name: 'Full kit', price: 'Rs 9000.00', image: fullKit },
-];
-
-const initialWishlist = [
-  {
-    image: wishlist1,
-    title: 'Classic Top',
-    size: 'small',
-    color: 'Blue',
-    price: 'Rs.2500.00',
-  },
-  {
-    image: wishlist2,
-    title: 'Classic Top',
-    size: 'small',
-    color: 'Blue',
-    price: 'Rs.3500.00',
-  },
-  {
-    image: wishlist3,
-    title: 'Classic Top',
-    size: 'small',
-    color: 'Blue',
-    price: 'Rs.9000.00',
-  },
-  {
-    image: wishlist4,
-    title: 'Classic Top',
-    size: 'small',
-    color: 'Blue',
-    price: 'Rs.4500.00',
-  },
-];
 
 const Wishlist = () => {
-  const [wishlist, setWishlist] = useState(initialWishlist);
+  const [wishlist, setWishlist] = useState([]);
+  const [recentlyViewed, setRecentlyViewed] = useState([]);
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    const stored = JSON.parse(localStorage.getItem('wishlist') || '[]');
+    setWishlist(stored);
+    // Listen for localStorage changes (e.g., from other tabs or pages)
+    const handleStorage = (event) => {
+      if (event.key === 'wishlist') {
+        const updated = JSON.parse(event.newValue || '[]');
+        setWishlist(updated);
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    // Listen for custom wishlist change events in the same tab
+    const handleCustomWishlistChange = () => {
+      const updated = JSON.parse(localStorage.getItem('wishlist') || '[]');
+      setWishlist(updated);
+    };
+    window.addEventListener('wishlistChanged', handleCustomWishlistChange);
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('wishlistChanged', handleCustomWishlistChange);
+    };
+  }, []);
+
+  // Fetch recently viewed products from backend
+  useEffect(() => {
+    const fetchRecentlyViewed = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/recentlyview');
+        if (!response.ok) throw new Error('Failed to fetch recently viewed');
+        const data = await response.json();
+        setRecentlyViewed(data);
+      } catch (err) {
+        setRecentlyViewed([]);
+      }
+    };
+    fetchRecentlyViewed();
+  }, []);
+
+  // Redirect to /emptywishlist if wishlist is empty
+ 
   const handleAddToCart = (index) => {
-    console.log('Add to cart:', wishlist[index]);
+    const item = wishlist[index];
+    navigate('/cart', {
+      state: {
+        product: {
+          ...item,
+          // Add any additional fields needed for the cart page
+          quantity: 1,
+        },
+      },
+    });
   };
 
   const handleRemove = (index) => {
     const updated = [...wishlist];
     updated.splice(index, 1);
+    localStorage.setItem('wishlist', JSON.stringify(updated));
     setWishlist(updated);
+  };
+
+  const handleAddTestProduct = () => {
+    const testProduct = {
+      name: "Test Product",
+      price: 1999,
+      image: "https://via.placeholder.com/150",
+      size: "M",
+      color: "Red"
+    };
+    const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+    wishlist.push(testProduct);
+    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+    setWishlist(wishlist);
+  };
+
+  const handleAddToWishlist = (product) => {
+    // Get current wishlist from localStorage
+    const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+    // Check if product is already in wishlist
+    const exists = wishlist.some(item => item._id === product._id || item.name === product.name);
+    if (!exists) {
+      wishlist.push(product);
+      localStorage.setItem('wishlist', JSON.stringify(wishlist));
+      setWishlist(wishlist);
+      // Optionally, show a message or toast here
+    }
   };
 
   return (
     <div>
       <Header /> {/* ✅ Header added */}
+
+      <button onClick={handleAddTestProduct} style={{margin: '20px', padding: '10px 20px'}}>Add Test Product to Wishlist</button>
 
       <div className="wishlist-container page-padding">
         <div className="main-layout">
@@ -91,7 +131,7 @@ const Wishlist = () => {
                 </div>
                 <h3>Your wishlist is empty.</h3>
                 <p>
-                  You don’t have any products in the wishlist yet. You will
+                  You don't have any products in the wishlist yet. You will
                   find a lot of interesting products on our Shop page.
                 </p>
                 <button>Continue Shopping</button>
@@ -103,11 +143,11 @@ const Wishlist = () => {
                   <div className="wishlist-item" key={index}>
                     <img
                       src={item.image}
-                      alt={item.title}
+                      alt={item.name}
                       className="wishlist-image"
                     />
                     <div className="wishlist-details">
-                      <div className="wishlist-title">{item.title}</div>
+                      <div className="wishlist-title">{item.name}</div>
                       <div className="wishlist-text">
                         <span>
                           <strong>Size:</strong> {item.size}
@@ -117,7 +157,7 @@ const Wishlist = () => {
                         </span>
                       </div>
                     </div>
-                    <div className="wishlist-price">{item.price}</div>
+                    <div className="wishlist-price">Rs.{item.price?.toLocaleString?.() ?? item.price}</div>
                     <button
                       className="wishlist-add-btn"
                       onClick={() => handleAddToCart(index)}
@@ -140,22 +180,30 @@ const Wishlist = () => {
         <div className="recently-viewed">
           <h3>Recently Viewed</h3>
           <div className="product-list">
-            {recentlyViewed.map((product, index) => (
-              <div className="product-card" key={index}>
-                <img src={product.image} alt={product.name} />
-                <FaRegHeart className="card-heart-icon" />
-                <h4>{product.name}</h4>
-                <p>{product.price}</p>
-                <div className="rating">
-                  <FaStarSolid className="star-icon" />
-                  <FaStarSolid className="star-icon" />
-                  <FaStarSolid className="star-icon" />
-                  <FaStarSolid className="star-icon" />
-                  <FaStarHalfStroke className="star-icon" />
-                  <span>(121)</span>
+            {recentlyViewed.length === 0 ? (
+              <p>No recently viewed products.</p>
+            ) : (
+              recentlyViewed.map((product, index) => (
+                <div className="product-card" key={product._id || index}>
+                  <img src={product.image} alt={product.title || product.name} />
+                  <FaRegHeart
+                    className="card-heart-icon"
+                    onClick={() => handleAddToWishlist(product)}
+                    style={{ cursor: 'pointer' }}
+                  />
+                  <h4>{product.title || product.name}</h4>
+                  <p>Rs {product.price}</p>
+                  <div className="rating">
+                    <FaStarSolid className="star-icon" />
+                    <FaStarSolid className="star-icon" />
+                    <FaStarSolid className="star-icon" />
+                    <FaStarSolid className="star-icon" />
+                    <FaStarHalfStroke className="star-icon" />
+                    <span>(121)</span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </div>
