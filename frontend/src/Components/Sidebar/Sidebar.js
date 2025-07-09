@@ -6,6 +6,7 @@ import {
   FiHeart,
   FiBell,
   FiLogOut,
+  FiX,
 } from "react-icons/fi";
 import "./Sidebar.css";
 
@@ -20,30 +21,26 @@ const links = [
 export default function Sidebar({ onMyAccountClick }) {
   const navigate = useNavigate();
   const location = useLocation();
+
   const [showConfirm, setShowConfirm] = useState(false);
   const [username, setUsername] = useState("");
-  const [isSidebarVisible, setSidebarVisible] = useState(true);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
     const storedUsername = localStorage.getItem("username");
-    if (storedUsername) {
-      setUsername(storedUsername);
-    }
+    if (storedUsername) setUsername(storedUsername);
   }, []);
 
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
-      if (window.innerWidth < 1220) {
-        setSidebarVisible(false);
-      } else {
-        setSidebarVisible(true);
+      if (window.innerWidth >= 1127) {
+        setMobileSidebarOpen(false);
       }
     };
 
     window.addEventListener("resize", handleResize);
-    handleResize();
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
@@ -59,70 +56,86 @@ export default function Sidebar({ onMyAccountClick }) {
       setShowConfirm(true);
     } else {
       navigate(path);
+      if (windowWidth < 1127) setMobileSidebarOpen(false);
     }
   };
 
-  const activeLink = links.find(link => location.pathname === link.path);
+  const activeLink = links.find((link) => location.pathname === link.path);
   const activeLabel = activeLink?.label || "My Orders";
+
+  const SidebarContent = () => (
+    <>
+      <div className="sidebar-header">
+        <div className="breadcrumb-wrapper">
+          <Link to="/home" className="breadcrumb-link">Home</Link>
+          <span className="breadcrumb-divider">&gt;</span>
+          <span className="breadcrumb-link clickable" onClick={onMyAccountClick}>My Account</span>
+          <span className="breadcrumb-divider">&gt;</span>
+          <span className="breadcrumb-link clickable" onClick={() => navigate(0)}>
+            {activeLabel}
+          </span>
+        </div>
+
+        <h3>Hello {username || "User"},</h3>
+        <p className="subtitle">Welcome to your account</p>
+      </div>
+
+      <div className="nav-box">
+        <ul className="nav-links">
+          {links.map(({ label, icon, path }) => (
+            <li key={label} className={location.pathname === path ? "active" : ""}>
+              <button className="sidebar-btn" onClick={() => handleClick(label, path)}>
+                {icon}
+                <span>{label}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {showConfirm && (
+        <div className="popup-overlay">
+          <div className="popup-box">
+            <p className="popup-message">Are you sure you want to sign out?</p>
+            <div className="popup-buttons">
+              <button className="btn-warning" onClick={signOut}>Yes</button>
+              <button className="btn-cancel" onClick={() => setShowConfirm(false)}>No</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
 
   return (
     <>
-      {windowWidth < 1220 && (
+      {/* Desktop Sidebar */}
+      {windowWidth >= 1127 && <aside className="sidebar">{SidebarContent()}</aside>}
+
+      {/* Mobile Toggle Button */}
+      {windowWidth < 1127 && (
         <div
-          className={`sidebar-toggle ${isSidebarVisible ? "open" : ""}`}
-          onClick={() => setSidebarVisible(prev => !prev)}
-          title={isSidebarVisible ? "Close Sidebar" : "Open Sidebar"}
-        ></div>
+          className="sidebar-toggle"
+          onClick={() => setMobileSidebarOpen((prev) => !prev)}
+          title={isMobileSidebarOpen ? "Close Sidebar" : "Open Sidebar"}
+        />
       )}
 
-      {isSidebarVisible && (
-        <aside className="sidebar">
-          <div className="sidebar-header">
-            <div className="breadcrumb-wrapper">
-              <Link to="/home" className="breadcrumb-link">Home</Link>
-              <span className="breadcrumb-divider">&gt;</span>
-              <span className="breadcrumb-link clickable" onClick={onMyAccountClick}>
-                My Account
-              </span>
-              <span className="breadcrumb-divider">&gt;</span>
-              <span className="breadcrumb-link clickable" onClick={() => navigate(0)}>
-                {activeLabel}
-              </span>
-            </div>
-
-            <h3>Hello {username || "User"},</h3>
-            <p className="subtitle">Welcome to your account</p>
-          </div>
-
-          <div className="nav-box">
-            <ul className="nav-links">
-              {links.map(({ label, icon, path }) => (
-                <li
-                  key={label}
-                  className={location.pathname === path ? "active" : ""}
-                >
-                  <button className="sidebar-btn" onClick={() => handleClick(label, path)}>
-                    {icon}
-                    <span>{label}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {showConfirm && (
-            <div className="popup-overlay">
-              <div className="popup-box">
-                <p className="popup-message">Are you sure you want to sign out?</p>
-                <div className="popup-buttons">
-                  <button className="btn-warning" onClick={signOut}>Yes</button>
-                  <button className="btn-cancel" onClick={() => setShowConfirm(false)}>No</button>
-                </div>
-              </div>
-            </div>
-          )}
-        </aside>
+      {/* Overlay */}
+      {isMobileSidebarOpen && (
+        <div
+          className="mobile-sidebar-overlay"
+          onClick={() => setMobileSidebarOpen(false)}
+        />
       )}
+
+      {/* Mobile Sidebar */}
+      <div className={`mobile-sidebar ${isMobileSidebarOpen ? "open" : ""}`}>
+        <button className="close-btn" onClick={() => setMobileSidebarOpen(false)}>
+          <FiX size={24} />
+        </button>
+        {SidebarContent()}
+      </div>
     </>
   );
 }
