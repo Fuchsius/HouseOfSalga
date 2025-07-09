@@ -6,7 +6,7 @@ require("dotenv").config();
 
 const authRoutes = require("./routes/auth");
 const checkoutRoutes = require("./routes/checkout");
-const wishlistRoutes = require("./routes/wishlist");
+
 const wishlistRoutes = require("./routes/wishlistUser");
 
 //Shop and Cart Routes
@@ -50,13 +50,12 @@ app.use("/api/discount", discountRoutes);
 app.use("/api/personal-info", personalInfoRoutes);
 app.use('/api/trending', trendingRoutes);
 app.use("/api/wishlist", wishlistRoutes);
-app.use('/api/recently-viewed', recentlyViewedRoutes);
-app.use('/api/recentlyview', recentlyViewRoutes);
+app.use('/uploads', express.static('uploads'));
+app.use("/api/testimonials", testimonialRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/order-reviews', orderReviewRoutes);
-app.use('/uploads', express.static('uploads'));
-app.use("/api/testimonials", testimonialRoutes);
+
 
 app.use('/public/images', express.static(path.join(__dirname, 'images')));
 
