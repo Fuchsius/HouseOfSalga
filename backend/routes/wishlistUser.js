@@ -4,15 +4,14 @@ const { getWishlist, addToWishlist, removeFromWishlist } = require('../controlle
 
 // const { authenticateJWT } = require('../controllers/auth.controller');
 
-router.get('/', getWishlist);
-router.post('/:productId', addToWishlist);
-router.delete('/:productId', removeFromWishlist);
 
 const { authenticateJWT } = require('../controllers/auth.controller');
 const { getWishlistByUserId } = require('../controllers/wishlist.controller');
 
 
-
+router.get('/', getWishlist);
+router.post('/:productId', addToWishlist);
+router.delete('/:productId', removeFromWishlist);
 router.get('/user/:userId', getWishlistByUserId);
 
 
