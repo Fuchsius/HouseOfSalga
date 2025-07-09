@@ -43,7 +43,7 @@ mongoose
 app.use("/api/auth", authRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/checkout", checkoutRoutes);
-app.use("/api/wishlist", wishlistRoutes);
+
 //shop and cart Routes
 app.use("/api/cart", cartRoutes);
 app.use("/api/discount", discountRoutes);
