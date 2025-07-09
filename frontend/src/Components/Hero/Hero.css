@@ -103,7 +103,7 @@
     border: 1px solid #754F23;
     position: relative;
     background-color: white;
-     z-index: 0;
+     z-index: 1;
 }
 
 .hero-arch {
@@ -121,6 +121,40 @@
     z-index: 0;
     background: transparent;
     pointer-events: none;
+}
+@keyframes pulseZoom {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes rotateFadeIn {
+  0% {
+    opacity: 0;
+    transform: rotate(-15deg);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(-3.73deg);
+  }
+}
+
+.hero-image {
+  animation: pulseZoom 1.5s ease forwards;
+}
+
+.hero-arch {
+  animation: rotateFadeIn 1.5s ease forwards;
+  animation-delay: 0.5s;
 }
 
 /* Extra small devices (under 336px) */
