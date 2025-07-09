@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Footer from '../../Components/Footer/Footer';
 import Header from '../../Components/Header/Header';
 import axios from 'axios';
 
 import eyeIcon from '../../Assets/eye.png';
-import gmailIcon from '../../Assets/gmail.png';
 import googleIcon from '../../Assets/google.png';
 import signupImage from '../../Assets/signupImage.png';
 import './SignIn.css';
@@ -18,13 +17,30 @@ function SignIn() {
   const [messageType, setMessageType] = useState('');
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Load Google Identity Services SDK
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+
+    script.onload = () => {
+      if (window.google) {
+        window.google.accounts.id.initialize({
+          client_id: '27042630769-ho5qnivtl7dpvhi3sponoakicvfnhp70.apps.googleusercontent.com',
+          callback: handleGoogleResponse,
+        });
+      }
+    };
+  }, []);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const validate = () => {
     const tempErrors = {};
-
     if (!formData.email) {
       tempErrors.email = 'Email is required';
     } else {
@@ -68,6 +84,44 @@ function SignIn() {
     } catch (err) {
       setMessageType('error');
       setMessage(err.response?.data?.message || 'Login failed');
+      setTimeout(() => setMessage(null), 1000);
+    }
+  };
+
+  const handleGoogleSignIn = () => {
+    if (window.google) {
+      window.google.accounts.id.prompt((notification) => {
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+          setMessageType('error');
+          setMessage('Google Sign-In was cancelled or failed.');
+          setTimeout(() => setMessage(null), 1500);
+        }
+      });
+    } else {
+      setMessageType('error');
+      setMessage('Google Sign-In not available. Try again later.');
+      setTimeout(() => setMessage(null), 1000);
+    }
+  };
+
+  const handleGoogleResponse = async (response) => {
+    try {
+      const res = await axios.post('http://localhost:5000/api/auth/google', {
+        token: response.credential
+      });
+
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('username', res.data.user.username);
+
+      setMessageType('success');
+      setMessage('Signed in with Google! Redirecting...');
+      setTimeout(() => {
+        setMessage(null);
+        navigate('/home');
+      }, 1000);
+    } catch (err) {
+      setMessageType('error');
+      setMessage(err.response?.data?.message || 'Google login failed');
       setTimeout(() => setMessage(null), 1000);
     }
   };
@@ -123,8 +177,12 @@ function SignIn() {
             <p className="continue-text">or continue with</p>
 
             <div className="social-icons">
-              <img src={gmailIcon} alt="Gmail" />
-              <img src={googleIcon} alt="Google" />
+              <img
+                src={googleIcon}
+                alt="Google"
+                style={{ cursor: 'pointer' }}
+                onClick={handleGoogleSignIn}
+              />
             </div>
 
             <p className="signup-text">

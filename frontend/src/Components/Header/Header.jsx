@@ -17,6 +17,7 @@ function Header() {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [showActionPrompt, setShowActionPrompt] = useState(false);
   const [showCartPopup, setShowCartPopup] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false); // NEW
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -67,13 +68,22 @@ function Header() {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogoutRequest = () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const confirmLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
     setIsLoggedIn(false);
     setUsername('');
     setShowUserMenu(false);
+    setShowLogoutConfirm(false);
     navigate('/signup');
+  };
+
+  const cancelLogout = () => {
+    setShowLogoutConfirm(false);
   };
 
   const handleCartClick = () => {
@@ -154,7 +164,7 @@ function Header() {
           {isLoggedIn ? (
             <span
               className="nav-item hover-link"
-              onClick={handleLogout}
+              onClick={handleLogoutRequest}
               style={{ cursor: 'pointer' }}
             >
               Sign Out
@@ -236,7 +246,7 @@ function Header() {
                   {isLoggedIn && (
                     <div
                       className="user-menu-item"
-                      onClick={handleLogout}
+                      onClick={handleLogoutRequest}
                     >
                       ↩ Sign Out
                     </div>
@@ -295,7 +305,7 @@ function Header() {
               Login
             </Link>
           ) : (
-            <div className="mobile-menu-item" onClick={handleLogout}>
+            <div className="mobile-menu-item" onClick={handleLogoutRequest}>
               Sign Out
             </div>
           )}
@@ -389,6 +399,25 @@ function Header() {
           </div>
         </div>
       )}
+
+      {showLogoutConfirm && (
+  <div
+    className="logout-confirm-overlay"
+    onClick={cancelLogout} // dismiss when clicking outside
+  >
+    <div
+      className="logout-confirm-box"
+      onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside
+    >
+      <p>Are you sure you want to sign out?</p>
+      <div className="logout-confirm-buttons">
+        <button onClick={confirmLogout}>Yes</button>
+        <button onClick={cancelLogout}>No</button>
+      </div>
+    </div>
+  </div>
+)}
+
     </header>
   );
 }

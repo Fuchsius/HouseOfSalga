@@ -23,14 +23,37 @@
 }
 
 .hero-title {
-    font-size: 36px;
-    font-weight: 400;
-    color: #000;
-    line-height: 1.2;
-    margin-bottom: 12px;
-    max-width: 100%;
-    font-family: 'Wilkysta', sans-serif;
+  font-size: 36px;
+  font-weight: 400;
+  color: #000;
+  line-height: 1.2;
+  margin-bottom: 12px;
+  max-width: 100%;
+  font-family: 'Wilkysta', sans-serif;
+  overflow: hidden;
+  white-space: nowrap;
+  width: fit-content;
+
+  /* Animation */
+  animation: typing 3s steps(30, end) forwards, blink 0.75s step-end infinite;
+  
 }
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes blink {
+  50% {
+    border-color: transparent;
+  }
+}
+
 
 .hero-description {
     font-size: 12px;
@@ -38,6 +61,16 @@
     color: #000;
     margin: 0 auto 12px;
     max-width: 90%;
+
+    opacity: 0;
+    animation: fadeIn 1s ease forwards;
+    animation-delay: 3.1s; /* after 3s typing + small gap */
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
 }
 
 .hero-button {
@@ -56,6 +89,10 @@
     min-width: 140px;
     justify-content: center;
     font-family: 'Wilkysta', sans-serif;
+
+    opacity: 0;
+    animation: fadeIn 1s ease forwards;
+    animation-delay: 4.2s; 
 }
 
 .hero-button:hover {
@@ -82,7 +119,7 @@
     border: 1px solid #754F23;
     position: relative;
     background-color: white;
-     z-index: 0;
+     z-index: 1;
 }
 
 .hero-arch {
@@ -100,6 +137,40 @@
     z-index: 0;
     background: transparent;
     pointer-events: none;
+}
+@keyframes pulseZoom {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes rotateFadeIn {
+  0% {
+    opacity: 0;
+    transform: rotate(-15deg);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(-3.73deg);
+  }
+}
+
+.hero-image {
+  animation: pulseZoom 1.5s ease forwards;
+}
+
+.hero-arch {
+  animation: rotateFadeIn 1.5s ease forwards;
+  animation-delay: 0.5s;
 }
 
 /* Extra small devices (under 336px) */
