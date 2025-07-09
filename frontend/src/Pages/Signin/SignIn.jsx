@@ -56,7 +56,8 @@ function SignIn() {
     try {
       const res = await axios.post('http://localhost:5000/api/auth/signin', formData);
       localStorage.setItem('token', res.data.token);
-      localStorage.setItem('username', res.data.user.username); // ✅ fixed this line
+      localStorage.setItem('username', res.data.user.username);
+      localStorage.setItem('userId', res.data.user._id);
 
       setMessageType('success');
       setMessage('Signed in successfully! Redirecting...');
