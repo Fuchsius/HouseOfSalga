@@ -321,17 +321,16 @@ const Product = () => {
                   rating={product.averageRating || product.rating} 
                   size="large" 
                 />
-                <button>
+                <button
                   className={styles.favoriteButtonTop}
 
-                  onClick={() => setIsFavorite(!isFavorite)}
-
-                  onClick={handleAddToWishlist}
-
-                  onClick={handleAddToWishlist}
-
-                  onClick={handleAddToWishlist}
-
+                 
+onClick={() => {
+                    handleAddToWishlist();
+                    setIsFavorite(!isFavorite);
+                  }}
+                >
+                  
                   {isFavorite ? <FaHeart className={styles.filled} /> : <FaRegHeart />}
                 </button>
               </div>
