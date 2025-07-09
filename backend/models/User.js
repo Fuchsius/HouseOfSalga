@@ -4,10 +4,9 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   username: String,
   mobile: String,
-  password: String,
-    password: String,
+  password: String,   // for normal signup
+  googleId: String    // for Google OAuth users
   wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }], // Added wishlist field
 });
-  
 
 module.exports = mongoose.model('User', userSchema);
