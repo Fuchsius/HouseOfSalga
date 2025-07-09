@@ -78,6 +78,7 @@ function SignUp() {
       if (res.ok) {
         if (data.user && data.user.username) {
           localStorage.setItem('username', data.user.username);
+          localStorage.setItem('userEmail', data.user.email);
         }
 
         setMessageType('success');
