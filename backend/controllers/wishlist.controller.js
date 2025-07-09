@@ -40,3 +40,16 @@ exports.removeFromWishlist = async (req, res) => {
     res.status(500).json({ error: 'Failed to remove from wishlist' });
   }
 }; 
+
+// Get wishlist by userId (for /user/:userId route)
+exports.getWishlistByUserId = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId).populate('wishlist');
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    // If wishlist field does not exist, return empty array
+    if (!user.wishlist) return res.json([]);
+    res.json(user.wishlist);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch wishlist by userId' });
+  }
+}; 
