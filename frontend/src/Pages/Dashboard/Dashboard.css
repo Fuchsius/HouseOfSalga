@@ -112,22 +112,33 @@
 /* Medium Mobiles and below: keep single line, no stacking */
 @media (max-width: 768px) {
   .orders-headers {
-    flex-wrap: nowrap; /* Prevent wrapping */
+    flex-direction: column;      /* Stack items vertically */
+    align-items: center;         /* Center horizontally */
+    gap: 12px;                   /* Space between stacked items */
+    text-align: center;          /* Optional: center text in h2 */
   }
 
   .search-filter {
-    flex-direction: row; /* Keep search and filter side by side */
+    flex-direction: column;      /* Stack search and filter vertically */
+    align-items: center;         /* Center horizontally */
+    width: 100%;
+    gap: 12px;
   }
 
-  .search-wrapper,
+  .search-wrapper {
+    width: 90%;                 /* Expand input width */
+    max-width: 400px;
+  }
+
   .filter-btn {
-    width: auto; /* Allow natural width */
+    width: 150px;
   }
 
   .main-content {
     padding: 16px;
   }
 }
+
 
 /* Small Mobiles (≤480px): allow horizontal scroll if needed */
 @media (max-width: 480px) {

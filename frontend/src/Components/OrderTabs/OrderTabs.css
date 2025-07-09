@@ -21,8 +21,9 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 100px; /* increased gap */
-  border-bottom: 3px solid #000;
-  padding-bottom: 6px;
+  border-bottom: 5px solid #000;
+  
+  ;
   width: 100%;
   max-width: 100%;
   position: relative;
