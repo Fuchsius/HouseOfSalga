@@ -12,9 +12,7 @@ const { authenticateJWT } = require('../controllers/auth.controller');
 const { getWishlistByUserId } = require('../controllers/wishlist.controller');
 
 
-router.get('/', authenticateJWT, getWishlist);
-router.post('/:productId', addToWishlist);
-router.delete('/:productId', removeFromWishlist);
+
 router.get('/user/:userId', getWishlistByUserId);
 
 
