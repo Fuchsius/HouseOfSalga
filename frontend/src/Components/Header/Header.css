@@ -744,3 +744,78 @@ a.logo {
 }
 
 
+
+/*hodai*/
+.logout-confirm-overlay {
+  position: absolute;
+  z-index: 9999;
+  top: 60px; /* adjust if your header is taller/shorter */
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
+  width: 300px;
+  text-align: center;
+  animation: fadeIn 0.2s ease-in-out;
+  padding: 20px 25px;
+  
+}
+
+.logout-confirm-box {
+  padding: 0;
+}
+
+.logout-confirm-box p {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  margin: 0;
+}
+
+.logout-confirm-buttons {
+  margin-top: 16px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.logout-confirm-buttons button {
+  padding: 8px 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.logout-confirm-buttons button:first-child {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.logout-confirm-buttons button:first-child:hover {
+  background-color: #c0392b;
+}
+
+.logout-confirm-buttons button:last-child {
+  background-color: #bdc3c7;
+  color: #2c3e50;
+}
+
+.logout-confirm-buttons button:last-child:hover {
+  background-color: #95a5a6;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
