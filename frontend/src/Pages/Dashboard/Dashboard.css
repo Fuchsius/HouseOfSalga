@@ -9,15 +9,7 @@
 
 .dashboard {
   display: flex;
-  flex-direction: row;
-  background-color: #F0EADC;
-  font-family: 'Segoe UI', sans-serif;
-  color: #3C4242;
-  margin-top: 0;
-  padding: 0 40px;
-  box-sizing: border-box;
-  min-height: 100vh;
-  gap: 40px;
+  background-color:#F0EADC ;
 }
 
 

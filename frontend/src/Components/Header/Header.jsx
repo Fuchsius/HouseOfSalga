@@ -225,12 +225,14 @@ function Header() {
                   <div className="user-menu-item" onClick={handleWishlistClick}>
                     🤍 My Wishlist
                   </div>
-                  <div
-                    className="user-menu-item"
-                    onClick={handleDropdownItemClick}
-                  >
-                    🔔 Notifications
-                  </div>
+                  <Link
+  to="/notifications"
+  className={`user-menu-item ${location.pathname === '/notifications' ? 'active' : ''}`}
+  onClick={handleDropdownItemClick}
+>
+  🔔 Notifications
+</Link>
+
                   {isLoggedIn && (
                     <div
                       className="user-menu-item"
