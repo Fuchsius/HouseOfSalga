@@ -18,7 +18,6 @@ function SignIn() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Load Google Identity Services SDK
     const script = document.createElement('script');
     script.src = 'https://accounts.google.com/gsi/client';
     script.async = true;
@@ -171,6 +170,17 @@ function SignIn() {
               />
             </div>
             {errors.password && <p className="error-msg">{errors.password}</p>}
+
+            {/* 🔷 Forgot Password link */}
+            <div style={{ textAlign: 'right', marginBottom: '10px' }}>
+              <span
+                className="forgot-password-link"
+                style={{ color: '#007BFF', cursor: 'pointer', fontSize: '0.9rem' }}
+                onClick={() => navigate('/forgot-password')}
+              >
+                Forgot Password?
+              </span>
+            </div>
 
             <button type="submit" className="submit-btn">Sign In</button>
 
