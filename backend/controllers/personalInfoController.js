@@ -50,3 +50,33 @@ exports.deletePersonalInfo = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+// Get personal info for the logged-in user (by token)
+exports.getPersonalInfoByToken = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const info = await PersonalInfo.findOne({ userId });
+    if (!info) return res.status(404).json({ message: 'No personal info found.' });
+    res.json(info);
+  } catch (err) {
+    console.error('PersonalInfo fetch error:', err); // log error
+    res.status(500).json({ message: 'Server error.' });
+  }
+};
+
+// Create or update personal info for the logged-in user (by token)
+exports.createOrUpdatePersonalInfoByToken = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const update = req.body;
+    const info = await PersonalInfo.findOneAndUpdate(
+      { userId },
+      { ...update, userId },
+      { new: true, upsert: true }
+    );
+    res.json({ message: 'Personal info saved successfully!', data: info });
+  } catch (err) {
+    console.error('PersonalInfo save error:', err); // log error
+    res.status(500).json({ message: 'Server error.' });
+  }
+};
