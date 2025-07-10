@@ -12,37 +12,66 @@ const ProductCard = ({ product, variant = 'small' }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [wishlistIds, setWishlistIds] = useState([]);
   const navigate = useNavigate();
-  const userId = localStorage.getItem('userId');
 
   // Fetch user's wishlist IDs on mount
   useEffect(() => {
-    if (!userId) return;
-    fetch(`${WISHLIST_URL}/user/${userId}`)
-      .then(res => res.ok ? res.json() : null)
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    fetch(`${WISHLIST_URL}/me`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+      .then(res => {
+        if (res.status === 401) {
+          alert('Session expired. Please log in again.');
+          window.location.href = '/signin';
+          return null;
+        }
+        return res.ok ? res.json() : null;
+      })
       .then(data => {
+        if (!data) return;
         const ids = data?.products?.map(p => p._id) || [];
         setWishlistIds(ids);
         setIsFavorite(ids.includes(product._id));
       });
-  }, [userId, product._id]);
+  }, [product._id]);
 
   const handleWishlistToggle = async (e) => {
     e.stopPropagation();
-    if (!userId) return alert('Please log in first.');
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Please log in first.');
+      window.location.href = '/signin';
+      return;
+    }
     const isInWishlist = wishlistIds.includes(product._id);
     const method = isInWishlist ? 'DELETE' : 'POST';
     try {
       const response = await fetch(`${WISHLIST_URL}/${product._id}`, {
         method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId }),
+        headers: { 'Authorization': `Bearer ${token}` }
       });
+      if (response.status === 401) {
+        alert('Session expired. Please log in again.');
+        window.location.href = '/signin';
+        return;
+      }
       if (!response.ok) {
         const error = await response.json();
         return alert(`Error: ${error.error || response.statusText}`);
       }
       // Refetch wishlist IDs
-      const updated = await fetch(`${WISHLIST_URL}/user/${userId}`).then(res => res.json());
+      const updated = await fetch(`${WISHLIST_URL}/me`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      }).then(res => {
+        if (res.status === 401) {
+          alert('Session expired. Please log in again.');
+          window.location.href = '/signin';
+          return null;
+        }
+        return res.json();
+      });
+      if (!updated) return;
       const updatedIds = updated?.products?.map(p => p._id) || [];
       setWishlistIds(updatedIds);
       setIsFavorite(updatedIds.includes(product._id));
