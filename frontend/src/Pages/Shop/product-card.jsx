@@ -1,9 +1,9 @@
 import "./product-card.css";
 import { Heart, Star } from "lucide-react";
+import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { useState } from "react";
 
-const ProductCard = ({ product }) => {
-  const [isWishlisted, setIsWishlisted] = useState(false);
+const ProductCard = ({ product, isWishlisted, onWishlistClick }) => {
   const [imageError, setImageError] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
 
@@ -30,10 +30,6 @@ const ProductCard = ({ product }) => {
         : 0,
     reviews: product?.reviews || 0,
     image: product?.image,
-  };
-
-  const handleWishlistToggle = () => {
-    setIsWishlisted(!isWishlisted);
   };
 
   const handleImageError = () => {
@@ -67,13 +63,14 @@ const ProductCard = ({ product }) => {
         </div>
 
         <button
-          onClick={handleWishlistToggle}
+          onClick={e => {
+            e.stopPropagation();
+            onWishlistClick && onWishlistClick(product);
+          }}
           className="wishlist-button"
           aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
         >
-          <Heart
-            className={`wishlist-icon ${isWishlisted ? "wishlisted" : ""}`}
-          />
+          {isWishlisted ? <FaHeart color="red" size={22} /> : <FaRegHeart color="#888" size={22} />}
         </button>
       </div>
 
