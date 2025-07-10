@@ -7,7 +7,7 @@ require("dotenv").config();
 const authRoutes = require("./routes/auth");
 const checkoutRoutes = require("./routes/checkout");
 
-const wishlistRoutes = require("./routes/wishlistUser");
+const wishlistRoutes = require("./routes/wishlist");
 
 //Shop and Cart Routes
 const cartRoutes = require("./routes/cart");
