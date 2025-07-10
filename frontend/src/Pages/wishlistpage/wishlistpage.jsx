@@ -9,7 +9,7 @@ import Sidebar from '../../Components/Sidebar/Sidebar';
 import ProductCard from '../../Components/ProductCard/ProductCard';
 
 // Icons
-import { FaRegHeart, FaStarHalfStroke, FaStar as FaStarSolid } from 'react-icons/fa6';
+import { FaRegHeart } from 'react-icons/fa6';
 
 // API endpoints (update base URL if needed)
 const BASE_URL = 'http://localhost:5000/api';
@@ -21,14 +21,15 @@ const Wishlist = () => {
   const [recentlyViewed, setRecentlyViewed] = useState([]);
   const navigate = useNavigate();
 
-  const userId = localStorage.getItem('userId');
-
   useEffect(() => {
-    if (!userId) return;
-    fetch(`${WISHLIST_URL}/user/${userId}`)
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    fetch(`${WISHLIST_URL}/me`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
       .then(res => res.ok ? res.json() : null)
       .then(data => setWishlist(data?.products?.filter(Boolean) || []));
-  }, [userId]);
+  }, []);
 
   useEffect(() => {
     // Fetch recently viewed from localStorage
@@ -44,22 +45,22 @@ const Wishlist = () => {
   };
 
   const handleRemove = async (index) => {
-    if (!userId) return alert('No userId found. Please log in again.');
+    const token = localStorage.getItem('token');
+    if (!token) return alert('No token found. Please log in again.');
     const productId = wishlist[index]._id;
     try {
       const response = await fetch(`${WISHLIST_URL}/${productId}`, {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId }),
+        headers: { 'Authorization': `Bearer ${token}` },
       });
-
       if (!response.ok) {
         const error = await response.json();
         return alert(`Failed to remove: ${error.error || response.statusText}`);
       }
-
       // Refresh wishlist
-      const res = await fetch(`${WISHLIST_URL}/user/${userId}`);
+      const res = await fetch(`${WISHLIST_URL}/me`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
       const data = await res.json();
       setWishlist(data?.products?.filter(Boolean) || []);
     } catch (err) {
@@ -69,28 +70,26 @@ const Wishlist = () => {
   };
 
   const handleAddToWishlist = async (product) => {
-    if (!userId) return alert('Please log in first.');
+    const token = localStorage.getItem('token');
+    if (!token) return alert('Please log in first.');
     if (!product?._id) return alert('Invalid product.');
-
     const wishlistIds = wishlist.map(item => String(item._id));
     if (wishlistIds.includes(String(product._id))) {
       return alert('Already in wishlist!');
     }
-
     try {
       const response = await fetch(`${WISHLIST_URL}/${product._id}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId }),
+        headers: { 'Authorization': `Bearer ${token}` },
       });
-
       if (!response.ok) {
         const error = await response.json();
         return alert(`Failed to add: ${error.error || response.statusText}`);
       }
-
       // Refresh wishlist
-      const res = await fetch(`${WISHLIST_URL}/user/${userId}`);
+      const res = await fetch(`${WISHLIST_URL}/me`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
       const data = await res.json();
       setWishlist(data?.products?.filter(Boolean) || []);
     } catch (err) {
@@ -123,7 +122,7 @@ const Wishlist = () => {
                 {wishlist.map((item, index) => (
                   <div className="wishlist-item" key={item._id || index}>
                     <img
-                      src={item?.image}
+                      src={item?.image || item?.images?.[0]}
                       alt={item?.name}
                       className="wishlist-image"
                     />
