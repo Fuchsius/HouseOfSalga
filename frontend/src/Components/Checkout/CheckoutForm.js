@@ -21,14 +21,16 @@ export default function CheckoutForm() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userId = localStorage.getItem('userId');
-    if (!userId) {
-      alert('No userId found. Please log in again.');
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('No token found. Please log in again.');
       return;
     }
-    fetch(`http://localhost:5000/api/personal-info/userid/${userId}`)
+    fetch('http://localhost:5000/api/personal-info/me', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
       .then(res => res.ok ? res.json() : null)
-      .then(async data => {
+      .then(data => {
         if (data) {
           setForm(form => ({
             ...form,
@@ -84,11 +86,9 @@ export default function CheckoutForm() {
     };
 
     // Also update personal info in the database
-    const userId = localStorage.getItem('userId');
-    if (userId) {
-      // Prepare the data to update
+    const token = localStorage.getItem('token');
+    if (token) {
       const updatedInfo = {
-        userId,
         firstName: form.firstName,
         lastName: form.lastName,
         country: form.country,
@@ -103,17 +103,11 @@ export default function CheckoutForm() {
         defaultShipping: false,
         defaultBilling: false
       };
-      // Fetch the personal info record to get its _id
-      const res = await fetch(`http://localhost:5000/api/personal-info/userid/${userId}`);
-      const data = await res.json();
-      if (data && data._id) {
-        // Update the record
-        await fetch(`http://localhost:5000/api/personal-info/${data._id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(updatedInfo)
-        });
-      }
+      await fetch('http://localhost:5000/api/personal-info/me', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify(updatedInfo)
+      });
     }
 
     try {
