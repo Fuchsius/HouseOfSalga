@@ -3,7 +3,6 @@ import Header from '../../Components/Header/Header';
 import Footer from '../../Components/Footer/Footer';
 import Sidebar from '../../Components/Sidebar/Sidebar'; 
 import './PersonalInformation.css';
-import { useParams } from 'react-router-dom';
 
 const PersonalInformation = () => {
   const [formData, setFormData] = useState({
@@ -24,17 +23,23 @@ const PersonalInformation = () => {
   });
 
   const [errors, setErrors] = useState({});
-  const [isEditing, setIsEditing] = useState(true); // true = editable
+  const [isEditing, setIsEditing] = useState(true);
+  const [successMessage, setSuccessMessage] = useState('');
 
-  const { id: routeUserId } = useParams();
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
-    const userId = routeUserId || localStorage.getItem('userId');
-    if (!userId || !/^[0-9a-fA-F]{24}$/.test(userId)) {
-      alert('Invalid or missing userId. Please log in again.');
+    if (!token) {
+      alert('Missing token. Please sign in again.');
       return;
     }
-    fetch(`http://localhost:5000/api/personal-info/userid/${userId}`)
+
+    fetch('http://localhost:5000/api/personal-info/me', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    })
       .then(res => res.ok ? res.json() : null)
       .then(data => {
         if (data) {
@@ -56,20 +61,21 @@ const PersonalInformation = () => {
           });
           setIsEditing(false);
         } else {
-          alert('No personal info found for this user. Please fill out the form.');
+          alert('No personal info found. Please complete your profile.');
         }
       })
       .catch(err => {
+        console.error('Error fetching personal info:', err);
         alert('Failed to fetch personal info.');
-        console.error(err);
       });
-  }, [routeUserId]);
+  }, [token]);
 
   const handleInputChange = (e) => {
-    if (!isEditing) return; // block input if not editing
+    if (!isEditing) return;
+
     const { name, value, type, checked } = e.target;
+
     if (name === 'phone') {
-      // Only allow digits
       const digits = value.replace(/\D/g, '');
       setFormData(prev => ({
         ...prev,
@@ -93,8 +99,9 @@ const PersonalInformation = () => {
     if (!formData.city.trim()) newErrors.city = 'City is required';
     if (!formData.state.trim()) newErrors.state = 'State is required';
     if (!formData.phone.trim()) newErrors.phone = 'Phone is required';
-    else if (formData.phone.length !== 10) newErrors.phone = 'Phone number must be exactly 10 digits';
+    else if (formData.phone.length < 10 || formData.phone.length > 12) newErrors.phone = 'Phone number must be 10-12 digits';
     if (!formData.postalCode.trim()) newErrors.postalCode = 'Postal Code is required';
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -104,61 +111,42 @@ const PersonalInformation = () => {
       alert('Please fill in all required fields.');
       return;
     }
-    const userId = routeUserId || localStorage.getItem('userId');
-    if (!userId || !/^[0-9a-fA-F]{24}$/.test(userId)) {
-      alert('Invalid or missing userId. Please log in again.');
+
+    if (!token) {
+      alert('Missing token. Please sign in again.');
       return;
     }
+
     try {
-      const dataToSend = { ...formData, userId };
-      const response = await fetch('http://localhost:5000/api/personal-info', {
+      const response = await fetch('http://localhost:5000/api/personal-info/me', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dataToSend),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
       });
+
+      const resData = await response.json();
+
       if (!response.ok) {
-        const error = await response.json();
-        alert('Failed to save form: ' + (error.error || response.statusText));
+        alert(resData.message || 'Failed to save data');
         return;
       }
-      const resData = await response.json();
-      alert(resData.message || 'Form saved successfully!');
+
+      setSuccessMessage(resData.message || 'Profile information saved successfully!');
+      setTimeout(() => setSuccessMessage(''), 2000);
       setIsEditing(false);
-      // Refetch to update UI
-      fetch(`http://localhost:5000/api/personal-info/userid/${userId}`)
-        .then(res => res.ok ? res.json() : null)
-        .then(data => {
-          if (data) {
-            setFormData({
-              username: data.username || '',
-              firstName: data.firstName || '',
-              lastName: data.lastName || '',
-              country: data.country || '',
-              company: data.company || '',
-              streetAddress: data.streetAddress || '',
-              apartment: data.apartment || '',
-              city: data.city || '',
-              state: data.state || '',
-              phone: data.phone || '',
-              postalCode: data.postalCode || '',
-              deliveryInstructions: data.deliveryInstructions || '',
-              defaultShipping: data.defaultShipping || false,
-              defaultBilling: data.defaultBilling || false,
-            });
-          }
-        });
+
     } catch (error) {
-      alert('Failed to save form (network error).');
-      console.error(error);
+      console.error('Error saving form:', error);
+      alert('Network error while saving form.');
     }
   };
 
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
+  const handleEdit = () => setIsEditing(true);
 
   const handleClear = () => {
-    // Clear form and errors regardless of editing state
     setFormData({
       username: '',
       firstName: '',
@@ -176,265 +164,240 @@ const PersonalInformation = () => {
       defaultBilling: false,
     });
     setErrors({});
-    setIsEditing(true); // Make editable after clearing
+    setIsEditing(true);
   };
 
-  // Inputs disabled/readOnly when not editing
   const inputProps = isEditing ? {} : { readOnly: true, disabled: true };
+
+  // Toast popup for success message
+  const Toast = ({ message }) => (
+    <div style={{
+      position: 'fixed',
+      left: '50%',
+      bottom: 40,
+      transform: 'translateX(-50%)',
+      background: '#222',
+      color: '#fff',
+      padding: '16px 32px',
+      borderRadius: 8,
+      fontWeight: 500,
+      fontSize: 16,
+      boxShadow: '0 2px 16px rgba(60,66,66,0.13)',
+      zIndex: 9999,
+      opacity: message ? 1 : 0,
+      transition: 'opacity 0.3s',
+    }}>
+      {message}
+    </div>
+  );
 
   return (
     <>
       <Header />
       <div className="container">
-        <div className="content">
+        <div className="main-layout" style={{ display: 'flex', alignItems: 'flex-start' }}>
           <Sidebar />
-
-          <div className="main-content">
+          <div style={{ flex: 1, marginLeft: 32 }}>
             <div className="form-container">
               <h1 className="form-title1">Personal Information</h1>
               <p className="form-subtitle1">Add Address</p>
-
-              <div className="form-section">
-                <div className="form">
-                  {/* Form Rows (same as before) */}
-                  <div className="form-row">
-                    {/* Remove the username field from the form JSX */}
-                  </div>
-
+              <form className="form-root">
+                <div className="form-grid">
                   <div className="form-row">
                     <div className="form-group">
-                      <label className="label">
-                        First Name* {errors.firstName && <span className="error">{errors.firstName}</span>}
-                      </label>
+                      <label className="label">Username</label>
                       <input
+                        className="input"
+                        type="text"
+                        name="username"
+                        value={formData.username}
+                        onChange={handleInputChange}
+                        {...inputProps}
+                      />
+                    </div>
+                  </div>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label className="label">First Name</label>
+                      <input
+                        className="input"
                         type="text"
                         name="firstName"
-                        placeholder="First Name"
                         value={formData.firstName}
                         onChange={handleInputChange}
-                        className={`input ${errors.firstName ? 'input-error' : ''}`}
                         {...inputProps}
                       />
                     </div>
                     <div className="form-group">
-                      <label className="label">
-                        Last Name* {errors.lastName && <span className="error">{errors.lastName}</span>}
-                      </label>
+                      <label className="label">Last Name</label>
                       <input
+                        className="input"
                         type="text"
                         name="lastName"
-                        placeholder="Last Name"
                         value={formData.lastName}
                         onChange={handleInputChange}
-                        className={`input ${errors.lastName ? 'input-error' : ''}`}
                         {...inputProps}
                       />
                     </div>
                   </div>
-
                   <div className="form-row">
                     <div className="form-group">
-                      <label className="label">
-                        Country / Region* {errors.country && <span className="error">{errors.country}</span>}
-                      </label>
+                      <label className="label">Country</label>
                       <input
+                        className="input"
                         type="text"
                         name="country"
-                        placeholder="Country / Region"
                         value={formData.country}
                         onChange={handleInputChange}
-                        className={`input ${errors.country ? 'input-error' : ''}`}
                         {...inputProps}
                       />
                     </div>
                     <div className="form-group">
-                      <label className="label">Company Name</label>
+                      <label className="label">Company</label>
                       <input
+                        className="input"
                         type="text"
                         name="company"
-                        placeholder="Company (optional)"
                         value={formData.company}
                         onChange={handleInputChange}
-                        className="input"
                         {...inputProps}
                       />
                     </div>
                   </div>
-
                   <div className="form-row">
                     <div className="form-group">
-                      <label className="label">
-                        Street Address* {errors.streetAddress && <span className="error">{errors.streetAddress}</span>}
-                      </label>
+                      <label className="label">Street Address</label>
                       <input
+                        className="input"
                         type="text"
                         name="streetAddress"
-                        placeholder="House number and street name"
                         value={formData.streetAddress}
                         onChange={handleInputChange}
-                        className={`input ${errors.streetAddress ? 'input-error' : ''}`}
                         {...inputProps}
                       />
                     </div>
                     <div className="form-group">
-                      <label className="label">Apt, suite, unit</label>
+                      <label className="label">Apartment</label>
                       <input
+                        className="input"
                         type="text"
                         name="apartment"
-                        placeholder="apartment, suite, unit, etc. (optional)"
                         value={formData.apartment}
                         onChange={handleInputChange}
-                        className="input"
                         {...inputProps}
                       />
                     </div>
                   </div>
-
                   <div className="form-row">
                     <div className="form-group">
-                      <label className="label">
-                        City* {errors.city && <span className="error">{errors.city}</span>}
-                      </label>
+                      <label className="label">City</label>
                       <input
+                        className="input"
                         type="text"
                         name="city"
-                        placeholder="Town / City"
                         value={formData.city}
                         onChange={handleInputChange}
-                        className={`input ${errors.city ? 'input-error' : ''}`}
                         {...inputProps}
                       />
                     </div>
                     <div className="form-group">
-                      <label className="label">
-                        State* {errors.state && <span className="error">{errors.state}</span>}
-                      </label>
+                      <label className="label">State</label>
                       <input
+                        className="input"
                         type="text"
                         name="state"
-                        placeholder="State"
                         value={formData.state}
                         onChange={handleInputChange}
-                        className={`input ${errors.state ? 'input-error' : ''}`}
                         {...inputProps}
                       />
                     </div>
                   </div>
-
                   <div className="form-row">
                     <div className="form-group">
-                      <label className="label">
-                        Phone* {errors.phone && <span className="error">{errors.phone}</span>}
-                      </label>
+                      <label className="label">Phone</label>
                       <input
+                        className="input"
                         type="text"
                         name="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        maxLength={10}
                         {...inputProps}
                       />
                     </div>
                     <div className="form-group">
-                      <label className="label">
-                        Postal Code* {errors.postalCode && <span className="error">{errors.postalCode}</span>}
-                      </label>
+                      <label className="label">Postal Code</label>
                       <input
+                        className="input"
                         type="text"
                         name="postalCode"
-                        placeholder="Postal Code"
                         value={formData.postalCode}
                         onChange={handleInputChange}
-                        className={`input ${errors.postalCode ? 'input-error' : ''}`}
                         {...inputProps}
                       />
                     </div>
                   </div>
-
-                  <div className="form-group-full">
-                    <label className="label">Delivery Instructions</label>
-                    <textarea
-                      name="deliveryInstructions"
-                      placeholder="Delivery Instructions"
-                      value={formData.deliveryInstructions}
-                      onChange={handleInputChange}
-                      className="textarea"
-                      rows="4"
-                      {...inputProps}
-                    />
-                  </div>
-
-                  <div className="checkbox-group">
-                    <label className="checkbox-label">
+                  <div className="form-row">
+                    <div className="form-group-full">
+                      <label className="label">Delivery Instructions</label>
                       <input
-                        type="checkbox"
-                        name="defaultShipping"
-                        checked={formData.defaultShipping}
+                        className="input"
+                        type="text"
+                        name="deliveryInstructions"
+                        value={formData.deliveryInstructions}
                         onChange={handleInputChange}
-                        className="checkbox"
-                        disabled={!isEditing}
+                        {...inputProps}
                       />
-                      <span className="checkbox-text">Set as default shipping address</span>
-                    </label>
+                    </div>
                   </div>
-                  <div className="checkbox-group">
-                    <label className="checkbox-label">
-                      <input
-                        type="checkbox"
-                        name="defaultBilling"
-                        checked={formData.defaultBilling}
-                        onChange={handleInputChange}
-                        className="checkbox"
-                        disabled={!isEditing}
-                      />
-                      <span className="checkbox-text">Set as default billing address</span>
-                    </label>
-                  </div>
-
-                  <div className="button-group">
-                    {isEditing ? (
-                      <>
-                        <button
-                          type="button"
-                          onClick={handleClear}
-                          className="edit-button"
-                        >
-                          Clear
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleSave}
-                          className="save-button"
-                        >
-                          Save
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <button
-                          type="button"
-                          onClick={handleEdit}
-                          className="edit-button"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleClear}
-                          className="edit-button"
-                        >
-                          Clear
-                        </button>
-                      </>
-                    )}
+                  <div className="form-row">
+                    <div className="checkbox-group">
+                      <label className="checkbox-label">
+                        <input
+                          type="checkbox"
+                          className="checkbox"
+                          name="defaultShipping"
+                          checked={formData.defaultShipping}
+                          onChange={handleInputChange}
+                          disabled={!isEditing}
+                        />
+                        <span className="checkbox-text">Default Shipping</span>
+                      </label>
+                    </div>
+                    <div className="checkbox-group">
+                      <label className="checkbox-label">
+                        <input
+                          type="checkbox"
+                          className="checkbox"
+                          name="defaultBilling"
+                          checked={formData.defaultBilling}
+                          onChange={handleInputChange}
+                          disabled={!isEditing}
+                        />
+                        <span className="checkbox-text">Default Billing</span>
+                      </label>
+                    </div>
                   </div>
                 </div>
-              </div>
+                <div className="button-group">
+                  {isEditing ? (
+                    <>
+                      <button type="button" onClick={handleClear} className="personal-edit-btn">Clear</button>
+                      <button type="button" onClick={handleSave} className="personal-save-btn">Save</button>
+                    </>
+                  ) : (
+                    <>
+                      <button type="button" onClick={handleEdit} className="personal-edit-btn">Edit</button>
+                      <button type="button" onClick={handleClear} className="personal-edit-btn">Clear</button>
+                    </>
+                  )}
+                </div>
+              </form>
             </div>
           </div>
         </div>
       </div>
       <Footer />
+      <Toast message={successMessage} />
     </>
   );
 };
