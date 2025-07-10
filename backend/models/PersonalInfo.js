@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const personalInfoSchema = new mongoose.Schema({
+  userId: { type: String, required: true, unique: true },
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   country: { type: String, required: true },
