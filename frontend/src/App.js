@@ -15,21 +15,25 @@ import ProductReturns from './Pages/ProductReturns/ProductReturns';
 import ProductReview from './Pages/ProductReview/ProductReview';
 import ViewOrder from './Pages/ViewOrder/ViewOrder';
 import EmptyWishlist from './Pages/wishlist/EmptyWishlist';
-import WishlistPage from './Pages/wishlistpage/wishlistpage'; // ✅ added
-import PersonalInformation from './Pages/PersonalInformations/PersonalInformation'; // ✅ added
+import WishlistPage from './Pages/wishlistpage/wishlistpage';
+import PersonalInformation from './Pages/PersonalInformations/PersonalInformation';
 import Notifications from './Components/Notifications/Notifications';
 import OrderTracking from './Pages/OrderTracking/OrderTracking';
 import ShopPage from "./Pages/Shop/Shop";
 import CartPage from "./Pages/Cart/cart";
+
+// 🔷 NEW ForgotPassword & ResetPassword
+import ForgotPassword from './Pages/forgotPassword/ForgotPassword';
+import ResetPassword from './Pages/forgotPassword/ResetPassword';
 
 function App() {
   return (
     <BrowserRouter>
       <div className="App">
         <Routes>
-          <Route path="/" element={<Home />} />  {/* <-- Default page */}
+          <Route path="/" element={<Home />} />
           <Route path="/home" element={<Home />} />
-          <Route path="/signin" element={<SignIn />} /> {/* <-- Added back */}
+          <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/confirmorder" element={<ConfirmOrder />} />
           <Route path="/confirmorder/:id" element={<ConfirmOrder />} />
@@ -42,13 +46,15 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/wishlist" element={<EmptyWishlist />} />
-          <Route path="/wishlistpage" element={<WishlistPage />} /> {/* ✅ */}
-          <Route path="/personal-info" element={<PersonalInformation />} /> {/* ✅ */}
+          <Route path="/wishlistpage" element={<WishlistPage />} />
+          <Route path="/personal-info" element={<PersonalInformation />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/order-tracking/:orderId" element={<OrderTracking />} />
           <Route path="/order-tracking" element={<Navigate to="/dashboard" />} />
 
-          {/* Add more routes as needed */}
+          {/* 🔷 Forgot Password Routes */}
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
         </Routes>
       </div>
     </BrowserRouter>
