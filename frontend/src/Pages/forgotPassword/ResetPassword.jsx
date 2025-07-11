@@ -4,6 +4,7 @@ import Header from '../../Components/Header/Header';
 import Footer from '../../Components/Footer/Footer';
 import axios from 'axios';
 import signupImage from '../../Assets/signupImage.png';
+import eyeIcon from '../../Assets/eye.png';
 import './ForgotPassword.css';
 
 function ResetPassword() {
@@ -12,6 +13,7 @@ function ResetPassword() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState(null);
   const [messageType, setMessageType] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -33,6 +35,10 @@ function ResetPassword() {
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <div>
       <Header />
@@ -50,22 +56,54 @@ function ResetPassword() {
             )}
 
             <label className="forgot-label">New Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="forgot-input"
-              required
-            />
+            <div style={{ position: 'relative' }}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="forgot-input"
+                required
+              />
+              <img
+                src={eyeIcon}
+                alt="Toggle Password"
+                onClick={togglePasswordVisibility}
+                style={{
+                  position: 'absolute',
+                  right: '12px',
+                  top: '40%', // moved a bit up
+                  transform: 'translateY(-50%)',
+                  cursor: 'pointer',
+                  width: '22px',
+                  height: '20px'
+                }}
+              />
+            </div>
 
             <label className="forgot-label">Confirm New Password</label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="forgot-input"
-              required
-            />
+            <div style={{ position: 'relative' }}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="forgot-input"
+                required
+              />
+              <img
+                src={eyeIcon}
+                alt="Toggle Password"
+                onClick={togglePasswordVisibility}
+                style={{
+                  position: 'absolute',
+                  right: '12px',
+                  top: '40%', // moved a bit up
+                  transform: 'translateY(-50%)',
+                  cursor: 'pointer',
+                  width: '22px',
+                  height: '20px'
+                }}
+              />
+            </div>
 
             <button type="submit" className="forgot-btn">Reset Password</button>
           </form>
