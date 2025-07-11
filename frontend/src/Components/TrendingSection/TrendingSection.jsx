@@ -13,16 +13,13 @@ const TrendingSection = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [wishlistIds, setWishlistIds] = useState([]);
-  const userId = localStorage.getItem('userId');
 
   // Fetch trending products from backend
   useEffect(() => {
     const fetchTrendingProducts = async () => {
       try {
         const response = await axios.get('http://localhost:5000/api/trending');
-
         const updatedProducts = response.data
-          // Add /images/ prefix to image filenames
           .map(product => ({
             ...product,
             images: product.images.map(img => {
@@ -36,11 +33,8 @@ const TrendingSection = () => {
               return `/images/${img}`;
             })
           }))
-          // Sort by newest first
           .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-          // Take only the first 3 products
           .slice(0, 3);
-
         setProducts(updatedProducts);
         setLoading(false);
       } catch (err) {
@@ -48,20 +42,22 @@ const TrendingSection = () => {
         setLoading(false);
       }
     };
-
     fetchTrendingProducts();
   }, []);
 
-  // Fetch user's wishlist IDs
+  // Fetch user's wishlist IDs using token
   useEffect(() => {
-    if (!userId) return;
-    fetch(`${WISHLIST_URL}/user/${userId}`)
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    fetch(`${WISHLIST_URL}/me`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
       .then(res => res.ok ? res.json() : null)
       .then(data => {
         const ids = data?.products?.map(p => p._id) || [];
         setWishlistIds(ids);
       });
-  }, [userId]);
+  }, []);
 
   const handleClick = (product) => {
     navigate(`/product/${product._id}`);
@@ -69,21 +65,23 @@ const TrendingSection = () => {
 
   const handleWishlistToggle = async (e, productId) => {
     e.stopPropagation();
-    if (!userId) return alert('Please log in first.');
+    const token = localStorage.getItem('token');
+    if (!token) return alert('Please log in first.');
     const isInWishlist = wishlistIds.includes(productId);
     const method = isInWishlist ? 'DELETE' : 'POST';
     try {
       const response = await fetch(`${WISHLIST_URL}/${productId}`, {
         method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId }),
+        headers: { 'Authorization': `Bearer ${token}` },
       });
       if (!response.ok) {
         const error = await response.json();
         return alert(`Error: ${error.error || response.statusText}`);
       }
       // Refetch wishlist IDs
-      const updated = await fetch(`${WISHLIST_URL}/user/${userId}`).then(res => res.json());
+      const updated = await fetch(`${WISHLIST_URL}/me`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      }).then(res => res.json());
       const updatedIds = updated?.products?.map(p => p._id) || [];
       setWishlistIds(updatedIds);
     } catch (err) {
