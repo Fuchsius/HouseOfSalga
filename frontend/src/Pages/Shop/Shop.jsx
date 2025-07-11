@@ -4,7 +4,7 @@ import Header from "../../Components/Header/Header";
 import ShopHeader from "./shop-header";
 import ShopFooter from "./shop-footer";
 import FilterSidebar from "./filter-sidebar";
-import ProductCard from "./product-card";
+import ProductCard from "../../Components/ProductCard/ProductCard";
 import Pagination from "./pagination";
 import { useEffect, useState } from "react";
 
@@ -98,12 +98,16 @@ export default function ShopPage() {
       `fallback-${Date.now()}-${index}`;
 
     return {
+      _id: productId,
       id: productId,
       name: item.name || `Product ${index + 1}`,
       price: item.price || 0,
       originalPrice: item.originalPrice,
+      images: item.image ? [item.image] : ["/placeholder.svg?height=300&width=300"],
       image: item.image || "/placeholder.svg?height=300&width=300",
+      averageRating: item.averageRating || 4,
       rating: Math.round(item.averageRating || 4),
+      reviewCount: item.reviewCount || 0,
       reviews: item.reviewCount || 0,
       isNew: item.isNew || false,
       category: item.category,
