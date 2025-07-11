@@ -172,15 +172,22 @@ function SignIn() {
             {errors.password && <p className="error-msg">{errors.password}</p>}
 
             {/* 🔷 Forgot Password link */}
-            <div style={{ textAlign: 'right', marginBottom: '10px' }}>
-              <span
-                className="forgot-password-link"
-                style={{ color: '#007BFF', cursor: 'pointer', fontSize: '0.9rem' }}
-                onClick={() => navigate('/forgot-password')}
-              >
-                Forgot Password?
-              </span>
-            </div>
+            <div style={{ textAlign: 'right', marginBottom: '10px', marginTop: '-21px' }}>
+  <span
+    className="forgot-password-link"
+    style={{
+      color: '#007BFF',
+      cursor: 'pointer',
+      fontSize: '1.1rem'
+    }}
+    onClick={() => navigate('/forgot-password')}
+    onMouseEnter={(e) => e.target.style.color = '#0056b3'}  // darker blue on hover
+    onMouseLeave={(e) => e.target.style.color = '#007BFF'} // back to original
+  >
+    Forgot Password?
+  </span>
+</div>
+
 
             <button type="submit" className="submit-btn">Sign In</button>
 
