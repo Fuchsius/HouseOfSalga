@@ -251,13 +251,13 @@ export default function CheckoutForm() {
         <div className={styles['card-section']}>
           <div className={styles['shipping-method-box']}>
             <div className={styles['shipping-method-row']}>
-              <span className={styles['shipping-method-label']}>Arrives by Monday, February 7</span>
+              <span className={styles['shipping-method-label']}>Arrives within a week</span>
             </div><hr style={{ color: '#888', borderTop: '2px solid #222', margin: '16px 0' }} />
             <div className={styles['shipping-method-row']}>
               <span className={styles['shipping-method-label']}>Delivery Charge</span>
             </div>
             <div className={styles['shipping-method-note']}>Additional fees may apply</div>
-            <span className={styles['shipping-method-fee']}>$5.00</span>
+            <span className={styles['shipping-method-fee']}>Rs. 450</span>
           </div>
         </div>
         <hr style={{ color: 'black', borderTop: '2px solid #222', margin: '16px 0' }} />
