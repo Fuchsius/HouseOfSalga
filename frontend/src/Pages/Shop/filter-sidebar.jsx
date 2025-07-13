@@ -57,11 +57,11 @@ export default function FilterSidebar({ onApplyFilter }) {
   };
 
   return (
-    <div className="sidebar-container">
+    <div className="filter-sidebar">
       <div className="sidebar-header">
         <h2>FILTERS</h2>
-        <div className="flex items-center gap-2">
-          <SlidersHorizontal />
+        <div className="header-actions">
+          <SlidersHorizontal size={16} />
           <button className="clear-btn" onClick={handleClear}>
             Clear All
           </button>
@@ -70,7 +70,7 @@ export default function FilterSidebar({ onApplyFilter }) {
 
       {/* Price */}
       <div className="filter-section">
-        <h3 className="section-title">PRICES</h3>
+        <h3 className="filter-subheading">PRICES</h3>
         <div className="range-display">
           <span>Range</span>
           <span>
@@ -83,14 +83,15 @@ export default function FilterSidebar({ onApplyFilter }) {
           max={10000}
           min={500}
           step={500}
+          className="price-slider"
         />
       </div>
 
       {/* Categories */}
       <div className="filter-section">
-        <h3 className="section-title">CATEGORIES</h3>
+        <h3 className="filter-subheading">CATEGORIES</h3>
         {["Women", "Ladies", "Men", "Kids"].map((cat) => (
-          <div key={cat} className="flex items-center gap-2 mb-2">
+          <div key={cat} className="filter-option">
             <Checkbox
               id={cat.toLowerCase().replace(" ", "-")}
               checked={selectedCategories.includes(cat)}
@@ -104,7 +105,7 @@ export default function FilterSidebar({ onApplyFilter }) {
                 }
               }}
             />
-            <label htmlFor={cat.toLowerCase()} className="section-label">
+            <label htmlFor={cat.toLowerCase()} className="filter-label">
               {cat}
             </label>
           </div>
@@ -113,9 +114,9 @@ export default function FilterSidebar({ onApplyFilter }) {
 
       {/* Sizes */}
       <div className="filter-section">
-        <h3 className="section-title">SIZE</h3>
+        <h3 className="filter-subheading">SIZE</h3>
         {["Small", "Medium", "Large", "Extra Large"].map((size) => (
-          <div key={size} className="flex items-center gap-2 mb-2">
+          <div key={size} className="filter-option">
             <Checkbox
               id={size.toLowerCase().replace(" ", "-")}
               checked={selectedSizes.includes(size)}
@@ -127,7 +128,7 @@ export default function FilterSidebar({ onApplyFilter }) {
                 }
               }}
             />
-            <label htmlFor={size.toLowerCase()} className="section-label">
+            <label htmlFor={size.toLowerCase()} className="filter-label">
               {size}
             </label>
           </div>
@@ -136,11 +137,11 @@ export default function FilterSidebar({ onApplyFilter }) {
 
       {/* Colors */}
       <div className="filter-section">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="section-title">Colors</h3>
+        <div className="section-header">
+          <h3 className="filter-subheading">Colors</h3>
           <ChevronUp size={16} />
         </div>
-        <div className="filter-grid">
+        <div className="color-grid">
           {colorOptions.map((color) => (
             <button
               key={color.name}
@@ -167,8 +168,6 @@ export default function FilterSidebar({ onApplyFilter }) {
       <button onClick={handleApply} className="apply-btn">
         Apply Filter
       </button>
-
-
     </div>
   );
 }

@@ -47,6 +47,7 @@ export const useCart = (userId = "user123") => {
   const removeItem = async (itemId) => {
     try {
       setLoading(true);
+      console.log(`${API_URL}/cart/remove/${userId}/${itemId}`);
       const response = await fetch(
         `${API_URL}/cart/remove/${userId}/${itemId}`,
         {

@@ -1,14 +1,14 @@
 .quantity-container {
   display: flex;
   align-items: center;
-  border: 1px solid #d1d5db; /* gray-300 */
+  border: 1px solid #d1d5db;
   border-radius: 6px;
   overflow: hidden;
 }
 
 .quantity-btn {
   padding: 4px 12px;
-  color: #4b5563; /* gray-600 */
+  color: #4b5563;
   background-color: transparent;
   border: none;
   cursor: pointer;
@@ -17,7 +17,7 @@
 }
 
 .quantity-btn:hover {
-  background-color: #f3f4f6; /* gray-100 */
+  background-color: #f3f4f6;
 }
 
 .quantity-btn:disabled {

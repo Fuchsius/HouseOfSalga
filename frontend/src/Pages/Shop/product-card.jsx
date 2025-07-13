@@ -30,6 +30,7 @@ const ProductCard = ({ product }) => {
         : 0,
     reviews: product?.reviews || 0,
     image: product?.image,
+    description: product?.description || "",
   };
 
   const handleWishlistToggle = () => {
@@ -54,7 +55,7 @@ const ProductCard = ({ product }) => {
         {!imageLoaded && !imageError && (
           <div className="loading-overlay">Loading...</div>
         )}
-        {imageError && <div className="error-overlay">❌ Image Failed</div>}
+        {imageError && <div className="error-overlay">Image Failed</div>}
 
         <div className="product-image-container">
           <img

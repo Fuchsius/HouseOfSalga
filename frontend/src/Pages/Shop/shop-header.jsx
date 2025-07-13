@@ -10,10 +10,10 @@ export default function Header({ onApplyEdits }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const sortOptions = [
-    "Most Popular",
-    "Price: Low to High",
-    "Price: High to Low",
-    "Newest",
+    { label: "Most Popular", value: "Most Popular" },
+    { label: "Price: Low to High", value: "Price: Low to High" },
+    { label: "Price: High to Low", value: "Price: High to Low" },
+    { label: "Newest", value: "Newest" },
   ];
 
   const handleApply = () => {
@@ -52,14 +52,14 @@ export default function Header({ onApplyEdits }) {
                   <div className="dropdown-menu">
                     {sortOptions.map((option) => (
                       <button
-                        key={option}
+                        key={option.value}
                         onClick={() => {
-                          setSelectedSort(option);
+                          setSelectedSort(option.value);
                           setIsDropdownOpen(false);
                         }}
                         className="dropdown-item"
                       >
-                        {option}
+                        {option.label}
                       </button>
                     ))}
                   </div>

@@ -11,9 +11,9 @@
 }
 
 @media (min-width: 1024px) {
-  .cart-container {
+  /* .cart-container {
     margin-left: 80px;
-  }
+  } */
 }
 
 .empty-cart {

@@ -15,10 +15,11 @@ export default function ShopPage() {
   const [error, setError] = useState(null);
   const [totalProducts, setTotalProducts] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 10;
+  const [totalPages, setTotalPages] = useState(1);
+  const productsPerPage = 14;
 
   // Fetch products function
-  const fetchProducts = async (filters = {}) => {
+  const fetchProducts = async (filters = {}, page = 1) => {
     setLoading(true);
     setError(null);
 
@@ -44,11 +45,13 @@ export default function ShopPage() {
       if (filters.sort) {
         queryParams.append("sort", filters.sort);
       }
+      queryParams.append("page", page);
+      queryParams.append("limit", productsPerPage);
 
       const hasFilters = queryParams.toString().length > 0;
       const url = hasFilters
-        ? `http://localhost:5000/api/products?${queryParams.toString()}`
-        : "http://localhost:5000/api/products/all";
+        ? `http://localhost:5000/api/shopProducts?${queryParams.toString()}`
+        : "http://localhost:5000/api/shopProducts/all";
 
       console.log("Fetching from URL:", url);
 
@@ -63,6 +66,7 @@ export default function ShopPage() {
       if (data.success) {
         setProductData(data.data);
         setTotalProducts(data.count);
+        setTotalPages(data.pages);
         console.log("Products fetched successfully:", data.data);
       } else {
         throw new Error(data.message || "Failed to fetch products");
@@ -72,62 +76,56 @@ export default function ShopPage() {
       setError(error.message);
       setProductData([]);
       setTotalProducts(0);
+      setTotalPages(1);
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch initial products on component mount
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    fetchProducts({ sort: "price-desc" }, currentPage);
+  }, [currentPage]);
 
-  // Handle filter application from FilterSidebar
   const handleApplyFilter = (filters) => {
     console.log("Applying filters:", filters);
-    fetchProducts(filters);
+    setCurrentPage(1);
+    fetchProducts(filters, 1);
   };
 
-  // Transform backend data to frontend format
-  const products = productData.map((item, index) => {
-    // Generate a reliable ID with multiple fallbacks
-    const productId =
-      item._id ||
-      item.id ||
-      `product-${index}` ||
-      `fallback-${Date.now()}-${index}`;
-
-    return {
-      id: productId,
-      name: item.name || `Product ${index + 1}`,
-      price: item.price || 0,
-      originalPrice: item.originalPrice,
-      image: item.image || "/placeholder.svg?height=300&width=300",
-      rating: Math.round(item.averageRating || 4),
-      reviews: item.reviewCount || 0,
-      isNew: item.isNew || false,
-      category: item.category,
-      size: item.size,
-      color: item.color,
-      description: item.description,
-      inStock: item.inStock !== false,
-      sort: item.sort,
-    };
-  });
+  const products = productData.map((item, index) => ({
+    id: item.id || item._id || `product-${index}`,
+    name: item.name || `Product ${index + 1}`,
+    price: item.price || 0,
+    image: item.image || "/placeholder.svg?height=300&width=300",
+    rating: item.rating || 0,
+    reviews: item.numReviews || 0,
+    category: item.category || [],
+    size: item.size || [],
+    color: item.color || [],
+    description: item.description || "Product description",
+    inStock: item.inStock !== false,
+    popularity: item.popularity || 0,
+    createdAt: item.createdAt || new Date(),
+  }));
 
   return (
     <>
       <Header />
 
       <div className="page-container">
-        <ShopHeader onApplyEdits={handleApplyFilter} />
+        <ShopHeader
+          onApplyEdits={handleApplyFilter}
+          totalProducts={totalProducts}
+        />
 
-        <div className="px-4 py-6 mx-auto max-w-7xl">
+        <div className="content-container">
           {loading && (
             <div className="centered">
               <div>
-                <div className="spinner"></div>
-                <p className="loading-text">Loading products...</p>
+                <div className="text-center">
+                  <div className="spinner"></div>
+                  <p className="loading-text">Loading products...</p>
+                </div>
               </div>
             </div>
           )}
@@ -143,21 +141,21 @@ export default function ShopPage() {
           )}
 
           {!loading && !error && (
-            <div className="mb-6">
+            <div className="products-header">
               <h2 className="section-heading">Products</h2>
               <p className="subtext">{totalProducts} products found</p>
             </div>
           )}
 
           {/* Desktop Layout */}
-          <div className="gap-1 desktop-grid">
-            <div className="col-span-2">
+          <div className=" desktop-grid">
+            <div className="sidebar-column">
               <FilterSidebar onApplyFilter={handleApplyFilter} />
             </div>
 
-            <div className="col-span-3">
+            <div className="products-column">
               {!loading && !error && products.length > 0 ? (
-                <div className="product-grid-3">
+                <div className="product-grid">
                   {products.slice(0, 9).map((product, index) => (
                     <ProductCard
                       key={`first-${product.id}-${index}`}
@@ -168,13 +166,13 @@ export default function ShopPage() {
               ) : (
                 !loading &&
                 !error && (
-                  <div className="py-12 text-center">
+                  <div className="no-products">
                     <p className="subtext">
                       No products found matching your filters.
                     </p>
                     <button
                       onClick={() => fetchProducts()}
-                      className="mt-4 mobile-toggle-btn"
+                      className="reset-btn"
                     >
                       Show All Products
                     </button>
@@ -183,12 +181,11 @@ export default function ShopPage() {
               )}
             </div>
 
-
             {!loading && !error && products.length > 9 && (
               <>
-                <div className="col-span-2"></div>
-                <div className="col-span-5">
-                  <div className="product-grid-5">
+                <div className="sidebar-spacer"></div>
+                <div className="products-full-width">
+                  <div className="product-grid-full">
                     {products.slice(9, 14).map((product, index) => (
                       <ProductCard
                         key={`fourth-row-${product.id}-${index + 9}`}
@@ -201,8 +198,8 @@ export default function ShopPage() {
             )}
 
             {!loading && !error && products.length > 14 && (
-              <div className="col-span-5">
-                <div className="product-grid-5">
+              <div className="products-full-width">
+                <div className="product-grid-full">
                   {products.slice(14).map((product, index) => (
                     <ProductCard
                       key={`remaining-${product.id}-${index + 14}`}
@@ -214,8 +211,8 @@ export default function ShopPage() {
             )}
           </div>
 
-          <div className="xl:hidden">
-            <div className="mb-4">
+          <div className="mobile-only">
+            <div className="filter-toggle-container">
               <button
                 className="mobile-toggle-btn"
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -232,11 +229,11 @@ export default function ShopPage() {
             )}
 
             {!loading && !error && products.length > 0 ? (
-              <div className="mobile-grid">
+              <div className="mobile-product-grid">
                 {products.map((product, index) => (
                   <div
                     key={`mobile-${product.id}-${index}`}
-                    className="flex justify-center"
+                    className="product-card-container"
                   >
                     <ProductCard product={product} />
                   </div>
@@ -245,14 +242,11 @@ export default function ShopPage() {
             ) : (
               !loading &&
               !error && (
-                <div className="py-12 text-center">
+                <div className="no-products">
                   <p className="subtext">
                     No products found matching your filters.
                   </p>
-                  <button
-                    onClick={() => fetchProducts()}
-                    className="mt-4 mobile-toggle-btn"
-                  >
+                  <button onClick={() => fetchProducts()} className="reset-btn">
                     Show All Products
                   </button>
                 </div>
@@ -265,7 +259,10 @@ export default function ShopPage() {
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
-                onPageChange={(page) => setCurrentPage(page)}
+                onPageChange={(page) => {
+                  setCurrentPage(page);
+                  fetchProducts({ sort: productData.sort }, page);
+                }}
               />
             </div>
           )}

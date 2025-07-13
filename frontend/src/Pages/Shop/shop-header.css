@@ -117,6 +117,7 @@
   min-width: 160px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   background-color: #f0eadc;
+  font-family: "wilkysta";
 }
 
 .dropdown-item {
@@ -127,6 +128,7 @@
   background: none;
   cursor: pointer;
   width: 100%;
+  font-family: "wilkysta";
 }
 
 .dropdown-item:hover {
@@ -137,11 +139,10 @@
   margin-top: 13px;
   display: flex;
   justify-content: flex-end;
-
 }
 
 .btn-apply {
-  background-color:red;
+  background-color: red;
   color: #000000;
   padding: 10px 20px;
   font-size: 16px;
@@ -154,7 +155,7 @@
 }
 
 .btn-apply:hover {
-  background-color:blue;
+  background-color: blue;
 }
 
 .btn-apply:disabled {
@@ -163,7 +164,7 @@
   cursor: not-allowed;
 }
 .btn-clear {
-  background-color:red;
+  background-color: red;
   color: #000000;
   padding: 10px 20px;
   font-size: 10px;
@@ -175,8 +176,8 @@
   font-family: "Playfair Display", serif;
 }
 
-.btn-clear{
-  background-color:blue;
+.btn-clear {
+  background-color: blue;
 }
 
 .btn-clear {
@@ -184,5 +185,3 @@
   color: #9ca3af;
   cursor: not-allowed;
 }
-
-

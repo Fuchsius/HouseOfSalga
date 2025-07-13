@@ -1,11 +1,9 @@
-import { useCart } from "./useCart";
+import { useCart } from "../Cart/useCart";
 import CartItems from "./cart-items";
-import OrderSummary from "./order-summary";
+import OrderSummary from "../Cart/order-summary";
 import Footer from "../../Components/Footer/Footer";
 import Header from "../../Components/Header/Header";
-
-import { useCurrency } from "./useCurrency";
-
+import { useCurrency } from "../Cart/useCurrency";
 import "./cart.css";
 import Breadcrumb from "../../Components/breadcrumb";
 
@@ -14,7 +12,6 @@ export default function CartPage() {
     useCart();
   const { formatPrice } = useCurrency();
 
-  // Loading and error states
   if (loading && !cart) {
     return (
       <div className="cart-page-loading-container">
@@ -31,27 +28,17 @@ export default function CartPage() {
     );
   }
 
-  // Use backend data instead of static data
   const cartItems = cart?.items || [];
-  const subtotal = cart?.subtotal || 0;
-  const tax = cart?.tax || 250;
-  const deliveryFee = cart?.deliveryFee || 150;
-  const total = cart?.total || 0;
-  const discountAmount = cart?.discountAmount || 0;
-  const discountCode = cart?.discountCode || "";
 
-  // Update quantity function to use backend
   const handleUpdateQuantity = (itemId, newQuantity) => {
     if (newQuantity < 1) return;
     updateQuantity(itemId, newQuantity);
   };
 
-  // Remove item function to use backend
   const handleRemoveItem = (itemId) => {
     removeItem(itemId);
   };
 
-  // Apply discount function
   const handleApplyDiscount = async (discountCode) => {
     return await applyDiscount(discountCode);
   };
@@ -73,20 +60,20 @@ export default function CartPage() {
                 items={cartItems}
                 updateQuantity={handleUpdateQuantity}
                 removeItem={handleRemoveItem}
-                loading={loading} // Pass loading state
+                loading={loading}
                 formatPrice={formatPrice}
               />
             </div>
             <div className="cart-page-summary-section">
               <OrderSummary
-                subtotal={subtotal}
-                tax={tax}
-                deliveryFee={deliveryFee}
-                total={total}
-                discountAmount={discountAmount} // Pass discount amount
-                discountCode={discountCode} // Pass discount code
-                onApplyDiscount={handleApplyDiscount} // Pass discount function
-                loading={loading} // Pass loading state
+                subtotal={cart?.subtotal || 0}
+                tax={cart?.tax || 250}
+                deliveryFee={cart?.deliveryFee || 150}
+                total={cart?.total || 0}
+                discountAmount={cart?.discountAmount || 0}
+                discountCode={cart?.discountCode || ""}
+                onApplyDiscount={handleApplyDiscount}
+                loading={loading}
               />
             </div>
           </div>
