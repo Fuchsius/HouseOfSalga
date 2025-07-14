@@ -1,10 +1,9 @@
-
-
 .hero-section {
     background-color: #F0EADC;
     padding: clamp(15px, 5vw, 80px) clamp(10px, 4vw, 60px);
     font-family: "Playfair Display", serif;
     width: 100%;
+    overflow: hidden;
 }
 
 .hero-container {
@@ -20,40 +19,66 @@
 .hero-text {
     text-align: center;
     width: 100%;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: slideUpFadeIn 1s ease-out forwards;
+    animation-delay: 0.2s;
 }
 
 .hero-title {
-  font-size: 36px;
-  font-weight: 400;
-  color: #000;
-  line-height: 1.2;
-  margin-bottom: 12px;
-  max-width: 100%;
-  font-family: 'Wilkysta', sans-serif;
-  overflow: hidden;
-  white-space: nowrap;
-  width: fit-content;
-
-  /* Animation */
-  animation: typing 3s steps(30, end) forwards, blink 0.75s step-end infinite;
-  
+    font-size: 36px;
+    font-weight: 400;
+    color: #000;
+    line-height: 1.2;
+    margin-bottom: 12px;
+    max-width: 100%;
+    font-family: 'Wilkysta', sans-serif;
+    position: relative;
+    overflow: hidden;
+    
+    /* Enhanced typing animation */
+    &::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+       
+        
+    }
+    
+    /* Letter by letter reveal */
+    .letter {
+        display: inline-block;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: letterReveal 0.05s ease-out forwards;
+    }
 }
 
-@keyframes typing {
-  from {
-    width: 0;
-  }
-  to {
-    width: 100%;
-  }
+@keyframes slideUpFadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes letterReveal {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes blink {
-  50% {
-    border-color: transparent;
-  }
+    0%, 50% {
+        opacity: 1;
+    }
+    51%, 100% {
+        opacity: 0;
+    }
 }
-
 
 .hero-description {
     font-size: 12px;
@@ -61,16 +86,10 @@
     color: #000;
     margin: 0 auto 12px;
     max-width: 90%;
-
     opacity: 0;
-    animation: fadeIn 1s ease forwards;
-    animation-delay: 3.1s; /* after 3s typing + small gap */
-}
-
-@keyframes fadeIn {
-    to {
-        opacity: 1;
-    }
+    transform: translateY(20px);
+    animation: slideUpFadeIn 1s ease-out forwards;
+    animation-delay: 1.5s;
 }
 
 .hero-button {
@@ -85,22 +104,59 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
     min-width: 140px;
     justify-content: center;
     font-family: 'Wilkysta', sans-serif;
-
+    border: none;
+    position: relative;
+    overflow: hidden;
+    
     opacity: 0;
-    animation: fadeIn 1s ease forwards;
-    animation-delay: 4.2s; 
+    transform: translateY(20px) scale(0.9);
+    animation: buttonAppear 0.8s ease-out forwards;
+    animation-delay: 2s;
+}
+
+@keyframes buttonAppear {
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.hero-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
 }
 
 .hero-button:hover {
     background-color: #222;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.hero-button:hover::before {
+    left: 100%;
+}
+
+.hero-button:hover .arrow {
+    transform: translateX(5px);
+}
+
+.hero-button:active {
+    transform: translateY(0);
 }
 
 .arrow {
     font-size: 16px;
+    transition: transform 0.3s ease;
 }
 
 .hero-image-container {
@@ -108,6 +164,17 @@
     width: 100%;
     max-width: 260px;
     aspect-ratio: 404/604;
+    opacity: 0;
+    transform: translateX(50px) scale(0.8);
+    animation: imageSlideIn 1.2s ease-out forwards;
+    animation-delay: 0.8s;
+}
+
+@keyframes imageSlideIn {
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
 }
 
 .hero-image {
@@ -119,7 +186,12 @@
     border: 1px solid #754F23;
     position: relative;
     background-color: white;
-     z-index: 1;
+    z-index: 1;
+    transition: transform 0.5s ease;
+}
+
+.hero-image:hover {
+    transform: scale(1.05);
 }
 
 .hero-arch {
@@ -137,43 +209,66 @@
     z-index: 0;
     background: transparent;
     pointer-events: none;
-}
-@keyframes pulseZoom {
-  0% {
     opacity: 0;
-    transform: scale(0.9);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
+    animation: archFadeIn 1s ease-out forwards;
+    animation-delay: 1.3s;
 }
 
-@keyframes rotateFadeIn {
-  0% {
-    opacity: 0;
-    transform: rotate(-15deg);
-  }
-  100% {
-    opacity: 1;
-    transform: rotate(-3.73deg);
-  }
+@keyframes archFadeIn {
+    0% {
+        opacity: 0;
+        transform: rotate(-15deg) scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: rotate(-3.73deg) scale(1);
+    }
 }
 
-.hero-image {
-  animation: pulseZoom 1.5s ease forwards;
-}
-
+/* Floating animation for the arch */
 .hero-arch {
-  animation: rotateFadeIn 1.5s ease forwards;
-  animation-delay: 0.5s;
+    animation: archFadeIn 1s ease-out forwards, float 3s ease-in-out infinite;
+    animation-delay: 1.3s, 2.5s;
 }
 
-/* Extra small devices (under 336px) */
+@keyframes float {
+    0%, 100% {
+        transform: rotate(-3.73deg) translateY(0);
+    }
+    50% {
+        transform: rotate(-3.73deg) translateY(-10px);
+    }
+}
+
+/* Parallax effect on scroll */
+.hero-section {
+    position: relative;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 0%, rgba(117, 79, 35, 0.05) 50%, transparent 100%);
+    pointer-events: none;
+    opacity: 0;
+    animation: backgroundShimmer 2s ease-in-out infinite;
+    animation-delay: 3s;
+}
+
+@keyframes backgroundShimmer {
+    0%, 100% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Enhanced responsive animations */
 @media (max-width: 335px) {
     .hero-section {
         padding: 15px 8px;
@@ -204,18 +299,15 @@
     .hero-image-container {
         max-width: 220px;
         height: auto;
-        
     }
     
     .hero-image,
     .hero-arch {
-        
         border-top-left-radius: 100px;
         border-top-right-radius: 100px;
     }
 }
 
-/* Small mobile devices (336px to 575px) */
 @media (min-width: 336px) and (max-width: 575px) {
     .hero-section {
         padding: 25px 15px;
@@ -246,7 +338,6 @@
     }
 }
 
-/* Small devices (576px to 767px) */
 @media (min-width: 576px) {
     .hero-section {
         padding: 30px 20px;
@@ -277,7 +368,6 @@
     }
 }
 
-/* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) {
     .hero-section {
         padding: 60px 40px;
@@ -294,6 +384,7 @@
         text-align: left;
         width: 50%;
         max-width: 585px;
+        transform: translateX(-30px);
     }
     
     .hero-title {
@@ -313,6 +404,7 @@
     
     .hero-image-container {
         max-width: 380px;
+        transform: translateX(30px) scale(0.8);
     }
     
     .hero-image,
@@ -322,7 +414,6 @@
     }
 }
 
-/* Large devices (desktops, 1024px and up) */
 @media (min-width: 1024px) {
     .hero-section {
         padding: 80px 60px;
@@ -358,7 +449,6 @@
     }
 }
 
-/* Extra large devices (large desktops, 1440px and up) */
 @media (min-width: 1440px) {
     .hero-title {
         font-size: 96px;
@@ -371,5 +461,14 @@
     
     .hero-button {
         font-size: 24px;
+    }
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
     }
 }
