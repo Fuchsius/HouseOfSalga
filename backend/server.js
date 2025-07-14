@@ -9,7 +9,7 @@ const reviewRoutes = require("./routes/reviewRoutes");
 const checkoutRoutes = require("./routes/checkout");
 const wishlistRoutes = require("./routes/wishlist");
 //Shop and Cart Routes
-const productRoutes = require("./routes/products");
+const shopProductsRoutes = require("./routes/shopProducts");
 const cartRoutes = require("./routes/cart");
 const discountRoutes = require("./routes/discount");
 
@@ -34,7 +34,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/checkout", checkoutRoutes);
 app.use("/api/wishlist", wishlistRoutes);
 //shop and cart Routes
-app.use("/api/products", productRoutes);
+app.use("/api/shopProducts", shopProductsRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/discount", discountRoutes);
 // Start server
