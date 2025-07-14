@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Currency from "./currency";
-import DiscountCodeInput from "./discount-code";
-import CheckoutModal from "./checkout";
+// import DiscountCodeInput from "./discount-code";
+// import CheckoutModal from "./checkout";
 import ToastNotification from "./toast-notification";
 import { useCurrency } from "./useCurrency";
 import "./order-summary.css";
@@ -15,7 +16,8 @@ export default function OrderSummary({
   itemCount = 0,
   hideCheckoutButton = false,
 }) {
-  const [showCheckoutModal, setShowCheckoutModal] = useState(false);
+  // Removed showCheckoutModal state (not used)
+  const navigate = useNavigate();
   const [showToast, setShowToast] = useState(false);
   const [checkoutMessage, setCheckoutMessage] = useState("");
   const {
@@ -26,20 +28,13 @@ export default function OrderSummary({
   } = useCurrency();
 
   const handleCheckout = () => {
-    if (itemCount === 0) {
-      setCheckoutMessage("Your Cart is empty! Add some items first.");
-      setShowToast(true);
-      return;
-    }
-
     if (total < 500) {
       setCheckoutMessage("Minimum order amount is Rs.500");
       setShowToast(true);
       return;
     }
-
-    setCheckoutMessage("🎉 Great choice! Your order is ready for checkout.");
-    setShowCheckoutModal(true);
+    // Always navigate to checkout page
+    navigate("/checkout");
   };
 
   return (
@@ -95,15 +90,7 @@ export default function OrderSummary({
         </div>
       </div>
 
-      <CheckoutModal
-        isOpen={showCheckoutModal}
-        onClose={() => setShowCheckoutModal(false)}
-        cartTotal={total}
-        itemCount={itemCount}
-        subtotal={subtotal}
-        tax={tax}
-        deliveryFee={deliveryFee}
-      />
+      {/* CheckoutModal removed for cart page, navigation used instead */}
 
       {showToast && (
         <ToastNotification
