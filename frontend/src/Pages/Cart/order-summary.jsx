@@ -13,6 +13,7 @@ export default function OrderSummary({
   total,
   loading,
   itemCount = 0,
+  hideCheckoutButton = false,
 }) {
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
@@ -77,13 +78,16 @@ export default function OrderSummary({
 
 
 
-        <button
-          onClick={handleCheckout}
-          className="checkout-btn"
-          disabled={loading}
-        >
-          {loading ? "Processing..." : "Go to Checkout"}
-        </button>
+
+        {!hideCheckoutButton && (
+          <button
+            onClick={handleCheckout}
+            className="checkout-btn"
+            disabled={loading}
+          >
+            {loading ? "Processing..." : "Go to Checkout"}
+          </button>
+        )}
 
         <div className="info-text">
           🔒 Secure checkout • 📦 Free delivery on orders above {currencySymbol}
