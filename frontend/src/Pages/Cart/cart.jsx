@@ -10,51 +10,53 @@ import "./cart.css";
 import Breadcrumb from "../../Components/breadcrumb";
 
 export default function CartPage() {
-  const { cart, loading, error, updateQuantity, removeItem, applyDiscount } =
-    useCart();
+
+  const { cart, loading, error, updateQuantity, removeItem, applyDiscount } = useCart();
   const { formatPrice } = useCurrency();
 
-  // Loading and error states
-  if (loading && !cart) {
-    return (
-      <div className="cart-page-loading-container">
-        <div className="cart-page-loading-text">Loading cart...</div>
-      </div>
-    );
+  // Try to use backend cart, fallback to localStorage cart
+  let cartItems = cart?.items || [];
+  let subtotal = cart?.subtotal || 0;
+  let tax = cart?.tax || 250;
+  let deliveryFee = cart?.deliveryFee || 150;
+  let total = cart?.total || 0;
+  // Discount removed
+
+  // If backend cart is empty, use localStorage cart
+  if ((!cartItems || cartItems.length === 0) && typeof window !== 'undefined') {
+    const localCart = JSON.parse(localStorage.getItem('cart') || '[]');
+    cartItems = localCart;
+    subtotal = localCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    total = subtotal + tax + deliveryFee;
   }
 
-  if (error) {
-    return (
-      <div className="cart-page-loading-container">
-        <div className="cart-page-error-text">Error: {error}</div>
-      </div>
-    );
-  }
-
-  // Use backend data instead of static data
-  const cartItems = cart?.items || [];
-  const subtotal = cart?.subtotal || 0;
-  const tax = cart?.tax || 250;
-  const deliveryFee = cart?.deliveryFee || 150;
-  const total = cart?.total || 0;
-  const discountAmount = cart?.discountAmount || 0;
-  const discountCode = cart?.discountCode || "";
-
-  // Update quantity function to use backend
+  // Update quantity for localStorage cart
   const handleUpdateQuantity = (itemId, newQuantity) => {
     if (newQuantity < 1) return;
-    updateQuantity(itemId, newQuantity);
+    if (cartItems && cartItems.find(i => i._id === itemId)) {
+      // Update localStorage cart
+      const updated = cartItems.map(item =>
+        item._id === itemId ? { ...item, quantity: newQuantity } : item
+      );
+      localStorage.setItem('cart', JSON.stringify(updated));
+      window.location.reload();
+    } else {
+      updateQuantity(itemId, newQuantity);
+    }
   };
 
-  // Remove item function to use backend
+  // Remove item for localStorage cart
   const handleRemoveItem = (itemId) => {
-    removeItem(itemId);
+    if (cartItems && cartItems.find(i => i._id === itemId)) {
+      const updated = cartItems.filter(item => item._id !== itemId);
+      localStorage.setItem('cart', JSON.stringify(updated));
+      window.location.reload();
+    } else {
+      removeItem(itemId);
+    }
   };
 
-  // Apply discount function
-  const handleApplyDiscount = async (discountCode) => {
-    return await applyDiscount(discountCode);
-  };
+  // Discount removed
 
   return (
     <>
@@ -83,10 +85,7 @@ export default function CartPage() {
                 tax={tax}
                 deliveryFee={deliveryFee}
                 total={total}
-                discountAmount={discountAmount} // Pass discount amount
-                discountCode={discountCode} // Pass discount code
-                onApplyDiscount={handleApplyDiscount} // Pass discount function
-                loading={loading} // Pass loading state
+                loading={loading}
               />
             </div>
           </div>
