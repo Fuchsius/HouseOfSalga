@@ -1,138 +1,115 @@
-.order-summary {
-  background-color: #f0eadc;
-  border-radius: 20px;
-  padding-left: 24px;
-  padding-bottom: 10px;
-  padding-right: 24px;
-  padding-top: 10px;
 
-  font-family: Arial, sans-serif;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  font-family: "wilkysta";
-  max-width: 800px;
-  max-height: 700px;
-  top: 316px;
-  left: 833px;
-  border: 1px;
-  gap: 30px;
-}
+import { useCart } from "./useCart";
+import CartItems from "./cart-items";
+import OrderSummary from "./order-summary";
+import Footer from "../../Components/Footer/Footer";
+import Header from "../../Components/Header/Header";
+import { useCurrency } from "./useCurrency";
+import React, { useState, useEffect } from "react";
+import "./cart.css";
+import Breadcrumb from "../../Components/breadcrumb";
 
-.currency-row {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 1rem;
-  width: 108px;
-  height: 28px;
-  top: 10px;
-  left: 24px;
-}
 
-.summary-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #1a202c;
-  margin-bottom: 1.5rem;
-  text-align: center;
-  position: relative;
-  padding-bottom: 0.5rem;
-}
+export default function CartPage() {
+  const { cart, loading, error, updateQuantity, removeItem, applyDiscount } = useCart();
+  const { formatPrice } = useCurrency();
+  const [localCart, setLocalCart] = useState([]);
+  const [useLocal, setUseLocal] = useState(false);
+  const tax = 250;
+  const deliveryFee = 150;
 
-.summary-section {
-  border-top: 1px solid #e2e8f0;
-  padding-top: 1px;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  height: 212px;
-}
+  useEffect(() => {
+    // If backend cart is empty, use localStorage cart
+    if ((!cart?.items || cart.items.length === 0) && typeof window !== 'undefined') {
+      const stored = JSON.parse(localStorage.getItem('cart') || '[]');
+      setLocalCart(stored);
+      setUseLocal(true);
+    } else {
+      setUseLocal(false);
+    }
+  }, [cart]);
 
-.summary-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+  // Deduplicate localCart by _id, size, color and sum quantities
+  function deduplicateCart(items) {
+    const map = new Map();
+    for (const item of items) {
+      const size = item.selectedSize || item.size || (Array.isArray(item.sizes) ? item.sizes[0] : null) || null;
+      const color = item.selectedColor || item.color || (Array.isArray(item.colors) ? item.colors[0] : null) || null;
+      const key = `${item._id || ''}|${size || ''}|${color || ''}`;
+      if (map.has(key)) {
+        map.get(key).quantity += item.quantity || 1;
+      } else {
+        map.set(key, { ...item, selectedSize: size, selectedColor: color, quantity: item.quantity || 1 });
+      }
+    }
+    return Array.from(map.values());
+  }
 
-.label {
-  font-size: 1rem;
+  let cartItems = useLocal ? deduplicateCart(localCart) : (cart?.items || []);
+  let subtotal = useLocal
+    ? cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+    : cart?.subtotal || 0;
+  let total = subtotal + tax + deliveryFee;
 
-}
+  // Update quantity for localStorage cart
+  const handleUpdateQuantity = (itemId, newQuantity) => {
+    if (newQuantity < 1) return;
+    if (useLocal) {
+      const updated = localCart.map(item =>
+        item._id === itemId ? { ...item, quantity: newQuantity } : item
+      );
+      setLocalCart(updated);
+      localStorage.setItem('cart', JSON.stringify(updated));
+    } else {
+      updateQuantity(itemId, newQuantity);
+    }
+  };
 
-.value {
-  font-size: 1rem;
-  font-weight: 500;
-  color: #1a202c;
-}
+  // Remove item for localStorage cart
+  const handleRemoveItem = (itemId) => {
+    if (useLocal) {
+      const updated = localCart.filter(item => item._id !== itemId);
+      setLocalCart(updated);
+      localStorage.setItem('cart', JSON.stringify(updated));
+    } else {
+      removeItem(itemId);
+    }
+  };
 
-.summary-row.discount .label {
-  color: #4a5568;
-}
+  return (
+    <>
+      <Header />
+      <div className="cart-page-container">
+        <div className="cart-page-content-wrapper">
+          <Breadcrumb paths={["Home", "Cart"]} />
+          <h1 className="cart-page-title">
+            My Cart
+            <span className="cart-page-title-underline"></span>
+          </h1>
 
-.summary-row.discount .value {
-  color: #4a5568;
-  font-weight: 600;
-}
-
-.summary-total {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-top: 1px dashed #cbd5e0;
-  padding-top: 1rem;
-  margin-top: 1rem;
-  font-family: "wilkysta";
-}
-
-.total-label {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #1a202c;
-}
-
-.total-value {
-  font-size: 20px;
-  font-weight: 700;
-  color: #1a202c;
-}
-
-.checkout-btn {
-  width: 100%;
-  background-color: #facc15;
-  color: #1a202c;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  font-size: 1.125rem;
-  font-weight: 600;
-  text-align: center;
-  transition: background-color 0.2s ease-in-out;
-  border: none;
-  cursor: pointer;
-  margin-top: 1.5rem;
-  font-family: "wilkysta";
-}
-
-.checkout-btn:hover:not(:disabled) {
-  background-color: #eab308;
-}
-
-.checkout-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  background-color: #fbd38d;
-  width: 407px;
-  height: 60px;
-  padding-left: 54px;
-  padding-bottom: 16px;
-  padding-right: 54px;
-  padding-top: 16px;
-  gap: 12px;
-}
-
-.info-text {
-  font-size: 0.875rem;
-  color: #4a5568;
-  text-align: center;
-  margin-top: 1px;
-  line-height: 1.5;
+          <div className="cart-page-layout">
+            <div className="cart-page-items-section">
+              <CartItems
+                items={cartItems}
+                updateQuantity={handleUpdateQuantity}
+                removeItem={handleRemoveItem}
+                loading={loading} // Pass loading state
+                formatPrice={formatPrice}
+              />
+            </div>
+            <div className="cart-page-summary-section">
+              <OrderSummary
+                subtotal={subtotal}
+                tax={tax}
+                deliveryFee={deliveryFee}
+                total={total}
+                loading={loading}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <Footer />
+    </>
+  );
 }
