@@ -11,9 +11,6 @@ export default function OrderSummary({
   tax,
   deliveryFee,
   total,
-  discountAmount,
-  discountCode,
-  onApplyDiscount,
   loading,
   itemCount = 0,
 }) {
@@ -70,12 +67,7 @@ export default function OrderSummary({
             <span className="value">{formatPrice(deliveryFee)}</span>
           </div>
 
-          {discountAmount > 0 && (
-            <div className="summary-row discount">
-              <span className="label">Discount ({discountCode})</span>
-              <span className="value">-{formatPrice(discountAmount)}</span>
-            </div>
-          )}
+
 
           <div className="summary-total">
             <span className="total-label">Total</span>
@@ -83,10 +75,7 @@ export default function OrderSummary({
           </div>
         </div>
 
-        <DiscountCodeInput
-          onApplyDiscount={onApplyDiscount}
-          loading={loading}
-        />
+
 
         <button
           onClick={handleCheckout}
@@ -107,6 +96,9 @@ export default function OrderSummary({
         onClose={() => setShowCheckoutModal(false)}
         cartTotal={total}
         itemCount={itemCount}
+        subtotal={subtotal}
+        tax={tax}
+        deliveryFee={deliveryFee}
       />
 
       {showToast && (

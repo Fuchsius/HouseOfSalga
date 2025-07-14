@@ -39,9 +39,28 @@ const Wishlist = () => {
 
   const handleAddToCart = (index) => {
     const item = wishlist[index];
-    navigate('/cart', {
-      state: { product: { ...item, quantity: 1 } },
-    });
+    if (!item) return;
+    // Use same logic as Product.jsx
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    // Check if product with same id, size, color exists
+    const selectedSize = item.size || item.selectedSize || (item.sizes && item.sizes[0]) || null;
+    const selectedColor = item.color || item.selectedColor || (item.colors && item.colors[0]) || null;
+    const existingIndex = cart.findIndex(
+      p => p._id === item._id && p.selectedSize === selectedSize && p.selectedColor === selectedColor
+    );
+    if (existingIndex !== -1) {
+      cart[existingIndex].quantity += 1;
+    } else {
+      cart.push({
+        ...item,
+        selectedSize,
+        selectedColor,
+        quantity: 1
+      });
+    }
+    localStorage.setItem('cart', JSON.stringify(cart));
+    window.dispatchEvent(new Event('cartChanged'));
+    navigate('/cart');
   };
 
   const handleRemove = async (index) => {
