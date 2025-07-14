@@ -3,8 +3,25 @@ import styles from './CheckoutForm.module.css';
 import CardIcons from './CardIcons';
 import { FaMapMarkerAlt, FaTimes } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import OrderSummary from '../../Pages/Cart/order-summary';
 
 export default function CheckoutForm() {
+  // Cart summary state for OrderSummary
+  const [cartItems, setCartItems] = useState([]);
+  const [subtotal, setSubtotal] = useState(0);
+  const [tax] = useState(250);
+  const [deliveryFee] = useState(150);
+  const [total, setTotal] = useState(0);
+
+  useEffect(() => {
+    // Get cart from localStorage (or backend if needed)
+    const stored = JSON.parse(localStorage.getItem('cart') || '[]');
+    setCartItems(stored);
+    const sub = stored.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    setSubtotal(sub);
+    setTotal(sub + tax + deliveryFee);
+  }, [tax, deliveryFee]);
+
   const [form, setForm] = useState({
     firstName: '', lastName: '', country: '', company: '', address: '',
     apt: '', city: '', state: '', postal: '', phone: '',
@@ -135,11 +152,12 @@ export default function CheckoutForm() {
   };
 
   return (
-    <form className={styles['form-root']} onSubmit={showDelivery ? handleSubmit : handleContinue}>
-      {/* Billing Details */}
-      <div>
-        <div className={styles['checkout-title']}>Billing Details</div>
-        <div className={styles['form-grid']}>
+    <div className={styles['checkout-layout']}>
+      <form className={styles['form-root']} onSubmit={showDelivery ? handleSubmit : handleContinue}>
+        {/* Billing Details */}
+        <div>
+          <div className={styles['checkout-title']}>Billing Details</div>
+          <div className={styles['form-grid']}>
           <div className={styles['form-row']}>
             <label htmlFor="firstName">First Name</label>
             <input id="firstName" name="firstName" placeholder="First Name" value={form.firstName} onChange={handleChange} required />
@@ -303,6 +321,7 @@ export default function CheckoutForm() {
               Paypal
             </label>
           </div>
+          {/* Order Summary moved to sidebar */}
           <button className={styles['pay-btn']} type="submit">Pay Now</button>
           {showMessage && (
             <div className="success-message" style={{textAlign: 'center', margin: '20px 0', color: 'green', background: '#fff', border: '1px solid #4BB543', borderRadius: 8, padding: 16, position: 'fixed', top: '30%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999}}>
@@ -313,6 +332,19 @@ export default function CheckoutForm() {
           )}
         </div>
       </>}
-    </form>
+      </form>
+      {/* Sidebar Order Summary */}
+      <aside className={styles['order-summary-sidebar']}>
+        <OrderSummary
+          subtotal={subtotal}
+          tax={tax}
+          deliveryFee={deliveryFee}
+          total={total}
+          loading={false}
+          itemCount={cartItems.reduce((sum, item) => sum + item.quantity, 0)}
+          hideCheckoutButton={true}
+        />
+      </aside>
+    </div>
   );
 } 
