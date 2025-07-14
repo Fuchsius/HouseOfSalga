@@ -163,10 +163,9 @@ const Product = () => {
   // Add to cart: store in localStorage and update cart count
   const handleAddToCart = () => {
     if (!product) return;
-    alert('Add to Cart function called!');
-    // Fallbacks for size/color
-    const size = selectedSize || (product.sizes && product.sizes[0]) || null;
-    const color = selectedColor || (product.colors && product.colors[0]) || null;
+    // Standardize size/color selection
+    const size = selectedSize || product.selectedSize || product.size || (product.sizes && product.sizes[0]) || null;
+    const color = selectedColor || product.selectedColor || product.color || (product.colors && product.colors[0]) || null;
     let cart;
     try {
       cart = JSON.parse(localStorage.getItem('cart'));
@@ -174,8 +173,8 @@ const Product = () => {
     } catch {
       cart = [];
     }
-    // Check if product with same id, size, color exists
-    const existingIndex = cart.findIndex(item => item._id === product._id && item.selectedSize === size && item.selectedColor === color);
+    // Deduplicate by _id, size, color
+    const existingIndex = cart.findIndex(item => item._id === product._id && (item.selectedSize || item.size || null) === size && (item.selectedColor || item.color || null) === color);
     if (existingIndex !== -1) {
       cart[existingIndex].quantity += quantity;
     } else {
@@ -188,7 +187,6 @@ const Product = () => {
     }
     localStorage.setItem('cart', JSON.stringify(cart));
     window.dispatchEvent(new Event('cartChanged'));
-    alert('Cart now has ' + cart.length + ' items.');
     navigate('/cart');
   };
 
