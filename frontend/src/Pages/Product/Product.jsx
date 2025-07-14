@@ -20,7 +20,11 @@ import RatingStars from '../../Components/RatingStars/RatingStars';
 import ProductTabs from '../../Components/ProductTabs/ProductTabs';
 import Footer from '../../Components/Footer/Footer';
 import Header from '../../Components/Header/Header';
+
 import styles from './Product.module.css';
+
+const BASE_URL = 'http://localhost:5000/api';
+const WISHLIST_URL = `${BASE_URL}/wishlist`;
 
 const Product = () => {
   const { id } = useParams();
@@ -44,6 +48,29 @@ const Product = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [wishlistIds, setWishlistIds] = useState([]);
+  // Fetch user's wishlist IDs on mount and when product changes
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token || !product?._id) return;
+    fetch(`${WISHLIST_URL}/me`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+      .then(res => {
+        if (res.status === 401) {
+          alert('Session expired. Please log in again.');
+          window.location.href = '/signin';
+          return null;
+        }
+        return res.ok ? res.json() : null;
+      })
+      .then(data => {
+        if (!data) return;
+        const ids = data?.products?.map(p => p._id) || [];
+        setWishlistIds(ids);
+        setIsFavorite(ids.includes(product._id));
+      });
+  }, [product?._id]);
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('description');
 
@@ -159,25 +186,48 @@ const Product = () => {
     });
   };
 
-  // Wishlist handler
-  const handleAddToWishlist = () => {
-    if (!product) return;
-    const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
-    // Prevent duplicates (by _id or name)
-    const exists = wishlist.some(item => item._id === product._id || item.name === product.name);
-    if (!exists) {
-      wishlist.push({
-        ...product,
-        selectedSize,
-        selectedColor,
-        quantity
+  // Wishlist handler (API-based, like ProductCard)
+  const handleWishlistToggle = async () => {
+    if (!product?._id) return;
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Please log in first.');
+      window.location.href = '/signin';
+      return;
+    }
+    const isInWishlist = wishlistIds.includes(product._id);
+    const method = isInWishlist ? 'DELETE' : 'POST';
+    try {
+      const response = await fetch(`${WISHLIST_URL}/${product._id}`, {
+        method,
+        headers: { 'Authorization': `Bearer ${token}` }
       });
-      localStorage.setItem('wishlist', JSON.stringify(wishlist));
-      window.dispatchEvent(new Event('wishlistChanged'));
-      setIsFavorite(true);
-      alert('Added to wishlist!');
-    } else {
-      alert('Already in wishlist!');
+      if (response.status === 401) {
+        alert('Session expired. Please log in again.');
+        window.location.href = '/signin';
+        return;
+      }
+      if (!response.ok) {
+        const error = await response.json();
+        return alert(`Error: ${error.error || response.statusText}`);
+      }
+      // Refetch wishlist IDs
+      const updated = await fetch(`${WISHLIST_URL}/me`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      }).then(res => {
+        if (res.status === 401) {
+          alert('Session expired. Please log in again.');
+          window.location.href = '/signin';
+          return null;
+        }
+        return res.json();
+      });
+      if (!updated) return;
+      const updatedIds = updated?.products?.map(p => p._id) || [];
+      setWishlistIds(updatedIds);
+      setIsFavorite(updatedIds.includes(product._id));
+    } catch (err) {
+      alert('Network error while updating wishlist.');
     }
   };
 
@@ -323,14 +373,9 @@ const Product = () => {
                 />
                 <button
                   className={styles.favoriteButtonTop}
-
-                 
-onClick={() => {
-                    handleAddToWishlist();
-                    setIsFavorite(!isFavorite);
-                  }}
+                  onClick={handleWishlistToggle}
+                  aria-label="Toggle favorite"
                 >
-                  
                   {isFavorite ? <FaHeart className={styles.filled} /> : <FaRegHeart />}
                 </button>
               </div>
