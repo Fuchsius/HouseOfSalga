@@ -1,97 +1,138 @@
-import { useCart } from "./useCart";
-import CartItems from "./cart-items";
-import OrderSummary from "./order-summary";
-import Footer from "../../Components/Footer/Footer";
-import Header from "../../Components/Header/Header";
+.order-summary {
+  background-color: #f0eadc;
+  border-radius: 20px;
+  padding-left: 24px;
+  padding-bottom: 10px;
+  padding-right: 24px;
+  padding-top: 10px;
 
-import { useCurrency } from "./useCurrency";
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  font-family: "wilkysta";
+  max-width: 800px;
+  max-height: 700px;
+  top: 316px;
+  left: 833px;
+  border: 1px;
+  gap: 30px;
+}
 
-import "./cart.css";
-import Breadcrumb from "../../Components/breadcrumb";
+.currency-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+  width: 108px;
+  height: 28px;
+  top: 10px;
+  left: 24px;
+}
 
-export default function CartPage() {
+.summary-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
 
-  const { cart, loading, error, updateQuantity, removeItem, applyDiscount } = useCart();
-  const { formatPrice } = useCurrency();
+.summary-section {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 1px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  height: 212px;
+}
 
-  // Try to use backend cart, fallback to localStorage cart
-  let cartItems = cart?.items || [];
-  let subtotal = cart?.subtotal || 0;
-  let tax = cart?.tax || 250;
-  let deliveryFee = cart?.deliveryFee || 150;
-  let total = cart?.total || 0;
-  // Discount removed
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-  // If backend cart is empty, use localStorage cart
-  if ((!cartItems || cartItems.length === 0) && typeof window !== 'undefined') {
-    const localCart = JSON.parse(localStorage.getItem('cart') || '[]');
-    cartItems = localCart;
-    subtotal = localCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    total = subtotal + tax + deliveryFee;
-  }
+.label {
+  font-size: 1rem;
 
-  // Update quantity for localStorage cart
-  const handleUpdateQuantity = (itemId, newQuantity) => {
-    if (newQuantity < 1) return;
-    if (cartItems && cartItems.find(i => i._id === itemId)) {
-      // Update localStorage cart
-      const updated = cartItems.map(item =>
-        item._id === itemId ? { ...item, quantity: newQuantity } : item
-      );
-      localStorage.setItem('cart', JSON.stringify(updated));
-      window.location.reload();
-    } else {
-      updateQuantity(itemId, newQuantity);
-    }
-  };
+}
 
-  // Remove item for localStorage cart
-  const handleRemoveItem = (itemId) => {
-    if (cartItems && cartItems.find(i => i._id === itemId)) {
-      const updated = cartItems.filter(item => item._id !== itemId);
-      localStorage.setItem('cart', JSON.stringify(updated));
-      window.location.reload();
-    } else {
-      removeItem(itemId);
-    }
-  };
+.value {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1a202c;
+}
 
-  // Discount removed
+.summary-row.discount .label {
+  color: #4a5568;
+}
 
-  return (
-    <>
-      <Header />
-      <div className="cart-page-container">
-        <div className="cart-page-content-wrapper">
-          <Breadcrumb paths={["Home", "Cart"]} />
-          <h1 className="cart-page-title">
-            My Cart
-            <span className="cart-page-title-underline"></span>
-          </h1>
+.summary-row.discount .value {
+  color: #4a5568;
+  font-weight: 600;
+}
 
-          <div className="cart-page-layout">
-            <div className="cart-page-items-section">
-              <CartItems
-                items={cartItems}
-                updateQuantity={handleUpdateQuantity}
-                removeItem={handleRemoveItem}
-                loading={loading} // Pass loading state
-                formatPrice={formatPrice}
-              />
-            </div>
-            <div className="cart-page-summary-section">
-              <OrderSummary
-                subtotal={subtotal}
-                tax={tax}
-                deliveryFee={deliveryFee}
-                total={total}
-                loading={loading}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-      <Footer />
-    </>
-  );
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px dashed #cbd5e0;
+  padding-top: 1rem;
+  margin-top: 1rem;
+  font-family: "wilkysta";
+}
+
+.total-label {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a202c;
+}
+
+.total-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a202c;
+}
+
+.checkout-btn {
+  width: 100%;
+  background-color: #facc15;
+  color: #1a202c;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  text-align: center;
+  transition: background-color 0.2s ease-in-out;
+  border: none;
+  cursor: pointer;
+  margin-top: 1.5rem;
+  font-family: "wilkysta";
+}
+
+.checkout-btn:hover:not(:disabled) {
+  background-color: #eab308;
+}
+
+.checkout-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background-color: #fbd38d;
+  width: 407px;
+  height: 60px;
+  padding-left: 54px;
+  padding-bottom: 16px;
+  padding-right: 54px;
+  padding-top: 16px;
+  gap: 12px;
+}
+
+.info-text {
+  font-size: 0.875rem;
+  color: #4a5568;
+  text-align: center;
+  margin-top: 1px;
+  line-height: 1.5;
 }
