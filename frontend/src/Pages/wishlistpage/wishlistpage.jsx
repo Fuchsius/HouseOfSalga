@@ -40,21 +40,25 @@ const Wishlist = () => {
   const handleAddToCart = (index) => {
     const item = wishlist[index];
     if (!item) return;
-    // Use same logic as Product.jsx
-    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    // Check if product with same id, size, color exists
-    const selectedSize = item.size || item.selectedSize || (item.sizes && item.sizes[0]) || null;
-    const selectedColor = item.color || item.selectedColor || (item.colors && item.colors[0]) || null;
-    const existingIndex = cart.findIndex(
-      p => p._id === item._id && p.selectedSize === selectedSize && p.selectedColor === selectedColor
-    );
+    // Standardize size/color selection
+    const size = item.selectedSize || item.size || (item.sizes && item.sizes[0]) || null;
+    const color = item.selectedColor || item.color || (item.colors && item.colors[0]) || null;
+    let cart;
+    try {
+      cart = JSON.parse(localStorage.getItem('cart'));
+      if (!Array.isArray(cart)) cart = [];
+    } catch {
+      cart = [];
+    }
+    // Deduplicate by _id, size, color
+    const existingIndex = cart.findIndex(p => p._id === item._id && (p.selectedSize || p.size || null) === size && (p.selectedColor || p.color || null) === color);
     if (existingIndex !== -1) {
       cart[existingIndex].quantity += 1;
     } else {
       cart.push({
         ...item,
-        selectedSize,
-        selectedColor,
+        selectedSize: size,
+        selectedColor: color,
         quantity: 1
       });
     }
