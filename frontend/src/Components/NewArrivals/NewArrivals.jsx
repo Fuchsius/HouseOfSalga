@@ -1,12 +1,25 @@
+
 import React, { useEffect, useState } from 'react';
 import './NewArrivals.css';
-import { useNavigate } from 'react-router-dom';
+import ProductCard from '../ProductCard/ProductCard';
+
 
 const NewArrivals = () => {
-  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true); // Controls initial fetch
   const [allLoaded, setAllLoaded] = useState(false); // Controls button visibility
+  // Add to Cart handler (same as Shop)
+  const handleAddToCart = (product) => {
+    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    const existing = cart.find(item => item._id === product._id || item.id === product.id);
+    if (existing) {
+      existing.quantity = (existing.quantity || 1) + 1;
+    } else {
+      cart.push({ ...product, quantity: 1 });
+    }
+    localStorage.setItem('cart', JSON.stringify(cart));
+    alert(`${product.name} added to cart!`);
+  };
 
   useEffect(() => {
     const fetchNewArrivals = async () => {
@@ -29,9 +42,6 @@ const NewArrivals = () => {
     fetchNewArrivals();
   }, []);
 
-  const handleProductClick = (product) => {
-    navigate(`/product/${product._id}`);
-  };
 
   const handleLoadMore = async () => {
   try {
@@ -64,31 +74,11 @@ const NewArrivals = () => {
           {!loading && (
             <div className="products-grid1">
               {products.map((product) => (
-                <div
+                <ProductCard
                   key={product._id}
-                  className="product-card1"
-                  onClick={() => handleProductClick(product)}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <img
-                    src={product.images && product.images.length > 0 ? product.images[0] : ''}
-                    alt={product.name}
-                    className="new-arrivals-product-image"
-                  />
-                  <div className="new-arrivals-product-details">
-                    <p className="new-arrivals-product-name">{product.name}</p>
-                    <div className="new-arrivals-product-meta">
-                      <span className="new-arrivals-product-price">
-                        Rs. {product.price?.toFixed(2)}
-                      </span>
-                      <span className="new-arrivals-divider">|</span>
-                      <span className="new-arrivals-product-rating">
-                        {product.rating || 5.0}
-                      </span>
-                      <span className="new-arrivals-star">★</span>
-                    </div>
-                  </div>
-                </div>
+                  product={product}
+                  onAddToCart={handleAddToCart}
+                />
               ))}
             </div>
           )}

@@ -137,10 +137,35 @@ exports.getProductById = async (req, res) => {
 // @desc Get all products
 exports.getAllProducts = async (req, res) => {
   try {
-    const { category, inStock, limit } = req.query;
+    const { category, size, color, minPrice, maxPrice, inStock, limit } = req.query;
     const query = {};
 
-    if (category) query.category = category;
+    // Category filter (multi-value)
+    if (category) {
+      const categories = category.split(',').map(c => c.trim());
+      query.category = { $in: categories };
+    }
+
+    // Size filter (multi-value)
+    if (size) {
+      const sizes = size.split(',').map(s => s.trim());
+      query.sizes = { $in: sizes };
+    }
+
+    // Color filter (multi-value)
+    if (color) {
+      const colors = color.split(',').map(c => c.trim());
+      query.colors = { $in: colors };
+    }
+
+    // Price range filter
+    if (minPrice || maxPrice) {
+      query.price = {};
+      if (minPrice) query.price.$gte = Number(minPrice);
+      if (maxPrice) query.price.$lte = Number(maxPrice);
+    }
+
+    // In stock filter
     if (inStock === 'true') query.stock = { $gt: 0 };
 
     const products = await Product.find(query).limit(parseInt(limit) || 0);

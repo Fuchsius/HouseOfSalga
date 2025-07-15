@@ -7,6 +7,7 @@ import searchIcon from '../../Assets/magnifyingglass.png';
 import userIcon from '../../Assets/user.png';
 import cartIcon from '../../Assets/Frame 2609102 (1).png';
 import favIcon from '../../Assets/bag-04 (1).png';
+import { FaTrash } from 'react-icons/fa';
 
 function Header() {
   const [showWomenDropdown, setShowWomenDropdown] = useState(false);
@@ -18,6 +19,40 @@ function Header() {
   const [showActionPrompt, setShowActionPrompt] = useState(false);
   const [showCartPopup, setShowCartPopup] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false); // NEW
+  const [cartCount, setCartCount] = useState(0);
+  const [cartItems, setCartItems] = useState([]);
+  // Update cart count from localStorage
+  useEffect(() => {
+    async function updateCartCountAndItems() {
+      const token = localStorage.getItem('token');
+      if (token) {
+        // Fetch from backend
+        try {
+          const res = await fetch('http://localhost:5000/api/cart', {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            const count = data.items ? data.items.reduce((sum, item) => sum + (item.quantity || 1), 0) : 0;
+            setCartCount(count);
+            setCartItems(data.items || []);
+            return;
+          }
+        } catch {}
+      }
+      // Fallback to localStorage for guests
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      let count = 0;
+      if (Array.isArray(cart)) {
+        count = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+      }
+      setCartCount(count);
+      setCartItems(cart);
+    }
+    updateCartCountAndItems();
+    window.addEventListener('cart-updated', updateCartCountAndItems);
+    return () => window.removeEventListener('cart-updated', updateCartCountAndItems);
+  }, []);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -256,19 +291,47 @@ function Header() {
             )}
           </div>
 
-          <img
-            src={cartIcon}
-            alt="Cart"
-            className="icon"
-            onClick={handleWishlistClick}
-            style={{ cursor: 'pointer' }}
-          />
-          <img
-            src={favIcon}
-            alt="Favorite"
-            className="icon fav-icon"
-            onClick={handleCartClick}
-          />
+          {/* Heart icon (wishlist) with badge */}
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <img
+              src={cartIcon}
+              alt="Cart"
+              className="icon"
+              onClick={handleWishlistClick}
+              style={{ cursor: 'pointer' }}
+            />
+            {/* Wishlist badge */}
+            <WishlistBadge />
+          </div>
+
+          {/* Bag icon (cart) with badge */}
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <img
+              src={favIcon}
+              alt="Cart Bag"
+              className="icon fav-icon"
+              onClick={handleCartClick}
+              style={{ cursor: 'pointer' }}
+            />
+            {cartCount > 0 && (
+              <span
+                style={{
+                  position: 'absolute',
+                  top: '-8px',
+                  right: '-8px',
+                  background: 'red',
+                  color: 'white',
+                  borderRadius: '50%',
+                  padding: '2px 7px',
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  zIndex: 2,
+                }}
+              >
+                {cartCount}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
@@ -332,6 +395,7 @@ function Header() {
           <div
             className="cart-popup"
             onClick={(e) => e.stopPropagation()}
+            style={{ width: 600, minWidth: 0, maxWidth: '99vw', minHeight: 0, maxHeight: 660, borderRadius: 18, padding: 26 }}
           >
             <div className="cart-header">
               <span
@@ -354,42 +418,89 @@ function Header() {
               </span>
             </div>
 
-            <div className="cart-content">
-              <p
-                style={{
-                  color: '#000',
-                  textAlign: 'center',
-                  marginTop: '5px',
-                  fontSize: '21px',
-                }}
-              >
-                Cart items will appear here.
-              </p>
+            <div className="cart-content" style={{ minHeight: 180, maxHeight: 420, overflowY: 'auto', marginBottom: 20 }}>
+              {cartItems.length === 0 ? (
+                <p
+                  style={{
+                    color: '#000',
+                    textAlign: 'center',
+                    marginTop: '5px',
+                    fontSize: '18px',
+                  }}
+                >
+                  Cart is empty.
+                </p>
+              ) : (
+                <div>
+                  {cartItems.map((item, idx) => (
+                    <div key={item._id || item.id || idx} style={{ display: 'flex', alignItems: 'center', marginBottom: 8, borderBottom: '1px solid #eee', paddingBottom: 4 }}>
+                      <img src={item.product?.image || item.images?.[0] || '/images/placeholder.png'} alt={item.product?.name || item.name} style={{ width: 38, height: 38, objectFit: 'cover', borderRadius: 6, marginRight: 8 }} />
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontWeight: 600, fontSize: 14 }}>{item.product?.name || item.name}</div>
+                        <div style={{ fontSize: 12, color: '#555' }}>Rs. {(item.priceAtTime || item.price)?.toFixed(2)} {item.quantity ? `x${item.quantity}` : ''}</div>
+                        <div style={{ fontSize: 12, color: '#555' }}>Size: {item.size || item.selectedSize}</div>
+                        <div style={{ fontSize: 12, color: '#555' }}>Color: {item.color || item.selectedColor}</div>
+                      </div>
+                      <div style={{ fontWeight: 600, color: '#222', minWidth: 48, textAlign: 'right', fontSize: 13 }}>Rs. {((item.priceAtTime || item.price) * (item.quantity || 1)).toFixed(2)}</div>
+                      <button onClick={() => {
+                        // Remove item logic
+                        let updatedCart = [...cartItems];
+                        updatedCart.splice(idx, 1);
+                        setCartItems(updatedCart);
+                        const token = localStorage.getItem('token');
+                        if (token) {
+                          // Remove from backend
+                          fetch(`http://localhost:5000/api/cart/remove/${item._id || item.id}`, {
+                            method: 'DELETE',
+                            headers: { Authorization: `Bearer ${token}` }
+                          }).then(() => {
+                            window.dispatchEvent(new Event('cart-updated'));
+                          });
+                        } else {
+                          // Remove from localStorage
+                          localStorage.setItem('cart', JSON.stringify(updatedCart));
+                          window.dispatchEvent(new Event('cart-updated'));
+                        }
+                      }} style={{ background: 'none', border: 'none', color: '#ef4444', marginLeft: 8, cursor: 'pointer' }} title="Remove">
+                        <FaTrash />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
-            <div className="cart-footer">
+            <div className="cart-footer" style={{ borderTop: '1px solid #eee', paddingTop: 8 }}>
               <div
                 className="subtotal"
                 style={{
-                  fontSize: '21px',
+                  fontSize: '16px',
                   fontWeight: '600',
                   textAlign: 'center',
                   width: '100%',
-                  marginBottom: '12px'
+                  marginBottom: '8px'
                 }}
               >
-                Sub Total: $0.00
+                {(() => {
+                  let cart = [];
+                  try {
+                    cart = JSON.parse(localStorage.getItem('cart')) || [];
+                  } catch {}
+                  const subtotal = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
+                  return `Sub Total: Rs. ${subtotal.toFixed(2)}`;
+                })()}
               </div>
-
-              <div className="cart-buttons">
+              <div className="cart-buttons" style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
                 <button
                   className="view-cart-btn"
+                  style={{ padding: '6px 14px', fontSize: 14 }}
                   onClick={() => handleViewCartOrCheckout('view')}
                 >
                   View Cart
                 </button>
                 <button
                   className="checkout-btn"
+                  style={{ padding: '6px 14px', fontSize: 14 }}
                   onClick={() => handleViewCartOrCheckout('checkout')}
                 >
                   Checkout
@@ -419,7 +530,57 @@ function Header() {
 )}
 
     </header>
+   
   );
 }
 
 export default Header;
+
+// Move WishlistBadge function here, outside of Header
+
+export function WishlistBadge() {
+  const [wishlistCount, setWishlistCount] = React.useState(0);
+  React.useEffect(() => {
+    // Fetch wishlist count on mount
+    function fetchWishlistCount() {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      fetch('http://localhost:5000/api/wishlist', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+        .then(res => res.ok ? res.json() : null)
+        .then(data => {
+          const ids = data?.products?.map(p => p._id) || [];
+          setWishlistCount(ids.length);
+        })
+        .catch(() => {});
+    }
+    fetchWishlistCount();
+    function handleWishlistUpdate(e) {
+      setWishlistCount(e.detail.count);
+    }
+    window.addEventListener('wishlist-updated', handleWishlistUpdate);
+    return () => window.removeEventListener('wishlist-updated', handleWishlistUpdate);
+  }, []);
+  if (wishlistCount > 0) {
+    return (
+      <span
+        style={{
+          position: 'absolute',
+          top: '-8px',
+          right: '-8px',
+          background: '#111',
+          color: '#fff',
+          borderRadius: '50%',
+          padding: '2px 7px',
+          fontSize: '12px',
+          fontWeight: 'bold',
+          zIndex: 2,
+        }}
+      >
+        {wishlistCount}
+      </span>
+    );
+  }
+  return null;
+}

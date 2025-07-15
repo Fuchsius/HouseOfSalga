@@ -2,16 +2,17 @@ const express = require('express');
 const router = express.Router();
 const Cart = require('../models/Cart');
 const Product = require('../models/Product');
+const authenticateToken = require('../middleware/authenticateToken');
 
-// Get cart by userId
-router.get('/:userId', async (req, res) => {
+// Get cart for logged-in user
+router.get('/', authenticateToken, async (req, res) => {
     try {
-        let cart = await Cart.findOne({ userId: req.params.userId })
+        let cart = await Cart.findOne({ userId: req.user.id })
             .populate('items.product');
 
         if (!cart) {
             cart = new Cart({
-                userId: req.params.userId,
+                userId: req.user.id,
                 items: [],
                 subtotal: 0,
                 tax: 250,
@@ -28,15 +29,16 @@ router.get('/:userId', async (req, res) => {
     }
 });
 
-// Add item to cart - FIXED VERSION
-router.post('/add', async (req, res) => {
+// Add item to cart
+router.post('/add', authenticateToken, async (req, res) => {
     try {
-        const { userId, productId, quantity, size, color } = req.body;
+        const { productId, quantity, size, color } = req.body;
+        const userId = req.user.id;
 
         // Validate required fields
-        if (!userId || !productId || !quantity || !size || !color) {
+        if (!productId || !quantity || !size || !color) {
             return res.status(400).json({
-                message: 'Missing required fields: userId, productId, quantity, size, color'
+                message: 'Missing required fields: productId, quantity, size, color'
             });
         }
 
@@ -114,13 +116,14 @@ router.post('/add', async (req, res) => {
 });
 
 // Update item quantity
-router.put('/update-quantity', async (req, res) => {
+router.put('/update-quantity', authenticateToken, async (req, res) => {
     try {
-        const { userId, itemId, quantity } = req.body;
+        const { itemId, quantity } = req.body;
+        const userId = req.user.id;
 
-        if (!userId || !itemId || quantity === undefined) {
+        if (!itemId || quantity === undefined) {
             return res.status(400).json({
-                message: 'Missing required fields: userId, itemId, quantity'
+                message: 'Missing required fields: itemId, quantity'
             });
         }
 
@@ -157,9 +160,10 @@ router.put('/update-quantity', async (req, res) => {
 });
 
 // Remove item from cart
-router.delete('/remove/:userId/:itemId', async (req, res) => {
+router.delete('/remove/:itemId', authenticateToken, async (req, res) => {
     try {
-        const { userId, itemId } = req.params;
+        const { itemId } = req.params;
+        const userId = req.user.id;
 
         const cart = await Cart.findOne({ userId });
         if (!cart) {
@@ -178,12 +182,13 @@ router.delete('/remove/:userId/:itemId', async (req, res) => {
 });
 
 // Apply discount code
-router.post('/apply-discount', async (req, res) => {
+router.post('/apply-discount', authenticateToken, async (req, res) => {
     try {
-        const { userId, discountCode } = req.body;
+        const { discountCode } = req.body;
+        const userId = req.user.id;
 
-        if (!userId || !discountCode) {
-            return res.status(400).json({ message: 'Missing userId or discountCode' });
+        if (!discountCode) {
+            return res.status(400).json({ message: 'Missing discountCode' });
         }
 
         const cart = await Cart.findOne({ userId });
@@ -233,9 +238,9 @@ router.post('/apply-discount', async (req, res) => {
 });
 
 // Remove discount
-router.post('/remove-discount', async (req, res) => {
+router.post('/remove-discount', authenticateToken, async (req, res) => {
     try {
-        const { userId } = req.body;
+        const userId = req.user.id;
 
         const cart = await Cart.findOne({ userId });
         if (!cart) {
@@ -255,9 +260,9 @@ router.post('/remove-discount', async (req, res) => {
 });
 
 // Get cart count
-router.get('/count/:userId', async (req, res) => {
+router.get('/count', authenticateToken, async (req, res) => {
     try {
-        const cart = await Cart.findOne({ userId: req.params.userId });
+        const cart = await Cart.findOne({ userId: req.user.id });
         const itemCount = cart ? cart.items.reduce((total, item) => total + item.quantity, 0) : 0;
         res.json({ count: itemCount });
     } catch (error) {
@@ -267,9 +272,9 @@ router.get('/count/:userId', async (req, res) => {
 });
 
 // Clear cart
-router.delete('/clear/:userId', async (req, res) => {
+router.delete('/clear', authenticateToken, async (req, res) => {
     try {
-        const cart = await Cart.findOne({ userId: req.params.userId });
+        const cart = await Cart.findOne({ userId: req.user.id });
         if (cart) {
             cart.items = [];
             cart.discountCode = '';

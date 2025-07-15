@@ -13,7 +13,6 @@ const ProductCard = ({ product, variant = 'small' }) => {
   const [wishlistIds, setWishlistIds] = useState([]);
   const navigate = useNavigate();
 
-  // Fetch user's wishlist IDs on mount
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) return;
@@ -32,9 +31,13 @@ const ProductCard = ({ product, variant = 'small' }) => {
         if (!data) return;
         const ids = data?.products?.map(p => p._id) || [];
         setWishlistIds(ids);
-        setIsFavorite(ids.includes(product._id));
+        setIsFavorite(ids.includes(product?._id));
       });
-  }, [product._id]);
+  }, [product?._id]);
+
+  if (!product || typeof product !== 'object') {
+    return null;
+  }
 
   const handleWishlistToggle = async (e) => {
     e.stopPropagation();
@@ -117,12 +120,73 @@ const ProductCard = ({ product, variant = 'small' }) => {
       <div className={styles.productInfo}>
         <h3 className={styles.productName}>{product.name}</h3>
         <div className={styles.productPrice}>Rs. {product.price?.toFixed(2)}</div>
+
         <div className={styles.ratingContainer}>
           <RatingStars rating={product.averageRating ?? product.rating} reviewCount={product.reviewCount} />
         </div>
+        <button
+          className={styles.addToCartButton}
+          onClick={async (e) => {
+            e.stopPropagation();
+            const token = localStorage.getItem('token');
+            // Always send a single string for size and color
+            const size = Array.isArray(product.sizes) ? product.sizes[0] : (product.size || 'M');
+            const color = Array.isArray(product.colors) ? product.colors[0] : (product.color || 'Default');
+            if (token) {
+              // Logged-in: Add to backend cart
+              try {
+                const response = await fetch('http://localhost:5000/api/cart/add', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                  },
+                  body: JSON.stringify({
+                    productId: product._id || product.id,
+                    quantity: 1,
+                    size,
+                    color
+                  })
+                });
+                if (!response.ok) {
+                  const error = await response.json();
+                  alert(error.message || 'Failed to add to cart');
+                  return;
+                }
+                alert('Added to cart!');
+                window.dispatchEvent(new Event('cart-updated'));
+              } catch (err) {
+                alert('Network error while adding to cart.');
+              }
+            } else {
+              // Guest: Add to localStorage cart
+              let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+              // Check if product with same id, size, color exists
+              const existingIndex = cart.findIndex(item =>
+                (item._id || item.id) === (product._id || product.id) &&
+                (item.size || item.selectedSize) === size &&
+                (item.color || item.selectedColor) === color
+              );
+              if (existingIndex !== -1) {
+                cart[existingIndex].quantity = (cart[existingIndex].quantity || 1) + 1;
+              } else {
+                cart.push({
+                  ...product,
+                  size,
+                  color,
+                  quantity: 1
+                });
+              }
+              localStorage.setItem('cart', JSON.stringify(cart));
+              alert('Added to cart!');
+              window.dispatchEvent(new Event('cart-updated'));
+            }
+          }}
+        >
+          Add to Cart
+        </button>
       </div>
     </div>
   );
 };
-
 export default ProductCard;

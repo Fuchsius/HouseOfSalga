@@ -4,9 +4,26 @@ import Header from "../../Components/Header/Header";
 import ShopHeader from "./shop-header";
 import ShopFooter from "./shop-footer";
 import FilterSidebar from "./filter-sidebar";
+
 import ProductCard from "../../Components/ProductCard/ProductCard";
 import Pagination from "./pagination";
 import { useEffect, useState } from "react";
+
+// Add to Cart handler
+const handleAddToCart = (product) => {
+  // Get cart from localStorage
+  let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+  // Check if product already in cart (by _id or id)
+  const existing = cart.find(item => item._id === product._id || item.id === product.id);
+  if (existing) {
+    existing.quantity = (existing.quantity || 1) + 1;
+  } else {
+    cart.push({ ...product, quantity: 1 });
+  }
+  localStorage.setItem('cart', JSON.stringify(cart));
+  // Optionally show a notification
+  alert(`${product.name} added to cart!`);
+};
 
 export default function ShopPage() {
   const [productData, setProductData] = useState([]);
@@ -32,14 +49,14 @@ export default function ShopPage() {
       if (filters.maxPrice && filters.maxPrice !== 10000) {
         queryParams.append("maxPrice", filters.maxPrice);
       }
-      if (filters.category) {
-        queryParams.append("category", filters.category);
+      if (filters.category && Array.isArray(filters.category) && filters.category.length > 0) {
+        queryParams.append("category", filters.category.join(","));
       }
-      if (filters.size) {
-        queryParams.append("size", filters.size);
+      if (filters.size && Array.isArray(filters.size) && filters.size.length > 0) {
+        queryParams.append("size", filters.size.join(","));
       }
       if (filters.colors && filters.colors.length > 0) {
-        queryParams.append("colors", filters.colors.join(","));
+        queryParams.append("color", filters.colors.join(","));
       }
       if (filters.sort) {
         queryParams.append("sort", filters.sort);
@@ -166,6 +183,7 @@ export default function ShopPage() {
                     <ProductCard
                       key={`first-${product.id}-${index}`}
                       product={product}
+                      onAddToCart={handleAddToCart}
                     />
                   ))}
                 </div>
@@ -197,6 +215,7 @@ export default function ShopPage() {
                       <ProductCard
                         key={`fourth-row-${product.id}-${index + 9}`}
                         product={product}
+                        onAddToCart={handleAddToCart}
                       />
                     ))}
                   </div>
@@ -211,6 +230,7 @@ export default function ShopPage() {
                     <ProductCard
                       key={`remaining-${product.id}-${index + 14}`}
                       product={product}
+                      onAddToCart={handleAddToCart}
                     />
                   ))}
                 </div>
@@ -242,7 +262,7 @@ export default function ShopPage() {
                     key={`mobile-${product.id}-${index}`}
                     className="flex justify-center"
                   >
-                    <ProductCard product={product} />
+                    <ProductCard product={product} onAddToCart={handleAddToCart} />
                   </div>
                 ))}
               </div>
