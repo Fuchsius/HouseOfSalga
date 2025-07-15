@@ -396,3 +396,8 @@
     color: #fff;
   }
 }
+@media (max-width: 1126px) {
+  .sidebar {
+    display: none !important;
+  }
+}

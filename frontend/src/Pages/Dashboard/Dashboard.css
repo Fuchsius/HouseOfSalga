@@ -20,28 +20,31 @@
 /* ========== Orders Header: flex row, no wrap, center vertically ========== */
 .orders-headers {
   display: flex;
-  justify-content: flex-start; /* Align left; adjust if needed */
-  align-items: center;         /* Vertically center all items */
-  gap: 16px;                   /* Spacing between items */
+  align-items: center;
+  justify-content: space-between; /* Spread items left and right */
   font-family: 'Wilkysta';
   font-size: 20px;
-  margin: 40px 0 20px;
-  flex-wrap: nowrap;           /* Prevent wrapping */
-  white-space: nowrap;         /* Prevent text wrap */
+  margin: 15px 0 20px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
+
+
+
 
 /* Make sure heading doesn't shrink */
 .orders-headers h2 {
   flex-shrink: 0;
 }
 
-/* Container for search and filter button */
+/* Container for search and filter: move to right */
 .search-filter {
   display: flex;
   gap: 10px;
-  flex-grow: 1;     /* Take remaining horizontal space */
-  min-width: 0;     /* Allow shrinking below min content width */
   align-items: center;
+  min-width: 0;
+  flex: 0 1 auto;
+  margin-left: auto; /* 👈 Push it to the far right */
 }
 
 /* Search input container grows to fill */

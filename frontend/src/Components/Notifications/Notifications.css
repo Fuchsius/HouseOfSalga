@@ -3,6 +3,7 @@
   padding: 40px 20px;
   background-color: #F0EADC;
   font-family: 'Playfair Display', serif;
+   flex-grow: 1;
 }
 
 .notifications-empty {
@@ -16,12 +17,7 @@
   min-height: 60vh;
 }
 
-.notifications-page {
-  flex-grow: 1;
-  padding: 56px 40px;
-  background-color: #F0EADC;
-  font-family: 'Playfair Display', serif;
-}
+
 
 .notifications-empty {
   font-size: 18px;
