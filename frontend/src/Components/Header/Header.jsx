@@ -110,10 +110,18 @@ function Header() {
   const confirmLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
+    // Optionally clear guest cart/wishlist:
+    localStorage.removeItem('cart');
+    localStorage.removeItem('wishlist');
     setIsLoggedIn(false);
     setUsername('');
+    setCartCount(0);        // Reset cart count
+    setCartItems([]);       // Reset cart items
     setShowUserMenu(false);
     setShowLogoutConfirm(false);
+    window.dispatchEvent(new Event('cart-updated')); // Force cart update
+    // If you have a similar state for wishlist, reset it too!
+    window.dispatchEvent(new CustomEvent('wishlist-updated', { detail: { count: 0 } })); // Force wishlist update
     navigate('/signup');
   };
 
@@ -482,11 +490,19 @@ function Header() {
                 }}
               >
                 {(() => {
-                  let cart = [];
-                  try {
-                    cart = JSON.parse(localStorage.getItem('cart')) || [];
-                  } catch {}
-                  const subtotal = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
+                  const token = localStorage.getItem('token');
+                  let subtotal = 0;
+                  if (token) {
+                    // Logged-in: use cartItems from backend
+                    subtotal = cartItems.reduce((sum, item) => sum + ((item.priceAtTime || item.price) * (item.quantity || 1)), 0);
+                  } else {
+                    // Guest: use localStorage
+                    let cart = [];
+                    try {
+                      cart = JSON.parse(localStorage.getItem('cart')) || [];
+                    } catch {}
+                    subtotal = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
+                  }
                   return `Sub Total: Rs. ${subtotal.toFixed(2)}`;
                 })()}
               </div>
