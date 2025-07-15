@@ -2,7 +2,7 @@ import './checkout.css';
 import Header from '../../Components/Header/Header';
 import Footer from '../../Components/Footer/Footer';
 import CheckoutForm from '../../Components/Checkout/CheckoutForm';
-import OrderSummary from '../../Components/Checkout/OrderSummary';
+
 import Breadcrumbs from '../../Components/Checkout/Breadcrumbs';
 
 export default function CheckoutPage() {
@@ -21,7 +21,7 @@ export default function CheckoutPage() {
             <CheckoutForm />
           </div>
           <div className="checkout-summary-card">
-            <OrderSummary />
+            
           </div>
         </div>
       </main>
