@@ -1,303 +1,180 @@
-import "./Shop.css";
-import Footer from "../../Components/Footer/Footer";
-import Header from "../../Components/Header/Header";
-import ShopHeader from "./shop-header";
-import ShopFooter from "./shop-footer";
-import FilterSidebar from "./filter-sidebar";
+.addToCartButton {
+  margin-top: 10px;
+  background: #4D1727;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 16px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.addToCartButton:hover {
+  background: #7a274a;
+}
+@font-face {
+  font-family: 'Wilkysta';
+  src: url('../../Assets/fonts/wilkysta.ttf') format('truetype');
+}
 
-import ProductCard from "../../Components/ProductCard/ProductCard";
-import Pagination from "./pagination";
-import { useEffect, useState } from "react";
+.productCard {
+  border: 1px solid #4D1727;
+  border-radius: 8px;
+  padding: 16px;
+  transition: all 0.3s ease;
+  font-family: 'Wilkysta', sans-serif;
+  width: 98%;
+  backdrop-filter: blur(5px);
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 50px;
+}
 
-// Add to Cart handler
-const handleAddToCart = (product) => {
-  // Get cart from localStorage
-  let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-  // Check if product already in cart (by _id or id)
-  const existing = cart.find(item => item._id === product._id || item.id === product.id);
-  if (existing) {
-    existing.quantity = (existing.quantity || 1) + 1;
-  } else {
-    cart.push({ ...product, quantity: 1 });
+.productCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.productCard:hover::before {
+  border-color: #4D1727;
+  box-shadow: 0 0 10px rgba(77, 23, 39, 0.2);
+}
+
+.productImageContainer {
+  position: relative;
+  margin-bottom: 12px;
+  text-align: center;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.productImg {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.hoverScale {
+  transform: scale(1.05);
+}
+
+.favoriteButton {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  z-index: 2;
+  transition: all 0.3s ease;
+}
+
+.favoriteButton:hover {
+  transform: scale(1.1);
+}
+
+.buttonPop {
+  animation: pop 0.3s ease;
+}
+
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.filled {
+  color: #e63946;
+}
+
+.productInfo {
+  text-align: left;
+  margin-left: 15px;
+}
+
+.productName {
+  font-size: 14px;
+  color: #888;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+  transition: color 0.3s ease;
+}
+
+.productCard:hover .productName {
+  color: #666;
+}
+
+.productPrice {
+  font-weight: 600;
+  font-size: 20px;
+  color: #4D1727;
+  margin-bottom: 8px;
+  transition: color 0.3s ease;
+}
+
+.productCard:hover .productPrice {
+  color: #3a101f;
+}
+
+.ratingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.reviewCount {
+  font-size: 12px;
+  color: #666;
+}
+
+/* Grid */
+.productGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 1200px) {
+  .productGrid {
+    grid-template-columns: repeat(4, 1fr);
   }
-  localStorage.setItem('cart', JSON.stringify(cart));
-  // Optionally show a notification
-  alert(`${product.name} added to cart!`);
-};
+}
 
-export default function ShopPage() {
-  const [productData, setProductData] = useState([]);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [totalProducts, setTotalProducts] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 10;
+@media (max-width: 992px) {
+  .productGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
 
-  // Fetch products function
-  const fetchProducts = async (filters = {}) => {
-    setLoading(true);
-    setError(null);
+@media (max-width: 768px) {
+  .productGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
 
-    try {
-      // Build query string from filters
-      const queryParams = new URLSearchParams();
-
-      if (filters.minPrice && filters.minPrice !== 500) {
-        queryParams.append("minPrice", filters.minPrice);
-      }
-      if (filters.maxPrice && filters.maxPrice !== 10000) {
-        queryParams.append("maxPrice", filters.maxPrice);
-      }
-      if (filters.category && Array.isArray(filters.category) && filters.category.length > 0) {
-        queryParams.append("category", filters.category.join(","));
-      }
-      if (filters.size && Array.isArray(filters.size) && filters.size.length > 0) {
-        queryParams.append("size", filters.size.join(","));
-      }
-      if (filters.colors && filters.colors.length > 0) {
-        queryParams.append("color", filters.colors.join(","));
-      }
-      if (filters.sort) {
-        queryParams.append("sort", filters.sort);
-      }
-
-      const hasFilters = queryParams.toString().length > 0;
-      const url = hasFilters
-        ? `http://localhost:5000/api/products?${queryParams.toString()}`
-        : "http://localhost:5000/api/products";
-
-      console.log("Fetching from URL:", url);
-
-      const response = await fetch(url);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (data.success) {
-        setProductData(data.data);
-        setTotalProducts(data.count);
-        console.log("Products fetched successfully:", data.data);
-      } else {
-        throw new Error(data.message || "Failed to fetch products");
-      }
-    } catch (error) {
-      console.error("Failed to fetch products:", error);
-      setError(error.message);
-      setProductData([]);
-      setTotalProducts(0);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Fetch initial products on component mount
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  // Handle filter application from FilterSidebar
-  const handleApplyFilter = (filters) => {
-    console.log("Applying filters:", filters);
-    fetchProducts(filters);
-  };
-
-  // Transform backend data to frontend format
-  const products = productData.map((item, index) => {
-    // Generate a reliable ID with multiple fallbacks
-    const productId =
-      item._id ||
-      item.id ||
-      `product-${index}` ||
-      `fallback-${Date.now()}-${index}`;
-
-    return {
-      _id: productId,
-      id: productId,
-      name: item.name || `Product ${index + 1}`,
-      price: item.price || 0,
-      originalPrice: item.originalPrice,
-      images: item.image ? [item.image] : ["/placeholder.svg?height=300&width=300"],
-      image: item.image || "/placeholder.svg?height=300&width=300",
-      averageRating: item.averageRating || 4,
-      rating: Math.round(item.averageRating || 4),
-      reviewCount: item.reviewCount || 0,
-      reviews: item.reviewCount || 0,
-      isNew: item.isNew || false,
-      category: item.category,
-      size: item.size,
-      color: item.color,
-      description: item.description,
-      inStock: item.inStock !== false,
-      sort: item.sort,
-    };
-  });
-
-  return (
-    <>
-      <Header />
-
-      <div className="page-container">
-        <ShopHeader onApplyEdits={handleApplyFilter} />
-
-        <div className="px-4 py-6 mx-auto max-w-7xl">
-          {loading && (
-            <div className="centered">
-              <div>
-                <div className="spinner"></div>
-                <p className="loading-text">Loading products...</p>
-              </div>
-            </div>
-          )}
-
-          {error && (
-            <div className="error-box">
-              <p className="font-bold">Error:</p>
-              <p>{error}</p>
-              <button onClick={() => fetchProducts()} className="retry-btn">
-                Retry
-              </button>
-            </div>
-          )}
-
-          {!loading && !error && (
-            <div className="mb-6">
-              <h2 className="section-heading">Products</h2>
-              <p className="subtext">{totalProducts} products found</p>
-            </div>
-          )}
-
-          {/* Desktop Layout */}
-          <div className="gap-1 desktop-grid">
-            <div className="col-span-2">
-              <FilterSidebar onApplyFilter={handleApplyFilter} />
-            </div>
-
-            <div className="col-span-3">
-              {!loading && !error && products.length > 0 ? (
-                <div className="product-grid-3">
-                  {products.slice(0, 9).map((product, index) => (
-                    <ProductCard
-                      key={`first-${product.id}-${index}`}
-                      product={product}
-                      onAddToCart={handleAddToCart}
-                    />
-                  ))}
-                </div>
-              ) : (
-                !loading &&
-                !error && (
-                  <div className="py-12 text-center">
-                    <p className="subtext">
-                      No products found matching your filters.
-                    </p>
-                    <button
-                      onClick={() => fetchProducts()}
-                      className="mt-4 mobile-toggle-btn"
-                    >
-                      Show All Products
-                    </button>
-                  </div>
-                )
-              )}
-            </div>
-
-
-            {!loading && !error && products.length > 9 && (
-              <>
-                <div className="col-span-2"></div>
-                <div className="col-span-5">
-                  <div className="product-grid-5">
-                    {products.slice(9, 14).map((product, index) => (
-                      <ProductCard
-                        key={`fourth-row-${product.id}-${index + 9}`}
-                        product={product}
-                        onAddToCart={handleAddToCart}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
-
-            {!loading && !error && products.length > 14 && (
-              <div className="col-span-5">
-                <div className="product-grid-5">
-                  {products.slice(14).map((product, index) => (
-                    <ProductCard
-                      key={`remaining-${product.id}-${index + 14}`}
-                      product={product}
-                      onAddToCart={handleAddToCart}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="xl:hidden">
-            <div className="mb-4">
-              <button
-                className="mobile-toggle-btn"
-                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              >
-                {isSidebarOpen ? "Hide Filters" : "Show Filters"} (
-                {totalProducts} products)
-              </button>
-            </div>
-
-            {isSidebarOpen && (
-              <div className="sidebar-wrapper">
-                <FilterSidebar onApplyFilter={handleApplyFilter} />
-              </div>
-            )}
-
-            {!loading && !error && products.length > 0 ? (
-              <div className="mobile-grid">
-                {products.map((product, index) => (
-                  <div
-                    key={`mobile-${product.id}-${index}`}
-                    className="flex justify-center"
-                  >
-                    <ProductCard product={product} onAddToCart={handleAddToCart} />
-                  </div>
-                ))}
-              </div>
-            ) : (
-              !loading &&
-              !error && (
-                <div className="py-12 text-center">
-                  <p className="subtext">
-                    No products found matching your filters.
-                  </p>
-                  <button
-                    onClick={() => fetchProducts()}
-                    className="mt-4 mobile-toggle-btn"
-                  >
-                    Show All Products
-                  </button>
-                </div>
-              )
-            )}
-          </div>
-
-          {!loading && !error && products.length > 0 && (
-            <div className="pagination-container">
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={(page) => setCurrentPage(page)}
-              />
-            </div>
-          )}
-        </div>
-
-        <ShopFooter />
-      </div>
-      <Footer />
-    </>
-  );
+@media (max-width: 480px) {
+  .productGrid {
+    grid-template-columns: 1fr;
+  }
 }
