@@ -9,6 +9,16 @@ import cartIcon from '../../Assets/Frame 2609102 (1).png';
 import favIcon from '../../Assets/bag-04 (1).png';
 import { FaTrash } from 'react-icons/fa';
 
+function debounce(fn, delay) {
+  let timer = null;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      fn(...args);
+    }, delay);
+  };
+}
+
 function Header() {
   const [showWomenDropdown, setShowWomenDropdown] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -21,26 +31,31 @@ function Header() {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false); // NEW
   const [cartCount, setCartCount] = useState(0);
   const [cartItems, setCartItems] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState('');
+
   // Update cart count from localStorage
   useEffect(() => {
     async function updateCartCountAndItems() {
       const token = localStorage.getItem('token');
       if (token) {
-        // Fetch from backend
         try {
           const res = await fetch('http://localhost:5000/api/cart', {
-            headers: { Authorization: `Bearer ${token}` }
+            headers: { Authorization: `Bearer ${token}` },
           });
           if (res.ok) {
             const data = await res.json();
-            const count = data.items ? data.items.reduce((sum, item) => sum + (item.quantity || 1), 0) : 0;
+            const count = data.items
+              ? data.items.reduce((sum, item) => sum + (item.quantity || 1), 0)
+              : 0;
             setCartCount(count);
             setCartItems(data.items || []);
             return;
           }
         } catch {}
       }
-      // Fallback to localStorage for guests
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
       let count = 0;
       if (Array.isArray(cart)) {
@@ -110,18 +125,16 @@ function Header() {
   const confirmLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
-    // Optionally clear guest cart/wishlist:
     localStorage.removeItem('cart');
     localStorage.removeItem('wishlist');
     setIsLoggedIn(false);
     setUsername('');
-    setCartCount(0);        // Reset cart count
-    setCartItems([]);       // Reset cart items
+    setCartCount(0);
+    setCartItems([]);
     setShowUserMenu(false);
     setShowLogoutConfirm(false);
-    window.dispatchEvent(new Event('cart-updated')); // Force cart update
-    // If you have a similar state for wishlist, reset it too!
-    window.dispatchEvent(new CustomEvent('wishlist-updated', { detail: { count: 0 } })); // Force wishlist update
+    window.dispatchEvent(new Event('cart-updated'));
+    window.dispatchEvent(new CustomEvent('wishlist-updated', { detail: { count: 0 } }));
     navigate('/signup');
   };
 
@@ -150,13 +163,61 @@ function Header() {
     navigate('/wishlistpage');
   };
 
+  // Your async fetchSuggestions function stays here
+  const fetchSuggestions = async (query) => {
+    if (!query) {
+      setSuggestions([]);
+      setSearchError('');
+      return;
+    }
+
+    setSearchLoading(true);
+    setSearchError('');
+    try {
+      // Fetch normal products
+      const resProducts = await fetch(
+        `http://localhost:5000/api/products/search?query=${encodeURIComponent(query)}`
+      );
+      if (!resProducts.ok) throw new Error('Failed to fetch products');
+      const dataProducts = await resProducts.json();
+
+      // Fetch trending products
+      const resTrending = await fetch(
+        `http://localhost:5000/api/trending/search?query=${encodeURIComponent(query)}`
+      );
+      if (!resTrending.ok) throw new Error('Failed to fetch trending products');
+      const dataTrending = await resTrending.json();
+
+      // Combine results, avoiding duplicates by _id
+      const combinedMap = new Map();
+
+      if (dataProducts.success && Array.isArray(dataProducts.data)) {
+        dataProducts.data.forEach((prod) => combinedMap.set(prod._id, prod));
+      }
+
+      if (dataTrending.success && Array.isArray(dataTrending.data)) {
+        dataTrending.data.forEach((prod) => {
+          if (!combinedMap.has(prod._id)) combinedMap.set(prod._id, prod);
+        });
+      }
+
+      const combinedSuggestions = Array.from(combinedMap.values());
+
+      setSuggestions(combinedSuggestions);
+    } catch (err) {
+      console.error(err);
+      setSuggestions([]);
+    }
+    setSearchLoading(false);
+  };
+
+  // debounce your fetchSuggestions
+  const debouncedFetch = useRef(debounce(fetchSuggestions, 300)).current;
+
   return (
     <header className="header" ref={wrapperRef}>
       <div className="header-container">
-        <div
-          className="hamburger"
-          onClick={() => setShowMobileMenu((prev) => !prev)}
-        >
+        <div className="hamburger" onClick={() => setShowMobileMenu((prev) => !prev)}>
           <span></span>
           <span></span>
           <span></span>
@@ -175,16 +236,9 @@ function Header() {
             </Link>
 
             <div className="dropdown-wrapper">
-              <span
-                className="nav-item hover-link"
-                onClick={() => toggleDropdown('women')}
-              >
+              <span className="nav-item hover-link" onClick={() => toggleDropdown('women')}>
                 Women
-                <img
-                  src={dropdownIcon}
-                  alt="dropdown"
-                  className="dropdown-icon"
-                />
+                <img src={dropdownIcon} alt="dropdown" className="dropdown-icon" />
               </span>
 
               {showWomenDropdown && (
@@ -199,10 +253,50 @@ function Header() {
         </div>
 
         <div className="right-section">
-          <div className="search-bar">
+          <div className="search-bar" style={{ position: 'relative' }}>
             <img src={searchIcon} alt="search" className="search-icon" />
-            <input type="text" placeholder="Search" />
+            <input
+              type="text"
+              placeholder="Search"
+              value={searchQuery}
+              onChange={(e) => {
+                const val = e.target.value;
+                setSearchQuery(val);
+                debouncedFetch(val);
+              }}
+            />
+
+            {searchQuery && (
+              <div className="search-suggestions-box">
+                {searchLoading ? (
+                  <div className="suggestion-item" onClick={() => {}}>
+                    Loading…
+                  </div>
+                ) : suggestions.length === 0 ? (
+                  <div className="suggestion-item" onClick={() => {}}>
+                    No results found
+                  </div>
+                ) : (
+                  suggestions.map((prod) => (
+                    <div
+                      key={prod._id}
+                      className="suggestion-item"
+                      onClick={() => {
+                        if (prod._id === 'none') return;
+                        navigate(`/product/${prod._id}`);
+                        setSearchQuery('');
+                        setSuggestions([]);
+                      }}
+                    >
+                      {prod.name}
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
           </div>
+
+
 
           {isLoggedIn ? (
             <span
@@ -599,4 +693,5 @@ export function WishlistBadge() {
     );
   }
   return null;
+  
 }
