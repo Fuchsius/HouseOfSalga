@@ -1,6 +1,7 @@
-const express = require('express');
+const express = require('express'); 
 const router = express.Router();
-const {
+
+const { 
   createProduct,
   getAllProducts,
   getProductById,
@@ -9,7 +10,8 @@ const {
   getRecommendedProducts,
   getDefaultProduct,
   setDefaultProduct,
-  getNewArrivals
+  getNewArrivals,
+  searchProducts // ← added
 } = require('../controllers/product.controller');
 
 router.route('/')
@@ -27,6 +29,10 @@ router.route('/recommended/:productId')
 
 router.route('/new-arrivals')
   .get(getNewArrivals);
+
+// 🔷 Add this route
+router.route('/search')
+  .get(searchProducts);
 
 router.route('/:id')
   .get(getProductById)
