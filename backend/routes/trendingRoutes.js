@@ -8,4 +8,7 @@ router.get('/', trendingController.getAllTrendingProducts);
 // POST /api/trending
 router.post('/', trendingController.createTrendingProduct);
 
+// NEW: GET /api/trending/search?query=...
+router.get('/search', trendingController.searchTrendingProducts);
+
 module.exports = router;
