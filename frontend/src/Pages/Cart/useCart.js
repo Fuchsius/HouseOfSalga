@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 
 const API_URL = "http://localhost:5000/api";
 
-export const useCart = () => {
+export const useCart = (userId = "user123") => {
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -10,10 +10,7 @@ export const useCart = () => {
   const fetchCart = useCallback(async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/cart`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const response = await fetch(`${API_URL}/cart/${userId}`);
       if (!response.ok) throw new Error("Failed to fetch Cart");
       const data = await response.json();
       setCart(data);
@@ -22,16 +19,15 @@ export const useCart = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [userId]);
 
   const updateQuantity = async (itemId, quantity) => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/cart/update-quantity`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ itemId, quantity }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, itemId, quantity }),
       });
 
       const data = await response.json();
@@ -51,12 +47,11 @@ export const useCart = () => {
   const removeItem = async (itemId) => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
+      console.log(`${API_URL}/cart/remove/${userId}/${itemId}`);
       const response = await fetch(
-        `${API_URL}/cart/remove/${itemId}`,
+        `${API_URL}/cart/remove/${userId}/${itemId}`,
         {
           method: "DELETE",
-          headers: { 'Authorization': `Bearer ${token}` }
         }
       );
       if (!response.ok) throw new Error("Failed to remove item");
@@ -72,11 +67,10 @@ export const useCart = () => {
   const applyDiscount = async (discountCode) => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/cart/apply-discount`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ discountCode }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, discountCode }),
       });
 
       const data = await response.json();

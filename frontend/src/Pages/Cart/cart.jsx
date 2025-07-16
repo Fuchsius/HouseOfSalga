@@ -1,79 +1,46 @@
-
-import { useCart } from "./useCart";
+import { useCart } from "../Cart/useCart";
 import CartItems from "./cart-items";
-import OrderSummary from "./order-summary";
+import OrderSummary from "../Cart/order-summary";
 import Footer from "../../Components/Footer/Footer";
 import Header from "../../Components/Header/Header";
-import { useCurrency } from "./useCurrency";
-import React, { useState, useEffect } from "react";
+import { useCurrency } from "../Cart/useCurrency";
 import "./cart.css";
 import Breadcrumb from "../../Components/breadcrumb";
 
-
 export default function CartPage() {
-  const { cart, loading, error, updateQuantity, removeItem, applyDiscount } = useCart();
+  const { cart, loading, error, updateQuantity, removeItem, applyDiscount } =
+    useCart();
   const { formatPrice } = useCurrency();
-  const [localCart, setLocalCart] = useState([]);
-  const [useLocal, setUseLocal] = useState(false);
-  const tax = 250;
-  const deliveryFee = 150;
 
-  useEffect(() => {
-    // If backend cart is empty, use localStorage cart
-    if ((!cart?.items || cart.items.length === 0) && typeof window !== 'undefined') {
-      const stored = JSON.parse(localStorage.getItem('cart') || '[]');
-      setLocalCart(stored);
-      setUseLocal(true);
-    } else {
-      setUseLocal(false);
-    }
-  }, [cart]);
-
-  // Deduplicate localCart by _id, size, color and sum quantities
-  function deduplicateCart(items) {
-    const map = new Map();
-    for (const item of items) {
-      const size = item.selectedSize || item.size || (Array.isArray(item.sizes) ? item.sizes[0] : null) || null;
-      const color = item.selectedColor || item.color || (Array.isArray(item.colors) ? item.colors[0] : null) || null;
-      const key = `${item._id || ''}|${size || ''}|${color || ''}`;
-      if (map.has(key)) {
-        map.get(key).quantity += item.quantity || 1;
-      } else {
-        map.set(key, { ...item, selectedSize: size, selectedColor: color, quantity: item.quantity || 1 });
-      }
-    }
-    return Array.from(map.values());
+  if (loading && !cart) {
+    return (
+      <div className="cart-page-loading-container">
+        <div className="cart-page-loading-text">Loading cart...</div>
+      </div>
+    );
   }
 
-  let cartItems = useLocal ? deduplicateCart(localCart) : (cart?.items || []);
-  let subtotal = useLocal
-    ? cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
-    : cart?.subtotal || 0;
-  let total = subtotal + tax + deliveryFee;
+  if (error) {
+    return (
+      <div className="cart-page-loading-container">
+        <div className="cart-page-error-text">Error: {error}</div>
+      </div>
+    );
+  }
 
-  // Update quantity for localStorage cart
+  const cartItems = cart?.items || [];
+
   const handleUpdateQuantity = (itemId, newQuantity) => {
     if (newQuantity < 1) return;
-    if (useLocal) {
-      const updated = localCart.map(item =>
-        item._id === itemId ? { ...item, quantity: newQuantity } : item
-      );
-      setLocalCart(updated);
-      localStorage.setItem('cart', JSON.stringify(updated));
-    } else {
-      updateQuantity(itemId, newQuantity);
-    }
+    updateQuantity(itemId, newQuantity);
   };
 
-  // Remove item for localStorage cart
   const handleRemoveItem = (itemId) => {
-    if (useLocal) {
-      const updated = localCart.filter(item => item._id !== itemId);
-      setLocalCart(updated);
-      localStorage.setItem('cart', JSON.stringify(updated));
-    } else {
-      removeItem(itemId);
-    }
+    removeItem(itemId);
+  };
+
+  const handleApplyDiscount = async (discountCode) => {
+    return await applyDiscount(discountCode);
   };
 
   return (
@@ -93,16 +60,19 @@ export default function CartPage() {
                 items={cartItems}
                 updateQuantity={handleUpdateQuantity}
                 removeItem={handleRemoveItem}
-                loading={loading} // Pass loading state
+                loading={loading}
                 formatPrice={formatPrice}
               />
             </div>
             <div className="cart-page-summary-section">
               <OrderSummary
-                subtotal={subtotal}
-                tax={tax}
-                deliveryFee={deliveryFee}
-                total={total}
+                subtotal={cart?.subtotal || 0}
+                tax={cart?.tax || 250}
+                deliveryFee={cart?.deliveryFee || 150}
+                total={cart?.total || 0}
+                discountAmount={cart?.discountAmount || 0}
+                discountCode={cart?.discountCode || ""}
+                onApplyDiscount={handleApplyDiscount}
                 loading={loading}
               />
             </div>

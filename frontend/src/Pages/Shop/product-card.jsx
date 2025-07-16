@@ -1,9 +1,9 @@
 import "./product-card.css";
 import { Heart, Star } from "lucide-react";
-import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { useState } from "react";
 
-const ProductCard = ({ product, isWishlisted, onWishlistClick }) => {
+const ProductCard = ({ product }) => {
+  const [isWishlisted, setIsWishlisted] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
 
@@ -30,6 +30,11 @@ const ProductCard = ({ product, isWishlisted, onWishlistClick }) => {
         : 0,
     reviews: product?.reviews || 0,
     image: product?.image,
+    description: product?.description || "",
+  };
+
+  const handleWishlistToggle = () => {
+    setIsWishlisted(!isWishlisted);
   };
 
   const handleImageError = () => {
@@ -50,7 +55,7 @@ const ProductCard = ({ product, isWishlisted, onWishlistClick }) => {
         {!imageLoaded && !imageError && (
           <div className="loading-overlay">Loading...</div>
         )}
-        {imageError && <div className="error-overlay">❌ Image Failed</div>}
+        {imageError && <div className="error-overlay">Image Failed</div>}
 
         <div className="product-image-container">
           <img
@@ -63,14 +68,13 @@ const ProductCard = ({ product, isWishlisted, onWishlistClick }) => {
         </div>
 
         <button
-          onClick={e => {
-            e.stopPropagation();
-            onWishlistClick && onWishlistClick(product);
-          }}
+          onClick={handleWishlistToggle}
           className="wishlist-button"
           aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
         >
-          {isWishlisted ? <FaHeart color="red" size={22} /> : <FaRegHeart color="#888" size={22} />}
+          <Heart
+            className={`wishlist-icon ${isWishlisted ? "wishlisted" : ""}`}
+          />
         </button>
       </div>
 

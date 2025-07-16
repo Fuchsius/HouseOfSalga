@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from "react";
 import { ShoppingBag, CreditCard, Truck } from "lucide-react";
 import "./checkout.css";
 
@@ -8,21 +7,6 @@ export default function CheckoutModal({
   cartTotal,
   itemCount,
 }) {
-  const [personalInfo, setPersonalInfo] = useState(null);
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) return;
-
-    fetch('http://localhost:5000/api/personal-info/me', {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-      .then(res => res.ok ? res.json() : null)
-      .then(data => {
-        if (data) setPersonalInfo(data);
-      });
-  }, []);
-
   if (!isOpen) return null;
 
   const handleProceedToPayment = () => {
@@ -55,17 +39,6 @@ export default function CheckoutModal({
             </span>
           </div>
         </div>
-
-        {/* Personal Info (auto-filled) */}
-        {personalInfo && (
-          <div className="modal-personal-info" style={{ margin: '16px 0', padding: '12px', background: '#f7f7f7', borderRadius: '6px' }}>
-            <h3 style={{ marginBottom: 8 }}>Your Details</h3>
-            <div><b>Name:</b> {personalInfo.firstName} {personalInfo.lastName}</div>
-            <div><b>Address:</b> {personalInfo.streetAddress}, {personalInfo.city}, {personalInfo.state}, {personalInfo.country}</div>
-            <div><b>Phone:</b> {personalInfo.phone}</div>
-            <div><b>Postal Code:</b> {personalInfo.postalCode}</div>
-          </div>
-        )}
 
         {/* Next Steps */}
         <div className="modal-benefits">

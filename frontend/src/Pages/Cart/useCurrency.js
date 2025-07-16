@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react"; // ✅ ADDED: useMemo import
+import { useState, useCallback, useMemo } from "react";
 
 export const useCurrency = () => {
   const [selectedCurrency, setSelectedCurrency] = useState("Rs");
@@ -17,7 +17,6 @@ export const useCurrency = () => {
     []
   );
 
-  // Convert price from base currency to selected currency
   const convertPrice = useCallback(
     (priceInBase) => {
       const rate = exchangeRates[selectedCurrency]?.rate || 1;
