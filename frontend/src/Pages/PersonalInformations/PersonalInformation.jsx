@@ -366,7 +366,8 @@ const PersonalInformation = () => {
                       </label>
                     </div>
                   </div>
-                </div>
+              
+               
                 <div className="button-group">
                   {isEditing ? (
                     <>
