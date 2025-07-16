@@ -6,19 +6,19 @@ import ShopFooter from "./shop-footer";
 import FilterSidebar from "./filter-sidebar";
 import ProductCard from "../../Components/ProductCard/ProductCard";
 import Pagination from "./pagination";
-import { useEffect, useState, useCallback, useMemo, useRef } from "react";
+import { useEffect, useState } from "react";
 
-const PRODUCTS_PER_PAGE = 9;
-const DEFAULT_FILTERS = {
-  minPrice: 0,
-  maxPrice: 50000,
-  category: '',
-  size: '',
-  colors: [],
-  sort: 'newest'
+const handleAddToCart = (product) => {
+  let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+  const existing = cart.find(item => item._id === product._id || item.id === product.id);
+  if (existing) {
+    existing.quantity = (existing.quantity || 1) + 1;
+  } else {
+    cart.push({ ...product, quantity: 1 });
+  }
+  localStorage.setItem('cart', JSON.stringify(cart));
+  alert(`${product.name} added to cart!`);
 };
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 export default function ShopPage() {
   const [productData, setProductData] = useState([]);
@@ -27,159 +27,83 @@ export default function ShopPage() {
   const [error, setError] = useState(null);
   const [totalProducts, setTotalProducts] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [filters, setFilters] = useState(DEFAULT_FILTERS);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const abortControllerRef = useRef(null);
+  const totalPages = 10;
 
-  const totalPages = useMemo(() => 
-    Math.ceil(totalProducts / PRODUCTS_PER_PAGE), 
-    [totalProducts]
-  );
-
-  const buildQueryParams = useCallback((filterParams, page = 1) => {
-    const queryParams = new URLSearchParams();
-    queryParams.append('page', page.toString());
-    queryParams.append('limit', PRODUCTS_PER_PAGE.toString());
-
-    if (Array.isArray(filterParams.category) && filterParams.category.length > 0) {
-      queryParams.append('category', filterParams.category.join(','));
-    }
-    if (Array.isArray(filterParams.size) && filterParams.size.length > 0) {
-      queryParams.append('size', filterParams.size.join(','));
-    }
-    if (Array.isArray(filterParams.colors) && filterParams.colors.length > 0) {
-      queryParams.append('color', filterParams.colors.join(','));
-    }
-    if (filterParams.minPrice > DEFAULT_FILTERS.minPrice) {
-      queryParams.append('minPrice', filterParams.minPrice.toString());
-    }
-    if (filterParams.maxPrice < DEFAULT_FILTERS.maxPrice) {
-      queryParams.append('maxPrice', filterParams.maxPrice.toString());
-    }
-    if (filterParams.sort && filterParams.sort !== DEFAULT_FILTERS.sort) {
-      queryParams.append('sort', filterParams.sort);
-    }
-
-    queryParams.append('inStock', 'true');
-    return queryParams;
-  }, []);
-
-  const fetchProducts = useCallback(async (filterParams, page) => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-
+  const fetchProducts = async (filters = {}) => {
     setLoading(true);
     setError(null);
 
     try {
-      const queryParams = buildQueryParams(filterParams, page);
-      const url = `${API_BASE_URL}/api/products?${queryParams.toString()}`;
+      const queryParams = new URLSearchParams();
 
-      const controller = new AbortController();
-      abortControllerRef.current = controller;
-      const timeoutId = setTimeout(() => controller.abort(), 15000);
+      if (filters.minPrice && filters.minPrice !== 500) {
+        queryParams.append("minPrice", filters.minPrice);
+      }
+      if (filters.maxPrice && filters.maxPrice !== 10000) {
+        queryParams.append("maxPrice", filters.maxPrice);
+      }
+      if (filters.category?.length > 0) {
+        queryParams.append("category", filters.category.join(","));
+      }
+      if (filters.size?.length > 0) {
+        queryParams.append("size", filters.size.join(","));
+      }
+      if (filters.colors?.length > 0) {
+        queryParams.append("color", filters.colors.join(","));
+      }
+      if (filters.sort) {
+        queryParams.append("sort", filters.sort);
+      }
 
-      const response = await fetch(url, {
-        signal: controller.signal,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      const url = queryParams.toString()
+        ? `http://localhost:5000/api/products?${queryParams.toString()}`
+        : "http://localhost:5000/api/products";
 
-      clearTimeout(timeoutId);
-
+      const response = await fetch(url);
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
       const data = await response.json();
-
       if (data.success) {
-        setProductData(data.data || []);
-        setTotalProducts(data.pagination?.totalProducts || data.count || 0);
+        setProductData(data.data);
+        setTotalProducts(data.count);
       } else {
-        throw new Error(data.message || 'Failed to fetch products');
+        throw new Error(data.message || "Failed to fetch products");
       }
     } catch (error) {
-      if (error.name !== 'AbortError') {
-        setError(error.message.includes('Failed to fetch') ? 'Network error. Check your connection.' : error.message);
-        setProductData([]);
-        setTotalProducts(0);
-      }
+      console.error("Failed to fetch products:", error);
+      setError(error.message);
+      setProductData([]);
+      setTotalProducts(0);
     } finally {
       setLoading(false);
-      setIsInitialLoad(false);
-      abortControllerRef.current = null;
     }
-  }, [buildQueryParams]);
+  };
 
   useEffect(() => {
-    fetchProducts(filters, currentPage);
+    fetchProducts();
   }, []);
 
-  useEffect(() => {
-    if (!isInitialLoad) fetchProducts(filters, currentPage);
-  }, [filters, currentPage, fetchProducts, isInitialLoad]);
-
-  const handleApplyFilter = useCallback((newFilters) => {
-    setFilters(newFilters);
-    setCurrentPage(1);
-    fetchProducts(newFilters, 1);
-  }, [fetchProducts]);
-
-  const handlePageChange = useCallback((page) => {
-    setCurrentPage(page);
-    fetchProducts(filters, page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [filters, fetchProducts]);
-
-  const handleRetry = () => fetchProducts(filters, currentPage);
-
-  const handleResetFilters = () => {
-    setFilters(DEFAULT_FILTERS);
-    setCurrentPage(1);
-    fetchProducts(DEFAULT_FILTERS, 1);
+  const handleApplyFilter = (filters) => {
+    fetchProducts(filters);
   };
 
-  const toggleSidebar = () => setIsSidebarOpen(prev => !prev);
-
-  const handleAddToCart = (product) => {
-    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    const existing = cart.find(item => item._id === product._id || item.id === product.id);
-    if (existing) {
-      existing.quantity = (existing.quantity || 1) + 1;
-    } else {
-      cart.push({ ...product, quantity: 1 });
-    }
-    localStorage.setItem('cart', JSON.stringify(cart));
-    alert(`${product.name} added to cart!`);
-  };
-
-  const products = useMemo(() => {
-    return productData.map((item, index) => {
-      const productId = item._id || item.id || `product-${index}`;
-      const productImages = item.images?.length > 0 ? item.images : item.image ? [item.image] : ['/placeholder.svg'];
-
-      return {
-        _id: productId,
-        id: productId,
-        name: item.name || `Product ${index + 1}`,
-        price: item.price || 0,
-        originalPrice: item.originalPrice,
-        images: productImages,
-        image: productImages[0],
-        averageRating: item.rating || 0,
-        rating: Math.round(item.rating || 0),
-        reviewCount: item.numReviews || 0,
-        isNew: item.isNew || false,
-        category: Array.isArray(item.category) ? item.category : [item.category].filter(Boolean),
-        size: Array.isArray(item.size) ? item.size : [item.size].filter(Boolean),
-        color: Array.isArray(item.color) ? item.color : [item.color].filter(Boolean),
-        description: item.description || 'Product description',
-        inStock: item.inStock !== false,
-        sort: Array.isArray(item.sort) ? item.sort : [item.sort].filter(Boolean),
-        createdAt: item.createdAt,
-        updatedAt: item.updatedAt,
-      };
-    });
-  }, [productData]);
+  const products = productData.map((item) => ({
+    _id: item._id || item.id || `product-${Date.now()}`,
+    id: item._id || item.id || `product-${Date.now()}`,
+    name: item.name || "Unnamed Product",
+    price: item.price || 0,
+    originalPrice: item.originalPrice,
+    image: item.images?.[0] || "/placeholder.svg",
+    images: item.images || ["/placeholder.svg"],
+    rating: Math.min(5, Math.max(0, item.rating || item.averageRating || 0)),
+    reviews: item.reviews || item.reviewCount || 0,
+    isNew: item.isNew || false,
+    category: item.category,
+    size: item.size,
+    color: item.color,
+    description: item.description,
+    inStock: item.inStock !== false
+  }));
 
   return (
     <>
@@ -189,7 +113,10 @@ export default function ShopPage() {
         <div className="px-4 py-6 mx-auto max-w-7xl">
           {loading && (
             <div className="centered">
-              <div><div className="spinner"></div><p className="loading-text">Loading products...</p></div>
+              <div>
+                <div className="spinner"></div>
+                <p className="loading-text">Loading products...</p>
+              </div>
             </div>
           )}
 
@@ -197,81 +124,122 @@ export default function ShopPage() {
             <div className="error-box">
               <p className="font-bold">Error:</p>
               <p>{error}</p>
-              <div className="mt-4 space-x-2">
-                <button onClick={handleRetry} className="retry-btn">Retry</button>
-                <button onClick={handleResetFilters} className="retry-btn">Reset Filters</button>
-              </div>
+              <button onClick={() => fetchProducts()} className="retry-btn">
+                Retry
+              </button>
             </div>
           )}
 
           {!loading && !error && (
-            <>
-              <div className="mb-6">
-                <h2 className="section-heading">Products</h2>
-                <p className="subtext">{totalProducts} product{totalProducts !== 1 ? 's' : ''} found (Page {currentPage} of {totalPages})</p>
-              </div>
+            <div className="mb-6">
+              <h2 className="section-heading">Products</h2>
+              <p className="subtext">{totalProducts} products found</p>
+            </div>
+          )}
 
-              <div className="gap-1 desktop-grid">
-                <div className="col-span-2">
-                  <FilterSidebar onApplyFilter={handleApplyFilter} currentFilters={filters} totalProducts={totalProducts} />
+          <div className="gap-1 desktop-grid">
+            <div className="col-span-2">
+              <FilterSidebar onApplyFilter={handleApplyFilter} />
+            </div>
+
+            <div className="col-span-3">
+              {!loading && !error && products.length > 0 ? (
+                <div className="product-grid-3">
+                  {products.slice(0, 9).map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      onAddToCart={handleAddToCart}
+                    />
+                  ))}
                 </div>
-                <div className="col-span-3">
-                  <div className="product-grid-3">
-                    {products.slice(0, 9).map((product, index) => (
-                      <ProductCard key={`grid3-${index}`} product={product} onAddToCart={handleAddToCart} />
+              ) : (
+                !loading &&
+                !error && (
+                  <div className="py-12 text-center">
+                    <p className="subtext">
+                      No products found matching your filters.
+                    </p>
+                    <button
+                      onClick={() => fetchProducts()}
+                      className="mt-4 mobile-toggle-btn"
+                    >
+                      Show All Products
+                    </button>
+                  </div>
+                )
+              )}
+            </div>
+
+            {!loading && !error && products.length > 9 && (
+              <>
+                <div className="col-span-2"></div>
+                <div className="col-span-5">
+                  <div className="product-grid-5">
+                    {products.slice(9, 14).map((product) => (
+                      <ProductCard
+                        key={`${product.id}-${Math.random()}`}
+                        product={product}
+                        onAddToCart={handleAddToCart}
+                      />
                     ))}
                   </div>
                 </div>
+              </>
+            )}
+          </div>
 
-                {products.length > 9 && (
-                  <>
-                    <div className="col-span-2"></div>
-                    <div className="col-span-5">
-                      <div className="product-grid-5">
-                        {products.slice(9, 14).map((product, index) => (
-                          <ProductCard key={`grid5-1-${index}`} product={product} onAddToCart={handleAddToCart} />
-                        ))}
-                      </div>
-                    </div>
-                  </>
-                )}
+          <div className="xl:hidden">
+            <div className="mb-4">
+              <button
+                className="mobile-toggle-btn"
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              >
+                {isSidebarOpen ? "Hide Filters" : "Show Filters"} (
+                {totalProducts} products)
+              </button>
+            </div>
 
-                {products.length > 14 && (
-                  <div className="col-span-5">
-                    <div className="product-grid-5">
-                      {products.slice(14).map((product, index) => (
-                        <ProductCard key={`grid5-2-${index}`} product={product} onAddToCart={handleAddToCart} />
-                      ))}
-                    </div>
-                  </div>
-                )}
+            {isSidebarOpen && (
+              <div className="sidebar-wrapper">
+                <FilterSidebar onApplyFilter={handleApplyFilter} />
               </div>
+            )}
 
-              <div className="xl:hidden">
-                <div className="mb-4 flex items-center justify-between">
-                  <button className="mobile-toggle-btn" onClick={toggleSidebar}>{isSidebarOpen ? 'Hide Filters' : 'Show Filters'}</button>
-                  <span className="text-sm text-gray-600">{totalProducts} product{totalProducts !== 1 ? 's' : ''}</span>
-                </div>
-                {isSidebarOpen && (
-                  <div className="sidebar-wrapper mb-6">
-                    <FilterSidebar onApplyFilter={handleApplyFilter} currentFilters={filters} totalProducts={totalProducts} />
+            {!loading && !error && products.length > 0 ? (
+              <div className="mobile-grid">
+                {products.map((product) => (
+                  <div key={`mobile-${product.id}`} className="flex justify-center">
+                    <ProductCard product={product} onAddToCart={handleAddToCart} />
                   </div>
-                )}
-                <div className="mobile-grid">
-                  {products.map((product, index) => (
-                    <div key={`mobile-${index}`} className="flex justify-center">
-                      <ProductCard product={product} onAddToCart={handleAddToCart} />
-                    </div>
-                  ))}
-                </div>
+                ))}
               </div>
-
-              {totalPages > 1 && (
-                <div className="pagination-container">
-                  <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+            ) : (
+              !loading &&
+              !error && (
+                <div className="py-12 text-center">
+                  <p className="subtext">
+                    No products found matching your filters.
+                  </p>
+                  <button
+                    onClick={() => fetchProducts()}
+                    className="mt-4 mobile-toggle-btn"
+                  >
+                    Show All Products
+                  </button>
                 </div>
-              )}
-            </>
+              )
+            )}
+          </div>
+
+          {!loading && !error && products.length > 0 && (
+            <div className="pagination-container">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={(page) => setCurrentPage(page)}
+              />
+            </div>
           )}
         </div>
         <ShopFooter />
