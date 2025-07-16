@@ -6,7 +6,7 @@ import './PersonalInformation.css';
 
 const PersonalInformation = () => {
   const [formData, setFormData] = useState({
-    username: '',
+   
     firstName: '',
     lastName: '',
     country: '',
@@ -44,7 +44,7 @@ const PersonalInformation = () => {
       .then(data => {
         if (data) {
           setFormData({
-            username: data.username || '',
+           
             firstName: data.firstName || '',
             lastName: data.lastName || '',
             country: data.country || '',
@@ -148,7 +148,7 @@ const PersonalInformation = () => {
 
   const handleClear = () => {
     setFormData({
-      username: '',
+      
       firstName: '',
       lastName: '',
       country: '',
@@ -203,18 +203,7 @@ const PersonalInformation = () => {
               <p className="form-subtitle1">Add Address</p>
               <form className="form-root">
                 <div className="form-grid">
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label className="label">Username</label>
-                      <input
-                        className="input"
-                        type="text"
-                        name="username"
-                        value={formData.username}
-                        onChange={handleInputChange}
-                        {...inputProps}
-                      />
-                    </div>
+                  
                   </div>
                   <div className="form-row">
                     <div className="form-group">
