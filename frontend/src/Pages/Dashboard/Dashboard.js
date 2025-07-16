@@ -67,7 +67,7 @@ const handleSubmitReview = async (formData) => {
     });
 
     if (res.ok) {
-      toast.success("🎉 Review submitted successfully!");
+      toast.success("Review submitted successfully!");
     } else {
       const errText = await res.text();
       console.error("Server error:", errText);
