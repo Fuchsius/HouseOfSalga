@@ -135,6 +135,7 @@ exports.getProductById = async (req, res) => {
 };
 
 // @desc Get all products
+// @desc Get all products
 exports.getAllProducts = async (req, res) => {
   try {
     const { category, size, color, minPrice, maxPrice, inStock, limit } = req.query;
@@ -168,7 +169,11 @@ exports.getAllProducts = async (req, res) => {
     // In stock filter
     if (inStock === 'true') query.stock = { $gt: 0 };
 
-    const products = await Product.find(query).limit(parseInt(limit) || 0);
+    // ✅ Sort by createdAt DESC to match New Arrivals order
+    const products = await Product.find(query)
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit) || 0);
+
     res.json({ 
       success: true, 
       data: products 
@@ -181,6 +186,7 @@ exports.getAllProducts = async (req, res) => {
     });
   }
 };
+
 
 // @desc Get new arrivals
 exports.getNewArrivals = async (req, res) => {
