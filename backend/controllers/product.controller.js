@@ -7,24 +7,57 @@ const getDefaultProduct = async () => Product.findOne({ isDefault: true });
 // @desc Create new product
 exports.createProduct = async (req, res) => {
   try {
-    const { name, description, price, category, stock, colors, sizes, images, returnsInfo } = req.body;
-    if (!name || !price) {
+    const { 
+      name, 
+      id, 
+      description, 
+      price, 
+      category, 
+      size, 
+      color, 
+      image,
+      images, // Add support for images array
+      inStock, 
+      sort 
+    } = req.body;
+
+    // Validate required fields
+    if (!name || !price || !id) {
       return res.status(400).json({ 
         success: false,
-        error: 'Name and price are required' 
+        error: 'Name, price, and id are required' 
       });
+    }
+
+    // Check if product with this id already exists
+    const existingProduct = await Product.findOne({ id });
+    if (existingProduct) {
+      return res.status(400).json({ 
+        success: false,
+        error: 'Product with this ID already exists' 
+      });
+    }
+
+    // Handle images - prioritize images array, fallback to single image
+    let productImages = [];
+    if (images && Array.isArray(images) && images.length > 0) {
+      productImages = images.filter(img => img && img.trim() !== '');
+    } else if (image && image.trim() !== '') {
+      productImages = [image];
     }
 
     const newProduct = new Product({
       name,
-      description,
+      id,
+      description: description || 'Product description',
       price,
-      category,
-      stock,
-      colors: colors || [],
-      sizes: sizes || [],
-      images: images || [],
-      returnsInfo: returnsInfo || ''
+      category: category || [],
+      size: size || [],
+      color: color || [],
+      image: productImages.length > 0 ? productImages[0] : null, // Set first image as main image
+      images: productImages, // Set images array
+      inStock: inStock !== undefined ? inStock : true,
+      sort: sort || []
     });
 
     const savedProduct = await newProduct.save();
@@ -34,6 +67,17 @@ exports.createProduct = async (req, res) => {
     });
   } catch (err) {
     console.error('Error creating product:', err);
+    
+    // Handle validation errors
+    if (err.name === 'ValidationError') {
+      const errors = Object.values(err.errors).map(error => error.message);
+      return res.status(400).json({ 
+        success: false,
+        error: 'Validation Error',
+        details: errors
+      });
+    }
+    
     res.status(500).json({ 
       success: false,
       error: 'Internal server error' 
@@ -138,45 +182,41 @@ exports.getProductById = async (req, res) => {
 // @desc Get all products
 exports.getAllProducts = async (req, res) => {
   try {
-    const { category, size, color, minPrice, maxPrice, inStock, limit } = req.query;
+    const { category, inStock, limit, minPrice, maxPrice, size, color } = req.query;
     const query = {};
 
-    // Category filter (multi-value)
     if (category) {
-      const categories = category.split(',').map(c => c.trim());
+      const categories = category.split(',');
       query.category = { $in: categories };
     }
 
-    // Size filter (multi-value)
     if (size) {
-      const sizes = size.split(',').map(s => s.trim());
-      query.sizes = { $in: sizes };
+      const sizes = size.split(',');
+      query.size = { $in: sizes };
     }
 
-    // Color filter (multi-value)
     if (color) {
-      const colors = color.split(',').map(c => c.trim());
-      query.colors = { $in: colors };
+      const colors = color.split(',');
+      query.color = { $in: colors };
     }
 
-    // Price range filter
     if (minPrice || maxPrice) {
       query.price = {};
-      if (minPrice) query.price.$gte = Number(minPrice);
-      if (maxPrice) query.price.$lte = Number(maxPrice);
+      if (minPrice) query.price.$gte = parseFloat(minPrice);
+      if (maxPrice) query.price.$lte = parseFloat(maxPrice);
     }
 
-    // In stock filter
-    if (inStock === 'true') query.stock = { $gt: 0 };
+    if (inStock === 'true') query.inStock = true;
 
-    // ✅ Sort by createdAt DESC to match New Arrivals order
-    const products = await Product.find(query)
-      .sort({ createdAt: -1 })
-      .limit(parseInt(limit) || 0);
+    const products = await Product.find(query).limit(parseInt(limit) || 0);
 
     res.json({ 
       success: true, 
-      data: products 
+      data: products,
+      count: products.length,
+      pagination: {
+        totalProducts: products.length,
+      }
     });
   } catch (err) {
     console.error('Error fetching products:', err);
@@ -187,17 +227,30 @@ exports.getAllProducts = async (req, res) => {
   }
 };
 
-
-// @desc Get new arrivals
+// @desc Get new arrivals with pagination
 exports.getNewArrivals = async (req, res) => {
   try {
+    const { page = 1, limit = 8 } = req.query;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
     const products = await Product.find({})
       .sort({ createdAt: -1 })
-      .limit(8);
-    
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    const totalProducts = await Product.countDocuments({});
+    const totalPages = Math.ceil(totalProducts / parseInt(limit));
+    const hasMore = page < totalPages;
+
     res.json({ 
       success: true, 
-      data: products 
+      data: products,
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages,
+        totalProducts,
+        hasMore
+      }
     });
   } catch (err) {
     console.error('Error fetching new arrivals:', err);
@@ -219,9 +272,21 @@ exports.updateProduct = async (req, res) => {
       });
     }
 
+    // Handle image updates
+    const updateData = { ...req.body };
+    
+    if (updateData.images && Array.isArray(updateData.images)) {
+      // Filter out empty images
+      updateData.images = updateData.images.filter(img => img && img.trim() !== '');
+      // Set first image as main image if exists
+      if (updateData.images.length > 0) {
+        updateData.image = updateData.images[0];
+      }
+    }
+
     const updatedProduct = await Product.findByIdAndUpdate(
       id, 
-      req.body, 
+      updateData, 
       { new: true, runValidators: true }
     );
     
@@ -292,19 +357,19 @@ exports.getRecommendedProducts = async (req, res) => {
     // First try to get products from the same category
     let recommended = await Product.find({
       _id: { $ne: productId },
-      category: current.category
+      category: { $in: current.category }
     })
-    .sort({ reviewCount: -1, averageRating: -1 })
+    .sort({ numReviews: -1, rating: -1 })
     .limit(4);
 
     // If not enough products in same category, get most rated products
-    if (recommended.length < 5) {
+    if (recommended.length < 4) {
       const additionalProducts = await Product.find({
         _id: { $ne: productId },
-        category: { $ne: current.category }
+        category: { $nin: current.category }
       })
-      .sort({ reviewCount: -1, averageRating: -1 })
-      .limit(5 - recommended.length);
+      .sort({ numReviews: -1, rating: -1 })
+      .limit(4 - recommended.length);
       
       recommended = [...recommended, ...additionalProducts];
     }
