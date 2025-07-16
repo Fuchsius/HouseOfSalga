@@ -162,4 +162,12 @@ router.post("/:id/reviews", async (req, res) => {
     }
 });
 
+const { searchProducts } = require('../controllers/product.controller');
+router.get('/search', searchProducts);
+
+
+
 module.exports = router
+
+
+
