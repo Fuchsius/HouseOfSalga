@@ -6,7 +6,7 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 428px;
-  max-height: 2300px;
+  max-height: 2500px;
 }
 
 @media (max-width: 1023px) {
@@ -123,7 +123,7 @@
 }
 
 .filter-label {
-  font-size: 14px;
+  font-size: 16px;
   color: #374151;
   cursor: pointer;
   font-family: "wilkysta";
