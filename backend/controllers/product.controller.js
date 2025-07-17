@@ -7,23 +7,37 @@ const getDefaultProduct = async () => Product.findOne({ isDefault: true });
 // @desc Create new product
 exports.createProduct = async (req, res) => {
   try {
-    const { name, description, price, category, stock, colors, sizes, images, returnsInfo } = req.body;
-    if (!name || !price) {
+    const { name,id, description, price, category, stock, colors, sizes, images, inStock, sort , returnsInfo } = req.body;
+    if (!name || !price || !id) {
       return res.status(400).json({ 
         success: false,
         error: 'Name and price are required' 
       });
     }
+    const existingProduct = await Product.findOne({ id });
+    if (existingProduct) {
+      return res.status(400).json({ success: false, error: 'Product with this ID already exists' });
+    }
+    let productImages = [];
+    if (Array.isArray(images) && images.length > 0) {
+      productImages = images.filter(img => img && img.trim() !== '');
+    } else if (image && image.trim() !== '') {
+      productImages = [image];
+    }
 
     const newProduct = new Product({
       name,
+      id,
       description,
       price,
       category,
       stock,
       colors: colors || [],
       sizes: sizes || [],
-      images: images || [],
+      image: productImages.length > 0 ? productImages[0] : null,
+      images: productImages,
+      inStock: inStock !== undefined ? inStock : true,
+      sort: sort || []
       returnsInfo: returnsInfo || ''
     });
 
@@ -34,6 +48,10 @@ exports.createProduct = async (req, res) => {
     });
   } catch (err) {
     console.error('Error creating product:', err);
+    if (err.name === 'ValidationError') {
+      const errors = Object.values(err.errors).map(error => error.message);
+      return res.status(400).json({ success: false, error: 'Validation Error', details: errors });
+    }
     res.status(500).json({ 
       success: false,
       error: 'Internal server error' 
@@ -344,3 +362,80 @@ exports.searchProducts = async (req, res) => {
     });
   }
 };
+// @desc Get trending products
+exports.getTrendingProducts = async (req, res) => {
+  try {
+    const trending = await Product.find({ isTrending: true })
+      .sort({ createdAt: -1 })
+      .limit(10);
+
+    res.status(200).json(trending);
+  } catch (err) {
+    console.error('Error fetching trending products:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+// @desc Create trending product
+exports.createTrendingProduct = async (req, res) => {
+  try {
+    const { 
+      name, 
+      id, 
+      description, 
+      price, 
+      category, 
+      sizes, 
+      colors, 
+      image,
+      images,
+      inStock, 
+      sort,
+      isTrending 
+    } = req.body;
+
+    if (!name || !price || !id) {
+      return res.status(400).json({ success: false, error: 'Name, price, and id are required' });
+    }
+
+    const existingProduct = await Product.findOne({ id });
+    if (existingProduct) {
+      return res.status(400).json({ success: false, error: 'Product with this ID already exists' });
+    }
+
+    let productImages = [];
+    if (Array.isArray(images) && images.length > 0) {
+      productImages = images.filter(img => img && img.trim() !== '');
+    } else if (image && image.trim() !== '') {
+      productImages = [image];
+    }
+
+    const newProduct = new Product({
+      name,
+      id,
+      description: description || 'Product description',
+      price,
+      category: category || [],
+      sizes: sizes || [],
+      colors: colors || [],
+      image: productImages.length > 0 ? productImages[0] : null,
+      images: productImages,
+      inStock: inStock !== undefined ? inStock : true,
+      sort: sort || [],
+      isTrending: isTrending === true
+    });
+
+    const savedProduct = await newProduct.save();
+    res.status(201).json({ success: true, data: savedProduct });
+  } catch (err) {
+    console.error('Error creating trending product:', err);
+
+    if (err.name === 'ValidationError') {
+      const errors = Object.values(err.errors).map(error => error.message);
+      return res.status(400).json({ success: false, error: 'Validation Error', details: errors });
+    }
+
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+};
+
