@@ -1,4 +1,3 @@
-// Header.jsx
 import React, { useState } from "react";
 import { ChevronDown } from "lucide-react";
 
@@ -16,17 +15,10 @@ export default function Header({ onApplyEdits }) {
     "Newest",
   ];
 
-  const handleApply = () => {
-    const appliedFilters = {
-      sort: selectedSort,
-    };
-    console.log("Applied filters:", appliedFilters);
-    onApplyEdits(appliedFilters);
-  };
-
-  const handleClear = () => {
-    setSelectedSort("");
-    onApplyEdits({ sort: "" });
+  const handleSortChange = (option) => {
+    setSelectedSort(option);
+    setIsDropdownOpen(false);
+    onApplyEdits({ sort: option });
   };
 
   return (
@@ -44,7 +36,9 @@ export default function Header({ onApplyEdits }) {
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   className="dropdown-toggle"
                 >
-                  <span className="dropdown-value">{selectedSort}</span>
+                  <span className="dropdown-value">
+                    {selectedSort || "Select"}
+                  </span>
                   <ChevronDown className="dropdown-icon" />
                 </button>
 
@@ -53,10 +47,7 @@ export default function Header({ onApplyEdits }) {
                     {sortOptions.map((option) => (
                       <button
                         key={option}
-                        onClick={() => {
-                          setSelectedSort(option);
-                          setIsDropdownOpen(false);
-                        }}
+                        onClick={() => handleSortChange(option)}
                         className="dropdown-item"
                       >
                         {option}
@@ -64,19 +55,6 @@ export default function Header({ onApplyEdits }) {
                     ))}
                   </div>
                 )}
-              </div>
-
-              <div className="action-buttons">
-                <button
-                  onClick={handleApply}
-                  disabled={!selectedSort}
-                  className="btn-apply"
-                >
-                  Apply
-                </button>
-                <button onClick={handleClear} className="btn-clear">
-                  Remove
-                </button>
               </div>
             </div>
           </div>
