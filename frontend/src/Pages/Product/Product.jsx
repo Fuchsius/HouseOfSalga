@@ -251,7 +251,7 @@ const Product = () => {
   // Save to recently viewed in localStorage
   useEffect(() => {
     if (!product?._id) return;
-    const maxRecentlyViewed = 8;
+    const maxRecentlyViewed = 5;
     let recentlyViewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
     // Remove if already exists
     recentlyViewed = recentlyViewed.filter(p => p._id !== product._id);
