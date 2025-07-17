@@ -171,13 +171,28 @@ a.logo {
   position: relative;
 }
 
-.icon,
+.icon {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  flex-shrink: 0;
+  margin-top: 5px; /* For cart icon */
+}
+
 .fav-icon {
   width: 30px;
   height: 30px;
   object-fit: contain;
   flex-shrink: 0;
+  margin-top: 9px; /* For fav icon */
 }
+
+.cart-icon {
+  width: 32px;
+  height: 33px;
+  margin-top:9px;
+}
+
 
 .hamburger {
   display: none;
