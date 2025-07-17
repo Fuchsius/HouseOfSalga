@@ -69,6 +69,17 @@ function Header() {
     return () => window.removeEventListener('cart-updated', updateCartCountAndItems);
   }, []);
 
+  useEffect(() => {
+  const handleResize = () => {
+    if (window.innerWidth > 768) {
+      setShowMobileMenu(false);
+    }
+  };
+  window.addEventListener('resize', handleResize);
+  return () => window.removeEventListener('resize', handleResize);
+}, []);
+
+
   const navigate = useNavigate();
   const location = useLocation();
   const wrapperRef = useRef(null);
@@ -231,25 +242,31 @@ function Header() {
           </div>
 
           <nav className="nav-links">
-            <Link to="/home" className="nav-item hover-link">
-              Home
-            </Link>
+  <Link to="/home" className="nav-item hover-link">
+    Home
+  </Link>
 
-            <div className="dropdown-wrapper">
-              <span className="nav-item hover-link" onClick={() => toggleDropdown('women')}>
-                Women
-                <img src={dropdownIcon} alt="dropdown" className="dropdown-icon" />
-              </span>
+  <div className="dropdown-wrapper">
+    <span className="nav-item hover-link" onClick={() => toggleDropdown('women')}>
+      Women
+      <img src={dropdownIcon} alt="dropdown" className="dropdown-icon" />
+    </span>
 
-              {showWomenDropdown && (
-                <div className="dropdown-menu">
-                  <div onClick={handleDropdownItemClick}>Kurtha</div>
-                  <div onClick={handleDropdownItemClick}>Saree</div>
-                  <div onClick={handleDropdownItemClick}>Shalva</div>
-                </div>
-              )}
-            </div>
-          </nav>
+    {showWomenDropdown && (
+      <div className="dropdown-menu">
+        <div onClick={handleDropdownItemClick}>Kurtha</div>
+        <div onClick={handleDropdownItemClick}>Saree</div>
+        <div onClick={handleDropdownItemClick}>Shalva</div>
+      </div>
+    )}
+  </div>
+
+  {/* 👇 ADD THIS new Shop link after Women */}
+  <Link to="/shop" className="nav-item hover-link">
+    Shop
+  </Link>
+</nav>
+
         </div>
 
         <div className="right-section">
@@ -395,13 +412,8 @@ function Header() {
 
           {/* Heart icon (wishlist) with badge */}
           <div style={{ position: 'relative', display: 'inline-block' }}>
-            <img
-              src={cartIcon}
-              alt="Cart"
-              className="icon"
-              onClick={handleWishlistClick}
-              style={{ cursor: 'pointer' }}
-            />
+            <img src={cartIcon} className="icon cart-icon" />
+
             {/* Wishlist badge */}
             <WishlistBadge />
           </div>
@@ -438,44 +450,72 @@ function Header() {
       </div>
 
       {showMobileMenu && (
-        <div className="mobile-menu">
-          <Link to="/home" className="mobile-menu-item">
-            Home
-          </Link>
+  <div className="mobile-menu">
+    <Link
+  to="/home"
+  className="mobile-menu-item"
+  onClick={() => setShowMobileMenu(false)}
+>
+  Home
+</Link>
 
-          <div className="dropdown-wrapper">
-            <div
-              className="mobile-menu-item"
-              onClick={() => toggleDropdown('women')}
-            >
-              Women
-              <img
-                src={dropdownIcon}
-                alt="dropdown"
-                className="dropdown-icon"
-              />
-            </div>
 
-            {showWomenDropdown && (
-              <div className="dropdown-menu">
-                <div onClick={handleDropdownItemClick}>Dresses</div>
-                <div onClick={handleDropdownItemClick}>Shoes</div>
-                <div onClick={handleDropdownItemClick}>Accessories</div>
-              </div>
-            )}
-          </div>
+    <div className="dropdown-wrapper">
+      <div
+        className="mobile-menu-item"
+        onClick={() => toggleDropdown('women')}
+      >
+        Women
+        <img
+          src={dropdownIcon}
+          alt="dropdown"
+          className="dropdown-icon"
+        />
+      </div>
 
-          {!isLoggedIn ? (
-            <Link to="/signin" className="mobile-menu-item">
-              Login
-            </Link>
-          ) : (
-            <div className="mobile-menu-item" onClick={handleLogoutRequest}>
-              Sign Out
-            </div>
-          )}
+      {showWomenDropdown && (
+        <div className="dropdown-menu">
+          <div onClick={handleDropdownItemClick}>Dresses</div>
+          <div onClick={handleDropdownItemClick}>Shoes</div>
+          <div onClick={handleDropdownItemClick}>Accessories</div>
         </div>
       )}
+    </div>
+
+    {/* 👇 ADD THIS new Shop link after Women */}
+    <Link
+  to="/shop"
+  className="mobile-menu-item"
+  onClick={() => setShowMobileMenu(false)}
+>
+  Shop
+</Link>
+
+
+    {!isLoggedIn ? (
+      <Link
+  to="/signin"
+  className="mobile-menu-item"
+  onClick={() => setShowMobileMenu(false)}
+>
+  Login
+</Link>
+
+    ) : (
+      <div
+  className="mobile-menu-item"
+  onClick={() => {
+    handleLogoutRequest();
+    setShowMobileMenu(false);
+  }}
+>
+  Sign Out
+</div>
+
+    )}
+  </div>
+)}
+
 
       {showLoginPopup && <div className="login-popup">Please login first!</div>}
 
