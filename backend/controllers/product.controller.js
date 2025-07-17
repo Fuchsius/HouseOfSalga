@@ -37,7 +37,7 @@ exports.createProduct = async (req, res) => {
       image: productImages.length > 0 ? productImages[0] : null,
       images: productImages,
       inStock: inStock !== undefined ? inStock : true,
-      sort: sort || []
+      sort: sort || [],
       returnsInfo: returnsInfo || ''
     });
 
@@ -153,7 +153,7 @@ exports.getProductById = async (req, res) => {
 };
 
 // @desc Get all products
-exports.getAllProducts = async (req, res) => {
+/*exports.getAllProducts = async (req, res) => {
   try {
     const { category, size, color, minPrice, maxPrice, inStock, limit } = req.query;
     const query = {};
@@ -197,6 +197,31 @@ exports.getAllProducts = async (req, res) => {
       success: false,
       error: 'Internal server error' 
     });
+  }
+}; */
+// @desc Get all products with filters
+exports.getAllProducts = async (req, res) => {
+  try {
+    const { category, inStock, limit, minPrice, maxPrice, sizes, colors } = req.query;
+    const query = {};
+
+    if (category) query.category = { $in: category.split(',') };
+    if (sizes) query.sizes = { $in: sizes.split(',') };
+    if (colors) query.colors = { $in: colors.split(',') };
+
+    if (minPrice || maxPrice) {
+      query.price = {};
+      if (minPrice) query.price.$gte = parseFloat(minPrice);
+      if (maxPrice) query.price.$lte = parseFloat(maxPrice);
+    }
+
+    if (inStock === 'true') query.inStock = true;
+
+    const products = await Product.find(query).limit(parseInt(limit) || 0);
+    res.json({ success: true, data: products, count: products.length });
+  } catch (err) {
+    console.error('Error fetching products:', err);
+    res.status(500).json({ success: false, error: 'Internal server error' });
   }
 };
 
