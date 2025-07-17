@@ -18,7 +18,7 @@ const TrendingSection = () => {
   useEffect(() => {
     const fetchTrendingProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/trending');
+        const response = await axios.get('http://localhost:5000/api/products/trending');
         const updatedProducts = response.data
           .map(product => ({
             ...product,
