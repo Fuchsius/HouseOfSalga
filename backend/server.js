@@ -12,18 +12,17 @@ const wishlistRoutes = require("./routes/wishlist");
 //Shop and Cart Routes
 const cartRoutes = require("./routes/cart");
 const discountRoutes = require("./routes/discount");
-const personalInfoRoutes = require('./routes/personalInfoRoutes');
-const trendingRoutes = require('./routes/trendingRoutes');
+const personalInfoRoutes = require("./routes/personalInfoRoutes");
+const trendingRoutes = require("./routes/trendingRoutes");
+const shopProductsRoutes = require("./routes/shopProducts");
 
-const productRoutes = require('./routes/product.routes');
-const reviewRoutes = require('./routes/review.routes');
-const orderReviewRoutes = require('./routes/orderReview.routes');
+const productRoutes = require("./routes/product.routes");
+const reviewRoutes = require("./routes/review.routes");
+const orderReviewRoutes = require("./routes/orderReview.routes");
 const testimonialRoutes = require("./routes/testimonialRoutes");
 
-
-
 const app = express();
-const path = require('path');
+const path = require("path");
 
 app.use(cors());
 app.use(express.json());
@@ -48,19 +47,19 @@ app.use("/api/checkout", checkoutRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/discount", discountRoutes);
 app.use("/api/personal-info", personalInfoRoutes);
-app.use('/api/trending', trendingRoutes);
+app.use("/api/trending", trendingRoutes);
 app.use("/api/wishlist", wishlistRoutes);
-app.use('/uploads', express.static('uploads'));
+app.use("/uploads", express.static("uploads"));
 app.use("/api/testimonials", testimonialRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/reviews', reviewRoutes);
-app.use('/api/order-reviews', orderReviewRoutes);
+app.use("/api/product", productRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/order-reviews", orderReviewRoutes);
+app.use("/api/shopProducts", shopProductsRoutes);
 
+app.use("/public/images", express.static(path.join(__dirname, "images")));
 
-app.use('/public/images', express.static(path.join(__dirname, 'images')));
-
-app.post('/api/personal-info/test', (req, res) => {
-  res.json({ message: 'Test route works!' });
+app.post("/api/personal-info/test", (req, res) => {
+  res.json({ message: "Test route works!" });
 });
 // Start server
 const PORT = process.env.PORT || 5000;

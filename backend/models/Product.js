@@ -38,28 +38,9 @@ const productSchema = new mongoose.Schema(
             type: [String],
             required: true,
         },
-        images: {
-            type: [String],
-            default: [],
-            validate: {
-                validator: function(v) {
-                    // Ensure no empty strings in the array
-                    return v.every(img => img && img.trim() !== '');
-                },
-                message: 'Images array cannot contain empty strings'
-            }
-        },
-        // Keep single image for backward compatibility
         image: {
             type: String,
-            default: null, // Changed from placeholder to null
-            validate: {
-                validator: function(v) {
-                    // Allow null or non-empty string
-                    return v === null || (typeof v === 'string' && v.trim() !== '');
-                },
-                message: 'Image cannot be an empty string'
-            }
+            default: "/placeholder.svg?height=300&width=300",
         },
         description: {
             type: String,
