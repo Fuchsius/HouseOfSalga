@@ -11,8 +11,14 @@ const {
   getDefaultProduct,
   setDefaultProduct,
   getNewArrivals,
-  searchProducts // ← added
+  searchProducts ,// ← added
+  getTrendingProducts,
+  createTrendingProduct,
 } = require('../controllers/product.controller');
+// Trending products
+router.route('/trending')
+  .get(getTrendingProducts) // GET /api/products/trending
+  .post(createTrendingProduct); 
 
 router.route('/')
   .post(createProduct)
