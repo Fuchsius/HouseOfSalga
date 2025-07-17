@@ -62,3 +62,4 @@ out/
 # === Optional: If using backend/ and frontend/ folders ===
 frontend/node_modules/
 backend/node_modules/
+frontend/public/images/image1.png
