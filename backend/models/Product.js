@@ -29,12 +29,12 @@ const productSchema = new mongoose.Schema(
             required: true,
             enum: ["Women", "Ladies","Men","Kids"],
         },
-        size: {
+        sizes: {
             type: [String],
             required: true,
             enum: ["Small", "Medium", "Large", "Extra Large"],
         },
-        color: {
+        colors: {
             type: [String],
             required: true,
         },
