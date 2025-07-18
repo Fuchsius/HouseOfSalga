@@ -9,6 +9,7 @@ export default function CartItems({
   loading,
   formatPrice,
 }) {
+  console.log('Cart items:', items);
   if (!items || items.length === 0) {
     return (
       <div className="cart-container empty-cart">
@@ -23,7 +24,7 @@ export default function CartItems({
         <div key={item._id} className="cart-item">
           <div className="cart-image-container">
             <img
-              src={item.product?.image || item.image || "/placeholder.svg"}
+              src={item.product?.images || item.images || (item.images && item.images[0]) || "/placeholder.svg"}
               alt={item.product?.name || item.name}
               className="cart-image"
             />
