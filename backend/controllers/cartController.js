@@ -39,6 +39,7 @@ exports.addToCart = async (req, res) => {
     }
 
     await cart.save();
+    cart = await Cart.findOne({ userId }).populate('items.product');
     res.status(200).json(cart);
   } catch (error) {
     res.status(500).json({ message: error.message });
