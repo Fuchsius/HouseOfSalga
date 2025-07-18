@@ -78,6 +78,7 @@ const ProductCard = ({ product, variant = 'small' }) => {
       const updatedIds = updated?.products?.map(p => p._id) || [];
       setWishlistIds(updatedIds);
       setIsFavorite(updatedIds.includes(product._id));
+      window.dispatchEvent(new CustomEvent('wishlist-updated', { detail: { count: updatedIds.length } }));
     } catch (err) {
       alert('Network error while updating wishlist.');
     }
