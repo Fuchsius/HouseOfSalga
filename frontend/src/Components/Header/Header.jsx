@@ -606,10 +606,7 @@ function Header() {
                       </div>
                       <div style={{ fontWeight: 600, color: '#222', minWidth: 48, textAlign: 'right', fontSize: 13 }}>Rs. {((item.priceAtTime || item.price) * (item.quantity || 1)).toFixed(2)}</div>
                       <button onClick={() => {
-                        // Remove item logic
-                        let updatedCart = [...cartItems];
-                        updatedCart.splice(idx, 1);
-                        setCartItems(updatedCart);
+                        // Remove item logic (immutable)
                         const token = localStorage.getItem('token');
                         if (token) {
                           // Remove from backend
@@ -619,10 +616,13 @@ function Header() {
                           }).then(() => {
                             window.dispatchEvent(new Event('cart-updated'));
                           });
+                          // Do NOT call setCartItems here; let the event handler update it!
                         } else {
-                          // Remove from localStorage
+                          // Remove from localStorage (immutable)
+                          const updatedCart = cartItems.filter((_, i) => i !== idx);
                           localStorage.setItem('cart', JSON.stringify(updatedCart));
                           window.dispatchEvent(new Event('cart-updated'));
+                          // Do NOT call setCartItems here; let the event handler update it!
                         }
                       }} style={{ background: 'none', border: 'none', color: '#ef4444', marginLeft: 8, cursor: 'pointer' }} title="Remove">
                         <FaTrash />
@@ -716,7 +716,7 @@ export function WishlistBadge() {
     function fetchWishlistCount() {
       const token = localStorage.getItem('token');
       if (!token) return;
-      fetch('http://localhost:5000/api/wishlist', {
+      fetch('http://localhost:5000/api/wishlist/me', {
         headers: { Authorization: `Bearer ${token}` }
       })
         .then(res => res.ok ? res.json() : null)
@@ -733,28 +733,26 @@ export function WishlistBadge() {
     window.addEventListener('wishlist-updated', handleWishlistUpdate);
     return () => window.removeEventListener('wishlist-updated', handleWishlistUpdate);
   }, []);
-  if (wishlistCount > 0) {
-    return (
-      <span
-        style={{
-          position: 'absolute',
-          top: '-8px',
-          right: '-8px',
-          background: '#111',
-          color: '#fff',
-          borderRadius: '50%',
-          padding: '2px 7px',
-          fontSize: '12px',
-          fontWeight: 'bold',
-          zIndex: 2,
-        }}
-      >
-        {wishlistCount}
-      </span>
-    );
-  }
-  return null;
-  
+  console.log('WishlistBadge rendered, count:', wishlistCount); // Debug log
+  return (
+    <span
+      style={{
+        position: 'absolute',
+        top: '-8px',
+        right: '-8px',
+        background: '#111',
+        color: '#fff',
+        borderRadius: '50%',
+        padding: '2px 7px',
+        fontSize: '12px',
+        fontWeight: 'bold',
+        zIndex: 2,
+        opacity: wishlistCount === 0 ? 0.5 : 1, // faded if zero
+      }}
+    >
+      {wishlistCount}
+    </span>
+  );
 }
 
 
