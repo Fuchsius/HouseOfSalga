@@ -28,7 +28,11 @@ const Wishlist = () => {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => res.ok ? res.json() : null)
-      .then(data => setWishlist(data?.products?.filter(Boolean) || []));
+      .then(data => {
+        const products = data?.products?.filter(Boolean) || [];
+        setWishlist(products);
+        window.dispatchEvent(new CustomEvent('wishlist-updated', { detail: { count: products.length } }));
+      });
   }, []);
 
   useEffect(() => {
