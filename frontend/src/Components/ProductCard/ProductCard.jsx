@@ -126,64 +126,12 @@ const ProductCard = ({ product, variant = 'small' }) => {
         </div>
         <button
           className={styles.addToCartButton}
-          onClick={async (e) => {
+          onClick={(e) => {
             e.stopPropagation();
-            const token = localStorage.getItem('token');
-            // Always send a single string for size and color
-            const size = Array.isArray(product.sizes) ? product.sizes[0] : (product.size || 'M');
-            const color = Array.isArray(product.colors) ? product.colors[0] : (product.color || 'Default');
-            if (token) {
-              // Logged-in: Add to backend cart
-              try {
-                const response = await fetch('http://localhost:5000/api/cart/add', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                  },
-                  body: JSON.stringify({
-                    productId: product._id || product.id,
-                    quantity: 1,
-                    size,
-                    color
-                  })
-                });
-                if (!response.ok) {
-                  const error = await response.json();
-                  alert(error.message || 'Failed to add to cart');
-                  return;
-                }
-                alert('Added to cart!');
-                window.dispatchEvent(new Event('cart-updated'));
-              } catch (err) {
-                alert('Network error while adding to cart.');
-              }
-            } else {
-              // Guest: Add to localStorage cart
-              let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-              // Check if product with same id, size, color exists
-              const existingIndex = cart.findIndex(item =>
-                (item._id || item.id) === (product._id || product.id) &&
-                (item.size || item.selectedSize) === size &&
-                (item.color || item.selectedColor) === color
-              );
-              if (existingIndex !== -1) {
-                cart[existingIndex].quantity = (cart[existingIndex].quantity || 1) + 1;
-              } else {
-                cart.push({
-                  ...product,
-                  size,
-                  color,
-                  quantity: 1
-                });
-              }
-              localStorage.setItem('cart', JSON.stringify(cart));
-              alert('Added to cart!');
-              window.dispatchEvent(new Event('cart-updated'));
-            }
+            handleClick();
           }}
         >
-          Add to Cart
+          View
         </button>
       </div>
     </div>
