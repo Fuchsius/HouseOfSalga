@@ -225,6 +225,23 @@ function Header() {
   // debounce your fetchSuggestions
   const debouncedFetch = useRef(debounce(fetchSuggestions, 300)).current;
 
+  // Fetch wishlist items when popup opens
+  useEffect(() => {
+    if (!showCartPopup) return;
+    const token = localStorage.getItem('token');
+    if (!token) {
+      // setWishlistItems([]); // This line is removed as per the edit hint
+      return;
+    }
+    fetch('http://localhost:5000/api/wishlist/me', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        // setWishlistItems(data?.products?.filter(Boolean) || []); // This line is removed as per the edit hint
+      });
+  }, [showCartPopup]);
+
   return (
     <header className="header" ref={wrapperRef}>
       <div className="header-container">
@@ -412,9 +429,13 @@ function Header() {
 
           {/* Heart icon (wishlist) with badge */}
           <div style={{ position: 'relative', display: 'inline-block' }}>
-            <img src={cartIcon} className="icon cart-icon" />
-
-            {/* Wishlist badge */}
+            <img
+              src={cartIcon}
+              className="icon cart-icon"
+              onClick={handleWishlistClick}
+              style={{ cursor: 'pointer' }}
+              alt="Wishlist"
+            />
             <WishlistBadge />
           </div>
 
@@ -576,7 +597,7 @@ function Header() {
                 <div>
                   {cartItems.map((item, idx) => (
                     <div key={item._id || item.id || idx} style={{ display: 'flex', alignItems: 'center', marginBottom: 8, borderBottom: '1px solid #eee', paddingBottom: 4 }}>
-                      <img src={item.product?.image || item.images?.[0] || '/images/placeholder.png'} alt={item.product?.name || item.name} style={{ width: 38, height: 38, objectFit: 'cover', borderRadius: 6, marginRight: 8 }} />
+                      <img src={item.product?.images || item.images || (item.images?.[0]) || '/images/placeholder.png'} alt={item.product?.name || item.name} style={{ width: 38, height: 38, objectFit: 'cover', borderRadius: 6, marginRight: 8 }} />
                       <div style={{ flex: 1 }}>
                         <div style={{ fontWeight: 600, fontSize: 14 }}>{item.product?.name || item.name}</div>
                         <div style={{ fontSize: 12, color: '#555' }}>Rs. {(item.priceAtTime || item.price)?.toFixed(2)} {item.quantity ? `x${item.quantity}` : ''}</div>
