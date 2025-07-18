@@ -37,36 +37,6 @@ const Wishlist = () => {
     setRecentlyViewed(recentlyViewed);
   }, []);
 
-  const handleAddToCart = (index) => {
-    const item = wishlist[index];
-    if (!item) return;
-    // Standardize size/color selection
-    const size = item.selectedSize || item.size || (item.sizes && item.sizes[0]) || null;
-    const color = item.selectedColor || item.color || (item.colors && item.colors[0]) || null;
-    let cart;
-    try {
-      cart = JSON.parse(localStorage.getItem('cart'));
-      if (!Array.isArray(cart)) cart = [];
-    } catch {
-      cart = [];
-    }
-    // Deduplicate by _id, size, color
-    const existingIndex = cart.findIndex(p => p._id === item._id && (p.selectedSize || p.size || null) === size && (p.selectedColor || p.color || null) === color);
-    if (existingIndex !== -1) {
-      cart[existingIndex].quantity += 1;
-    } else {
-      cart.push({
-        ...item,
-        selectedSize: size,
-        selectedColor: color,
-        quantity: 1
-      });
-    }
-    localStorage.setItem('cart', JSON.stringify(cart));
-    window.dispatchEvent(new Event('cartChanged'));
-    navigate('/cart');
-  };
-
   const handleRemove = async (index) => {
     const token = localStorage.getItem('token');
     if (!token) return alert('No token found. Please log in again.');
@@ -86,6 +56,7 @@ const Wishlist = () => {
       });
       const data = await res.json();
       setWishlist(data?.products?.filter(Boolean) || []);
+      window.dispatchEvent(new CustomEvent('wishlist-updated', { detail: { count: (data?.products?.length || 0) } }));
     } catch (err) {
       console.error(err);
       alert('Network error while removing item.');
@@ -115,6 +86,7 @@ const Wishlist = () => {
       });
       const data = await res.json();
       setWishlist(data?.products?.filter(Boolean) || []);
+      window.dispatchEvent(new CustomEvent('wishlist-updated', { detail: { count: (data?.products?.length || 0) } }));
     } catch (err) {
       console.error(err);
       alert('Network error while adding to wishlist.');
@@ -152,22 +124,21 @@ const Wishlist = () => {
                     <div className="wishlist-details">
                       <div className="wishlist-title">{item?.name}</div>
                       <div className="wishlist-text">
-                        <span><strong>Size:</strong> {item?.size}</span>
-                        <span><strong>Color:</strong> {item?.color}</span>
+                        <span><strong>Sizes:</strong> {Array.isArray(item?.sizes) ? item.sizes.join(', ') : item?.size || '-'}</span>
+                        <span><strong>Colors:</strong> {Array.isArray(item?.colors) ? item.colors.join(', ') : item?.color || '-'}</span>
                       </div>
-                    </div>
-                    <div className="wishlist-price">
-                      Rs. {item?.price?.toLocaleString?.() ?? item.price}
+                      <div className="wishlist-price">Rs. {item?.price?.toLocaleString?.() ?? item.price}</div>
                     </div>
                     <button
-                      className="wishlist-add-btn"
-                      onClick={() => handleAddToCart(index)}
+                      className="wishlist-view-btn"
+                      onClick={() => navigate(`/product/${item._id}`)}
                     >
-                      Add to cart
+                      View
                     </button>
                     <button
-                      className="wishlist-remove"
+                      className="wishlist-remove-btn"
                       onClick={() => handleRemove(index)}
+                      title="Remove from wishlist"
                     >
                       ×
                     </button>
