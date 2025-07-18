@@ -16,7 +16,8 @@ export const useCart = () => {
       });
       if (!response.ok) throw new Error("Failed to fetch Cart");
       const data = await response.json();
-      setCart(data);
+      console.log('Fetched cart:', data); // Debug log
+      setCart({ ...data }); // Force new reference
     } catch (err) {
       setError(err.message);
     } finally {
@@ -61,7 +62,9 @@ export const useCart = () => {
       );
       if (!response.ok) throw new Error("Failed to remove item");
       const data = await response.json();
-      setCart(data);
+      console.log('Cart after remove:', data); // Debug log
+      setCart({ ...data }); // Force new reference
+      window.dispatchEvent(new Event('cart-updated'));
     } catch (err) {
       setError(err.message);
     } finally {
@@ -109,6 +112,7 @@ export const useCart = () => {
     updateQuantity,
     removeItem,
     applyDiscount,
+    fetchCart, // Expose fetchCart directly
     refetch: fetchCart,
   };
 };
