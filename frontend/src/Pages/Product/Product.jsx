@@ -160,84 +160,79 @@ const Product = () => {
   };
 
   // Cart and checkout handlers
-  // Add to cart: store in localStorage and update cart count
-  // const handleAddToCart = () => {
-  //   if (!product) return;
-  //   // Standardize size/color selection
-  //   const size = selectedSize || product.selectedSize || product.size || (product.sizes && product.sizes[0]) || null;
-  //   const color = selectedColor || product.selectedColor || product.color || (product.colors && product.colors[0]) || null;
-  //   let cart;
-  //   try {
-  //     cart = JSON.parse(localStorage.getItem('cart'));
-  //     if (!Array.isArray(cart)) cart = [];
-  //   } catch {
-  //     cart = [];
-  //   }
-  //   // Deduplicate by _id, size, color
-  //   const existingIndex = cart.findIndex(item => item._id === product._id && (item.selectedSize || item.size || null) === size && (item.selectedColor || item.color || null) === color);
-  //   if (existingIndex !== -1) {
-  //     cart[existingIndex].quantity += quantity;
-  //   } else {
-  //     cart.push({
-  //       ...product,
-  //       selectedSize: size,
-  //       selectedColor: color,
-  //       quantity
-  //     });
-  //   }
-  //   localStorage.setItem('cart', JSON.stringify(cart));
-  //   window.dispatchEvent(new Event('cartChanged'));
-  //   navigate('/cart');
-  // };
-const handleAddToCart = () => {
-  if (!product) return;
+  const handleAddToCart = async () => {
+    if (!product) return;
 
-  const size = selectedSize;
-  const color = selectedColor;
+    const size = selectedSize;
+    const color = selectedColor;
 
-  if (!size || !color) {
-    alert('Please select size and color.');
-    return;
-  }
+    if (!size || !color) {
+      alert('Please select size and color.');
+      return;
+    }
 
-  let cart = [];
-  try {
-    const storedCart = localStorage.getItem('cart');
-    cart = storedCart ? JSON.parse(storedCart) : [];
-    if (!Array.isArray(cart)) cart = [];
-  } catch (err) {
-    cart = [];
-  }
-
-  // Check if item with same ID, size, and color already exists
-  const existingIndex = cart.findIndex(
-    item =>
-      item._id === product._id &&
-      item.selectedSize === size &&
-      item.selectedColor === color
-  );
-
-  if (existingIndex !== -1) {
-    cart[existingIndex].quantity += quantity;
-  } else {
-    const cartItem = {
-      _id: product._id,
-      name: product.name,
-      price: product.price,
-      image: product.images?.[0] || '',
-      selectedSize: size,
-      selectedColor: color,
-      quantity,
-      inStock: product.inStock
-    };
-    cart.push(cartItem);
-  }
-
-  localStorage.setItem('cart', JSON.stringify(cart));
-  window.dispatchEvent(new Event('cartChanged'));
-  navigate('/cart');
-};
-
+    const token = localStorage.getItem('token');
+    if (token) {
+      // LOGGED IN: Add to backend cart
+      try {
+        const res = await fetch('http://localhost:5000/api/cart/add', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            productId: product._id,
+            quantity,
+            size,
+            color
+          })
+        });
+        if (!res.ok) {
+          alert('Failed to add to cart');
+          return;
+        }
+        window.dispatchEvent(new Event('cart-updated'));
+        navigate('/cart');
+      } catch (err) {
+        alert('Network error while adding to cart');
+      }
+    } else {
+      // GUEST: Add to localStorage
+      let cart = [];
+      try {
+        const storedCart = localStorage.getItem('cart');
+        cart = storedCart ? JSON.parse(storedCart) : [];
+        if (!Array.isArray(cart)) cart = [];
+      } catch (err) {
+        cart = [];
+      }
+      const existingIndex = cart.findIndex(
+        item =>
+          item._id === product._id &&
+          item.selectedSize === size &&
+          item.selectedColor === color
+      );
+      if (existingIndex !== -1) {
+        cart[existingIndex].quantity += quantity;
+      } else {
+        const cartItem = {
+          _id: product._id,
+          name: product.name,
+          price: product.price,
+          image: product.images?.[0] || '',
+          selectedSize: size,
+          selectedColor: color,
+          quantity,
+          inStock: product.inStock
+        };
+        cart.push(cartItem);
+      }
+      localStorage.setItem('cart', JSON.stringify(cart));
+      window.dispatchEvent(new Event('cart-updated'));
+      navigate('/cart');
+    }
+  };
 
 
   const handleBuyNow = () => {
