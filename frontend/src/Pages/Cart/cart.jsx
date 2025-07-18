@@ -11,12 +11,14 @@ import Breadcrumb from "../../Components/breadcrumb";
 
 
 export default function CartPage() {
-  const { cart, loading, error, updateQuantity, removeItem, applyDiscount } = useCart();
+  const { cart, loading, error, updateQuantity, removeItem, applyDiscount, fetchCart } = useCart();
   const { formatPrice } = useCurrency();
   const [localCart, setLocalCart] = useState([]);
   const [useLocal, setUseLocal] = useState(false);
   const tax = 250;
   const deliveryFee = 150;
+
+  console.log('Cart state in page:', cart); // Debug log
 
   useEffect(() => {
     // If backend cart is empty, use localStorage cart
@@ -28,6 +30,23 @@ export default function CartPage() {
       setUseLocal(false);
     }
   }, [cart]);
+
+  useEffect(() => {
+    function handleCartUpdated() {
+      if (useLocal) {
+        // For guests: re-read from localStorage
+        const stored = JSON.parse(localStorage.getItem('cart') || '[]');
+        setLocalCart(stored);
+      } else {
+        // For logged-in: re-fetch from backend
+        if (typeof fetchCart === 'function') {
+          fetchCart();
+        }
+      }
+    }
+    window.addEventListener('cart-updated', handleCartUpdated);
+    return () => window.removeEventListener('cart-updated', handleCartUpdated);
+  }, [useLocal, fetchCart]);
 
   // Deduplicate localCart by _id, size, color and sum quantities
   function deduplicateCart(items) {
@@ -71,6 +90,7 @@ export default function CartPage() {
       const updated = localCart.filter(item => item._id !== itemId);
       setLocalCart(updated);
       localStorage.setItem('cart', JSON.stringify(updated));
+      window.dispatchEvent(new Event('cart-updated'));
     } else {
       removeItem(itemId);
     }
