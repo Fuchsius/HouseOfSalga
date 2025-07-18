@@ -35,8 +35,8 @@ export default function CartItems({
                 <h3 className="cart-product-name">
                   {item.product?.name || item.name}
                 </h3>
-                <p className="cart-product-size">Size: {item.size}</p>
-                <h3 className="cart-product-color">Color: {item.color}</h3>
+               <p className="cart-product-size">Size: {item.selectedSize || item.size}</p>
+                <h3 className="cart-product-color">Color: {item.selectedColor || item.color}</h3>
                 <h3 className="cart-product-price">
                   {formatPrice(item.priceAtTime || item.price || 0)}
                 </h3>
