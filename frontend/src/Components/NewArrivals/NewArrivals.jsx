@@ -9,7 +9,35 @@ const NewArrivals = () => {
   const [loading, setLoading] = useState(true); // Controls initial fetch
   const [allLoaded, setAllLoaded] = useState(false); // Controls button visibility
   // Add to Cart handler (same as Shop)
-  const handleAddToCart = (product) => {
+  const handleAddToCart = async (product) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      // LOGGED IN: Add to backend cart
+      try {
+        const res = await fetch('http://localhost:5000/api/cart/add', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            productId: product._id,
+            quantity: 1,
+            size: product.size || (product.sizes && product.sizes[0]) || null,
+            color: product.color || (product.colors && product.colors[0]) || null
+          })
+        });
+        if (!res.ok) {
+          alert('Failed to add to cart');
+          return;
+        }
+        window.dispatchEvent(new Event('cart-updated'));
+        alert(`${product.name} added to cart!`);
+      } catch (err) {
+        alert('Network error while adding to cart');
+      }
+    } else {
+      // GUEST: Add to localStorage
     let cart = JSON.parse(localStorage.getItem('cart') || '[]');
     const existing = cart.find(item => item._id === product._id || item.id === product.id);
     if (existing) {
@@ -18,7 +46,9 @@ const NewArrivals = () => {
       cart.push({ ...product, quantity: 1 });
     }
     localStorage.setItem('cart', JSON.stringify(cart));
+      window.dispatchEvent(new Event('cart-updated'));
     alert(`${product.name} added to cart!`);
+    }
   };
 
   useEffect(() => {
