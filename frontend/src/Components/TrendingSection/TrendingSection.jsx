@@ -84,6 +84,7 @@ const TrendingSection = () => {
       }).then(res => res.json());
       const updatedIds = updated?.products?.map(p => p._id) || [];
       setWishlistIds(updatedIds);
+      window.dispatchEvent(new CustomEvent('wishlist-updated', { detail: { count: updatedIds.length } }));
     } catch (err) {
       alert('Network error while updating wishlist.');
     }
