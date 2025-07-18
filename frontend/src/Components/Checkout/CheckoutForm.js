@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import styles from './CheckoutForm.module.css';
 import CardIcons from './CardIcons';
 import { FaMapMarkerAlt, FaTimes } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import OrderSummary from '../../Pages/Cart/order-summary';
 
 export default function CheckoutForm() {
@@ -13,14 +13,44 @@ export default function CheckoutForm() {
   const [deliveryFee] = useState(150);
   const [total, setTotal] = useState(0);
 
+  const location = useLocation();
+  const buyNowProduct = location.state?.product;
+
   useEffect(() => {
-    // Get cart from localStorage (or backend if needed)
+    if (buyNowProduct) {
+      setCartItems([buyNowProduct]);
+      const sub = buyNowProduct.price * (buyNowProduct.quantity || 1);
+      setSubtotal(sub);
+      setTotal(sub + tax + deliveryFee);
+      return;
+    }
+    const token = localStorage.getItem('token');
+    if (token) {
+      // Logged in: fetch cart from backend
+      fetch('http://localhost:5000/api/cart', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+        .then(res => res.ok ? res.json() : null)
+        .then(data => {
+          const items = data?.items || [];
+          setCartItems(items);
+          const sub = items.reduce((sum, item) => {
+            // Use priceAtTime if available, else product.price
+            const price = item.priceAtTime || item.product?.price || 0;
+            return sum + price * (item.quantity || 1);
+          }, 0);
+          setSubtotal(sub);
+          setTotal(sub + tax + deliveryFee);
+        });
+    } else {
+      // Guest: use localStorage
     const stored = JSON.parse(localStorage.getItem('cart') || '[]');
     setCartItems(stored);
     const sub = stored.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     setSubtotal(sub);
     setTotal(sub + tax + deliveryFee);
-  }, [tax, deliveryFee]);
+    }
+  }, [tax, deliveryFee, buyNowProduct]);
 
   const [form, setForm] = useState({
     firstName: '', lastName: '', country: '', company: '', address: '',
