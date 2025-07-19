@@ -882,3 +882,70 @@ a.logo {
 .suggestion-item:hover {
   background: #f2f2f2;
 }
+
+.logout-confirm-overlay {
+  position: fixed;
+  z-index: 9999;
+  top: 80px; /* slightly below the header */
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff8e1;
+  border: 2px solid #FFC107;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  width: 320px;
+  text-align: center;
+  padding: 20px 25px;
+  animation: fadeSlide 0.3s ease-in-out;
+}
+
+.logout-confirm-box {
+  padding: 0;
+}
+
+.logout-confirm-box p {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 12px 0;
+}
+
+.logout-confirm-buttons {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.logout-confirm-buttons button {
+  background-color: #FFC107;
+  color: #4D1727;
+  font-weight: 600;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.logout-confirm-buttons button:hover {
+  background-color: #e6b600;
+}
+
+@keyframes fadeSlide {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  10% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+}
