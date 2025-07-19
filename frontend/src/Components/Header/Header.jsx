@@ -9,6 +9,9 @@ import cartIcon from '../../Assets/Frame 2609102 (1).png';
 import favIcon from '../../Assets/bag-04 (1).png';
 import { FaTrash } from 'react-icons/fa';
 
+const AUTO_LOGOUT_TIME = 60 * 60 * 1000; // one hour
+
+
 function debounce(fn, delay) {
   let timer = null;
   return (...args) => {
@@ -35,6 +38,46 @@ function Header() {
   const [suggestions, setSuggestions] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchError, setSearchError] = useState('');
+  const [showAutoLogoutMessage, setShowAutoLogoutMessage] = useState(false);
+
+  const inactivityTimer = useRef(null);
+
+const handleAutoLogout = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('username');
+  localStorage.removeItem('cart');
+  localStorage.removeItem('wishlist');
+  setIsLoggedIn(false);
+  setUsername('');
+  setCartCount(0);
+  setCartItems([]);
+  setShowUserMenu(false);
+  window.dispatchEvent(new Event('cart-updated'));
+  window.dispatchEvent(new CustomEvent('wishlist-updated', { detail: { count: 0 } }));
+  setShowAutoLogoutMessage(true); // show the message
+};
+
+const resetInactivityTimer = () => {
+  if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
+  inactivityTimer.current = setTimeout(() => {
+    handleAutoLogout();
+  }, AUTO_LOGOUT_TIME);
+};
+
+useEffect(() => {
+  resetInactivityTimer();
+  const activityEvents = ['click', 'mousemove', 'keydown', 'scroll', 'touchstart'];
+  activityEvents.forEach(event =>
+    window.addEventListener(event, resetInactivityTimer)
+  );
+  return () => {
+    activityEvents.forEach(event =>
+      window.removeEventListener(event, resetInactivityTimer)
+    );
+    if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
+  };
+}, []);
+
 
   // Update cart count from localStorage
   useEffect(() => {
@@ -700,6 +743,30 @@ function Header() {
   </div>
 )}
 
+{showAutoLogoutMessage && (
+  <div
+    className="logout-confirm-overlay"
+    onClick={() => setShowAutoLogoutMessage(false)}
+  >
+    <div
+      className="logout-confirm-box"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <p>You have been logged out due to inactivity.</p>
+      <div className="logout-confirm-buttons">
+        <button
+          onClick={() => {
+            setShowAutoLogoutMessage(false);
+            navigate('/signin');
+          }}
+        >
+          OK
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </header>
    
   );
@@ -754,5 +821,4 @@ export function WishlistBadge() {
     </span>
   );
 }
-
 
