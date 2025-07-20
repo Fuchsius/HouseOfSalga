@@ -180,8 +180,8 @@ a.logo {
 }
 
 .fav-icon {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 31px;
   object-fit: contain;
   flex-shrink: 0;
   margin-top: 9px; /* For fav icon */
@@ -991,3 +991,49 @@ a.logo {
     width: 80px;
   }
 }
+@media (max-width: 550px) {
+  .search-suggestions-box {
+    max-height: 150px;
+    font-size: 14px;
+    width: 100%; /* ensure it doesn’t overflow */
+    overflow-x: hidden;
+  }
+
+  .suggestion-item {
+    padding: 6px 8px;
+    font-size: 14px;
+    word-break: break-word; /* prevent long words breaking layout */
+  }
+}
+
+@media (max-width: 400px) {
+  .search-suggestions-box {
+    max-height: 120px;
+    font-size: 12px;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  .suggestion-item {
+    padding: 5px 6px;
+    font-size: 12px;
+    word-break: break-word;
+  }
+}
+
+@media (max-width: 350px) {
+  .search-suggestions-box {
+    max-height: 100px;
+    font-size: 11px;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  .suggestion-item {
+    padding: 4px 6px;
+    font-size: 11px;
+    word-break: break-word;
+  }
+}
+
+
