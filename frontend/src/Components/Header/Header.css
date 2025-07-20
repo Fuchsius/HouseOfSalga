@@ -949,3 +949,15 @@ a.logo {
     transform: translateX(-50%) translateY(-10px);
   }
 }
+/* Prevent Sign Out from wrapping */
+.nav-item,
+.mobile-menu-item {
+  white-space: nowrap;
+}
+
+/* If needed, add this to ensure buttons/links don’t wrap either */
+.user-menu-item {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
