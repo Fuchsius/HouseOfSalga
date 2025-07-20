@@ -949,6 +949,7 @@ a.logo {
     transform: translateX(-50%) translateY(-10px);
   }
 }
+
 /* Prevent Sign Out from wrapping */
 .nav-item,
 .mobile-menu-item {
@@ -960,4 +961,33 @@ a.logo {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+@media (max-width: 750px) and (min-width: 550px) {
+  .search-bar {
+    width: 250px; /* or whatever its original desktop width is */
+  }
+}
+
+@media (max-width: 550px) and (min-width: 461px) {
+  .search-bar {
+    width: 180px;
+  }
+}
+
+@media (max-width: 461px) and (min-width: 400px) {
+  .search-bar {
+    width: 150px;
+  }
+}
+
+@media (max-width: 360px) and (min-width: 300px) {
+  .search-bar {
+    width: 100px;
+  }
+}
+@media (max-width: 300px) and (min-width: 200px) {
+  .search-bar {
+    width: 80px;
+  }
 }
