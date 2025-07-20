@@ -150,6 +150,8 @@ useEffect(() => {
         setShowMobileMenu(false);
         setShowUserMenu(false);
         setShowActionPrompt(false);
+        setSuggestions([]); // 👈 ADD THIS LINE
+        setSearchQuery('');
       }
     }
 
