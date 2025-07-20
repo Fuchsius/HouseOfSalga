@@ -24,7 +24,7 @@
 }
 
 .footer-left .footer-section:nth-child(3) {
-  margin-left: 0px;
+  margin-left: 40px;
 }
 
 .footer-right {
@@ -398,3 +398,30 @@
     height: 35px;
   }
 }
+
+@media screen and (max-width: 905px) {
+  .footer-copy {
+    text-align: center;
+    width: 100%;
+    order: 2; /* ensures it goes below payments if needed */
+  }
+}
+@media screen and (max-width: 905px) {
+  .footer-bottom {
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .footer-payments {
+    justify-content: center;
+    flex-wrap: nowrap;
+  }
+
+  .footer-copy {
+    text-align: center;
+    width: 100%;
+    order: 2;
+  }
+}
+
+
