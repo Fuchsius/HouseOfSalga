@@ -6,16 +6,19 @@ import styles from './ProductCard.module.css';
 
 const BASE_URL = 'http://localhost:5000/api';
 const WISHLIST_URL = `${BASE_URL}/wishlist`;
+const REVIEW_SUMMARY_URL = `${BASE_URL}/reviews/summary`;
 
 const ProductCard = ({ product, variant = 'small' }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [wishlistIds, setWishlistIds] = useState([]);
+  const [liveRating, setLiveRating] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) return;
+
     fetch(`${WISHLIST_URL}/me`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
@@ -35,9 +38,23 @@ const ProductCard = ({ product, variant = 'small' }) => {
       });
   }, [product?._id]);
 
-  if (!product || typeof product !== 'object') {
-    return null;
-  }
+  useEffect(() => {
+    if (!product?._id) return;
+
+    const fetchRating = async () => {
+      try {
+        const res = await fetch(`${REVIEW_SUMMARY_URL}/${product._id}`);
+        if (res.ok) {
+          const summary = await res.json();
+          setLiveRating(summary?.averageRating || product.averageRating || product.rating);
+        }
+      } catch (err) {
+        console.error('Failed to fetch review summary:', err);
+      }
+    };
+
+    fetchRating();
+  }, [product?._id]);
 
   const handleWishlistToggle = async (e) => {
     e.stopPropagation();
@@ -47,38 +64,44 @@ const ProductCard = ({ product, variant = 'small' }) => {
       window.location.href = '/signin';
       return;
     }
+
     const isInWishlist = wishlistIds.includes(product._id);
     const method = isInWishlist ? 'DELETE' : 'POST';
+
     try {
       const response = await fetch(`${WISHLIST_URL}/${product._id}`, {
         method,
         headers: { 'Authorization': `Bearer ${token}` }
       });
+
       if (response.status === 401) {
         alert('Session expired. Please log in again.');
         window.location.href = '/signin';
         return;
       }
+
       if (!response.ok) {
         const error = await response.json();
         return alert(`Error: ${error.error || response.statusText}`);
       }
-      // Refetch wishlist IDs
+
+      // Fetch updated wishlist
       const updated = await fetch(`${WISHLIST_URL}/me`, {
         headers: { 'Authorization': `Bearer ${token}` }
-      }).then(res => {
-        if (res.status === 401) {
-          alert('Session expired. Please log in again.');
-          window.location.href = '/signin';
-          return null;
-        }
-        return res.json();
-      });
+      }).then(res => res.ok ? res.json() : null);
+
       if (!updated) return;
       const updatedIds = updated?.products?.map(p => p._id) || [];
       setWishlistIds(updatedIds);
       setIsFavorite(updatedIds.includes(product._id));
-      window.dispatchEvent(new CustomEvent('wishlist-updated', { detail: { count: updatedIds.length } }));
+
+      // ✅ Dispatch safe wishlist-updated event with detail
+      window.dispatchEvent(new CustomEvent('wishlist-updated', {
+        detail: {
+          count: updatedIds.length,
+          products: updated.products
+        }
+      }));
     } catch (err) {
       alert('Network error while updating wishlist.');
     }
@@ -92,6 +115,10 @@ const ProductCard = ({ product, variant = 'small' }) => {
     }
     navigate(`/product/${productId}`);
   };
+
+  if (!product || typeof product !== 'object') {
+    return null;
+  }
 
   return (
     <div
@@ -118,24 +145,84 @@ const ProductCard = ({ product, variant = 'small' }) => {
           {isFavorite ? <FaHeart className={styles.filled} /> : <FaRegHeart />}
         </button>
       </div>
+
       <div className={styles.productInfo}>
         <h3 className={styles.productName}>{product.name}</h3>
         <div className={styles.productPrice}>Rs. {product.price?.toFixed(2)}</div>
 
         <div className={styles.ratingContainer}>
-          <RatingStars rating={product.averageRating ?? product.rating} reviewCount={product.reviewCount} />
+          <RatingStars
+            rating={liveRating ?? product.averageRating ?? product.rating}
+            reviewCount={product.reviewCount}
+          />
         </div>
+
         <button
           className={styles.addToCartButton}
-          onClick={(e) => {
+          onClick={async (e) => {
             e.stopPropagation();
-            handleClick();
+            const token = localStorage.getItem('token');
+            const size = Array.isArray(product.sizes) ? product.sizes[0] : (product.size || 'M');
+            const color = Array.isArray(product.colors) ? product.colors[0] : (product.color || 'Default');
+
+            if (token) {
+              try {
+                const response = await fetch(`${BASE_URL}/cart/add`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                  },
+                  body: JSON.stringify({
+                    productId: product._id || product.id,
+                    quantity: 1,
+                    size,
+                    color
+                  })
+                });
+
+                if (!response.ok) {
+                  const error = await response.json();
+                  alert(error.message || 'Failed to add to cart');
+                  return;
+                }
+
+                alert('Added to cart!');
+                window.dispatchEvent(new Event('cart-updated'));
+              } catch (err) {
+                alert('Network error while adding to cart.');
+              }
+            } else {
+              // Guest cart
+              let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+              const existingIndex = cart.findIndex(item =>
+                (item._id || item.id) === (product._id || product.id) &&
+                (item.size || item.selectedSize) === size &&
+                (item.color || item.selectedColor) === color
+              );
+
+              if (existingIndex !== -1) {
+                cart[existingIndex].quantity = (cart[existingIndex].quantity || 1) + 1;
+              } else {
+                cart.push({
+                  ...product,
+                  size,
+                  color,
+                  quantity: 1
+                });
+              }
+
+              localStorage.setItem('cart', JSON.stringify(cart));
+              alert('Added to cart!');
+              window.dispatchEvent(new Event('cart-updated'));
+            }
           }}
         >
-          View
+          Add to Cart
         </button>
       </div>
     </div>
   );
 };
+
 export default ProductCard;
