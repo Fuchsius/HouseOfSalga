@@ -25,7 +25,6 @@ import styles from './Product.module.css';
 
 const BASE_URL = 'http://localhost:5000/api';
 const WISHLIST_URL = `${BASE_URL}/wishlist`;
-const REVIEW_SUMMARY_URL = `${BASE_URL}/reviews/summary`;
 
 const Product = () => {
   const { id } = useParams();
@@ -50,17 +49,30 @@ const Product = () => {
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
   const [wishlistIds, setWishlistIds] = useState([]);
-  
-  // Review state
-  const [reviewSummary, setReviewSummary] = useState({
-    averageRating: 0,
-    totalReviews: 0,
-    breakdown: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }
-  });
-
+  // Fetch user's wishlist IDs on mount and when product changes
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token || !product?._id) return;
+    fetch(`${WISHLIST_URL}/me`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+      .then(res => {
+        if (res.status === 401) {
+          alert('Session expired. Please log in again.');
+          window.location.href = '/signin';
+          return null;
+        }
+        return res.ok ? res.json() : null;
+      })
+      .then(data => {
+        if (!data) return;
+        const ids = data?.products?.map(p => p._id) || [];
+        setWishlistIds(ids);
+        setIsFavorite(ids.includes(product._id));
+      });
+  }, [product?._id]);
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('description');
-  const [liveRating, setLiveRating] = useState(null);
 
   // Fetch product data
   useEffect(() => {
@@ -69,7 +81,7 @@ const Product = () => {
       setError(null);
       
       try {
-        const response = await axios.get(`${BASE_URL}/products/${id}`);
+        const response = await axios.get(`http://localhost:5000/api/products/${id}`);
         
         if (response.data.success && response.data.data) {
           const productData = response.data.data;
@@ -79,11 +91,6 @@ const Product = () => {
           // Set default selections
           setSelectedSize(productData.sizes?.[0] || null);
           setSelectedColor(productData.colors?.[0] || null);
-          
-          // Fetch review summary
-          const summaryRes = await axios.get(`${REVIEW_SUMMARY_URL}/${productData._id}`);
-          setReviewSummary(summaryRes.data);
-          setLiveRating(summaryRes.data?.averageRating || productData.averageRating || productData.rating);
         } else {
           setError(response.data.message || 'Product not found');
         }
@@ -107,7 +114,7 @@ const Product = () => {
       
       try {
         const response = await axios.get(
-          `${BASE_URL}/products/recommended/${product._id}`
+          `http://localhost:5000/api/products/recommended/${product._id}`
         );
         
         if (response.data.success) {
@@ -128,30 +135,6 @@ const Product = () => {
 
     fetchRecommendedProducts();
   }, [product]);
-
-  // Fetch user's wishlist IDs on mount and when product changes
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token || !product?._id) return;
-    
-    fetch(`${WISHLIST_URL}/me`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-      .then(res => {
-        if (res.status === 401) {
-          alert('Session expired. Please log in again.');
-          window.location.href = '/signin';
-          return null;
-        }
-        return res.ok ? res.json() : null;
-      })
-      .then(data => {
-        if (!data) return;
-        const ids = data?.products?.map(p => p._id) || [];
-        setWishlistIds(ids);
-        setIsFavorite(ids.includes(product._id));
-      });
-  }, [product?._id]);
 
   // Handle tab changes based on route
   useEffect(() => {
@@ -177,32 +160,80 @@ const Product = () => {
   };
 
   // Cart and checkout handlers
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!product) return;
-    const size = selectedSize || product.selectedSize || product.size || (product.sizes && product.sizes[0]) || null;
-    const color = selectedColor || product.selectedColor || product.color || (product.colors && product.colors[0]) || null;
-    let cart;
-    try {
-      cart = JSON.parse(localStorage.getItem('cart'));
-      if (!Array.isArray(cart)) cart = [];
-    } catch {
-      cart = [];
+
+    const size = selectedSize;
+    const color = selectedColor;
+
+    if (!size || !color) {
+      alert('Please select size and color.');
+      return;
     }
-    const existingIndex = cart.findIndex(item => item._id === product._id && (item.selectedSize || item.size || null) === size && (item.selectedColor || item.color || null) === color);
-    if (existingIndex !== -1) {
-      cart[existingIndex].quantity += quantity;
+
+    const token = localStorage.getItem('token');
+    if (token) {
+      // LOGGED IN: Add to backend cart
+      try {
+        const res = await fetch('http://localhost:5000/api/cart/add', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            productId: product._id,
+            quantity,
+            size,
+            color
+          })
+        });
+        if (!res.ok) {
+          alert('Failed to add to cart');
+          return;
+        }
+        window.dispatchEvent(new Event('cart-updated'));
+        navigate('/cart');
+      } catch (err) {
+        alert('Network error while adding to cart');
+      }
     } else {
-      cart.push({
-        ...product,
-        selectedSize: size,
-        selectedColor: color,
-        quantity
-      });
+      // GUEST: Add to localStorage
+      let cart = [];
+      try {
+        const storedCart = localStorage.getItem('cart');
+        cart = storedCart ? JSON.parse(storedCart) : [];
+        if (!Array.isArray(cart)) cart = [];
+      } catch (err) {
+        cart = [];
+      }
+      const existingIndex = cart.findIndex(
+        item =>
+          item._id === product._id &&
+          item.selectedSize === size &&
+          item.selectedColor === color
+      );
+      if (existingIndex !== -1) {
+        cart[existingIndex].quantity += quantity;
+      } else {
+        const cartItem = {
+          _id: product._id,
+          name: product.name,
+          price: product.price,
+          image: product.images?.[0] || '',
+          selectedSize: size,
+          selectedColor: color,
+          quantity,
+          inStock: product.inStock
+        };
+        cart.push(cartItem);
+      }
+      localStorage.setItem('cart', JSON.stringify(cart));
+      window.dispatchEvent(new Event('cart-updated'));
+      navigate('/cart');
     }
-    localStorage.setItem('cart', JSON.stringify(cart));
-    window.dispatchEvent(new Event('cartChanged'));
-    navigate('/cart');
   };
+
 
   const handleBuyNow = () => {
     navigate('/checkout', {
@@ -217,7 +248,7 @@ const Product = () => {
     });
   };
 
-  // Updated wishlist handler with event dispatch
+  // Wishlist handler (API-based, like ProductCard)
   const handleWishlistToggle = async () => {
     if (!product?._id) return;
     const token = localStorage.getItem('token');
@@ -226,45 +257,37 @@ const Product = () => {
       window.location.href = '/signin';
       return;
     }
-    
     const isInWishlist = wishlistIds.includes(product._id);
     const method = isInWishlist ? 'DELETE' : 'POST';
-    
     try {
       const response = await fetch(`${WISHLIST_URL}/${product._id}`, {
         method,
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      
       if (response.status === 401) {
         alert('Session expired. Please log in again.');
         window.location.href = '/signin';
         return;
       }
-      
       if (!response.ok) {
         const error = await response.json();
         return alert(`Error: ${error.error || response.statusText}`);
       }
-      
-      // Fetch updated wishlist
+      // Refetch wishlist IDs
       const updated = await fetch(`${WISHLIST_URL}/me`, {
         headers: { 'Authorization': `Bearer ${token}` }
-      }).then(res => res.ok ? res.json() : null);
-      
+      }).then(res => {
+        if (res.status === 401) {
+          alert('Session expired. Please log in again.');
+          window.location.href = '/signin';
+          return null;
+        }
+        return res.json();
+      });
       if (!updated) return;
-      
       const updatedIds = updated?.products?.map(p => p._id) || [];
       setWishlistIds(updatedIds);
       setIsFavorite(updatedIds.includes(product._id));
-      
-      // Dispatch wishlist-updated event
-      window.dispatchEvent(new CustomEvent('wishlist-updated', {
-        detail: {
-          count: updatedIds.length,
-          products: updated.products
-        }
-      }));
     } catch (err) {
       alert('Network error while updating wishlist.');
     }
@@ -273,15 +296,19 @@ const Product = () => {
   // Save to recently viewed in localStorage
   useEffect(() => {
     if (!product?._id) return;
-    const maxRecentlyViewed = 8;
+    const maxRecentlyViewed = 5;
     let recentlyViewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+    // Remove if already exists
     recentlyViewed = recentlyViewed.filter(p => p._id !== product._id);
+    // Add to front
     recentlyViewed.unshift({
       _id: product._id,
       name: product.name,
       image: product.images?.[0] || '',
       price: product.price,
+      // Add more fields if needed
     });
+    // Keep only latest 8
     recentlyViewed = recentlyViewed.slice(0, maxRecentlyViewed);
     localStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewed));
   }, [product]);
@@ -403,13 +430,13 @@ const Product = () => {
               <div className={styles.ratingFavoriteContainer}>
                 <RatingStars 
                   productId={product._id} 
-                  rating={liveRating || reviewSummary.averageRating || product.averageRating || product.rating} 
+                  rating={product.averageRating || product.rating} 
                   size="large" 
                 />
                 <button
                   className={styles.favoriteButtonTop}
                   onClick={handleWishlistToggle}
-                  aria-label={isFavorite ? "Remove from wishlist" : "Add to wishlist"}
+                  aria-label="Toggle favorite"
                 >
                   {isFavorite ? <FaHeart className={styles.filled} /> : <FaRegHeart />}
                 </button>
