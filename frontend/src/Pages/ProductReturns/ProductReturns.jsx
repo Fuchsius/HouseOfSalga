@@ -4,14 +4,13 @@ import {
   FaChevronLeft,
   FaChevronRight,
   FaHeart,
-  FaShoppingBag,
   FaRegHeart,
+  FaShoppingBag,
   FaExclamationTriangle
 } from 'react-icons/fa';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
-// Component Imports
 import ProductCard from '../../Components/ProductCard/ProductCard';
 import RatingStars from '../../Components/RatingStars/RatingStars';
 import ProductTabs from '../../Components/ProductTabs/ProductTabs';
@@ -19,28 +18,16 @@ import Footer from '../../Components/Footer/Footer';
 import Header from '../../Components/Header/Header';
 import useRecommendedProducts from '../../hooks/useRecommendedProducts';
 
-// Styles
 import styles from './ProductReturns.module.css';
 
-// Fix image path helper - updated to match the Product page version
+const BASE_URL = 'http://localhost:5000/api';
+const WISHLIST_URL = `${BASE_URL}/wishlist`;
+
 const fixImageUrl = (img) => {
-  if (typeof img !== 'string' || !img.trim()) {
-    return '/images/placeholder.jpg';
-  }
-
-  if (img.startsWith('http')) {
-    return img;
-  }
-
-  // If already starts with /images, use as is
-  if (img.startsWith('/images')) {
-    return img;
-  }
-
-  // Remove known wrong prefixes like /assets/
+  if (typeof img !== 'string' || !img.trim()) return '/images/placeholder.jpg';
+  if (img.startsWith('http')) return img;
+  if (img.startsWith('/images')) return img;
   img = img.replace(/^\/?assets\//, '');
-
-  // Serve from /images directory
   return `/images/${img}`;
 };
 
@@ -59,14 +46,44 @@ const ProductReturns = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [wishlistIds, setWishlistIds] = useState([]);
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('returns');
+
+  const [reviewSummary, setReviewSummary] = useState({
+    averageRating: 0,
+    totalReviews: 0,
+    breakdown: {}
+  });
 
   const {
     recommended: recommendedProducts,
     loading: recommendedLoading,
     error: recommendedError
   } = useRecommendedProducts(product?._id);
+
+  // Fetch user's wishlist IDs on mount and when product changes
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token || !product?._id) return;
+    fetch(`${WISHLIST_URL}/me`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+      .then(res => {
+        if (res.status === 401) {
+          alert('Session expired. Please log in again.');
+          window.location.href = '/signin';
+          return null;
+        }
+        return res.ok ? res.json() : null;
+      })
+      .then(data => {
+        if (!data) return;
+        const ids = data?.products?.map(p => p._id) || [];
+        setWishlistIds(ids);
+        setIsFavorite(ids.includes(product._id));
+      });
+  }, [product?._id]);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -77,15 +94,16 @@ const ProductReturns = () => {
         const response = await axios.get(`http://localhost:5000/api/products/${id}`);
         if (response.data.success && response.data.data) {
           const productData = response.data.data;
-          
-          // Process images using fixImageUrl before setting state
           const processedProduct = {
             ...productData,
             images: (productData.images || []).map(fixImageUrl)
           };
-          
           setProduct(processedProduct);
           setIsDefaultFallback(false);
+          
+          // Fetch review summary
+          const summaryRes = await axios.get(`http://localhost:5000/api/reviews/summary/${productData._id}`);
+          setReviewSummary(summaryRes.data);
         } else {
           await fetchDefaultProduct();
         }
@@ -102,15 +120,16 @@ const ProductReturns = () => {
         const defaultResponse = await axios.get('http://localhost:5000/api/products/default');
         if (defaultResponse.data.success && defaultResponse.data.data) {
           const productData = defaultResponse.data.data;
-          
-          // Process images for default product as well
           const processedProduct = {
             ...productData,
             images: (productData.images || []).map(fixImageUrl)
           };
-          
           setProduct(processedProduct);
           setIsDefaultFallback(true);
+          
+          // Fetch review summary for default product
+          const summaryRes = await axios.get(`http://localhost:5000/api/reviews/summary/${productData._id}`);
+          setReviewSummary(summaryRes.data);
         }
       } catch (defaultErr) {
         console.error('Error fetching default product:', defaultErr);
@@ -139,30 +158,89 @@ const ProductReturns = () => {
 
   const handleAddToCart = () => {
     if (!product) return;
-    navigate('/cart', {
+    const size = selectedSize || product.selectedSize || product.size || (product.sizes && product.sizes[0]) || null;
+    const color = selectedColor || product.selectedColor || product.color || (product.colors && product.colors[0]) || null;
+    let cart;
+    try {
+      cart = JSON.parse(localStorage.getItem('cart'));
+      if (!Array.isArray(cart)) cart = [];
+    } catch {
+      cart = [];
+    }
+    const existingIndex = cart.findIndex(item => item._id === product._id && (item.selectedSize || item.size || null) === size && (item.selectedColor || item.color || null) === color);
+    if (existingIndex !== -1) {
+      cart[existingIndex].quantity += quantity;
+    } else {
+      cart.push({
+        ...product,
+        selectedSize: size,
+        selectedColor: color,
+        quantity
+      });
+    }
+    localStorage.setItem('cart', JSON.stringify(cart));
+    window.dispatchEvent(new Event('cartChanged'));
+    navigate('/cart');
+  };
+
+  const handleBuyNow = () => {
+    if (!product) return;
+    const size = selectedSize || product.selectedSize || product.size || (product.sizes && product.sizes[0]) || null;
+    const color = selectedColor || product.selectedColor || product.color || (product.colors && product.colors[0]) || null;
+    
+    navigate('/checkout', {
       state: {
         product: {
           ...product,
-          selectedSize,
-          selectedColor,
+          selectedSize: size,
+          selectedColor: color,
           quantity
         }
       }
     });
   };
 
-  const handleBuyNow = () => {
-    if (!product) return;
-    navigate('/checkout', {
-      state: {
-        product: {
-          ...product,
-          selectedSize,
-          selectedColor,
-          quantity
-        }
+  const handleWishlistToggle = async () => {
+    if (!product?._id) return;
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Please log in first.');
+      window.location.href = '/signin';
+      return;
+    }
+    const isInWishlist = wishlistIds.includes(product._id);
+    const method = isInWishlist ? 'DELETE' : 'POST';
+    try {
+      const response = await fetch(`${WISHLIST_URL}/${product._id}`, {
+        method,
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.status === 401) {
+        alert('Session expired. Please log in again.');
+        window.location.href = '/signin';
+        return;
       }
-    });
+      if (!response.ok) {
+        const error = await response.json();
+        return alert(`Error: ${error.error || response.statusText}`);
+      }
+      const updated = await fetch(`${WISHLIST_URL}/me`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      }).then(res => {
+        if (res.status === 401) {
+          alert('Session expired. Please log in again.');
+          window.location.href = '/signin';
+          return null;
+        }
+        return res.json();
+      });
+      if (!updated) return;
+      const updatedIds = updated?.products?.map(p => p._id) || [];
+      setWishlistIds(updatedIds);
+      setIsFavorite(updatedIds.includes(product._id));
+    } catch (err) {
+      alert('Network error while updating wishlist.');
+    }
   };
 
   const navigateToTab = (tab) => {
@@ -173,16 +251,29 @@ const ProductReturns = () => {
   };
 
   const handleProductClick = (clickedProduct) => {
-    // Ensure images are processed before navigation
     const processedProduct = {
       ...clickedProduct,
       images: (clickedProduct.images || []).map(fixImageUrl)
     };
-    
     navigate(`/product/${clickedProduct._id || clickedProduct.id}`, {
       state: { product: processedProduct }
     });
   };
+
+  useEffect(() => {
+    if (!product?._id) return;
+    const maxRecentlyViewed = 8;
+    let recentlyViewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+    recentlyViewed = recentlyViewed.filter(p => p._id !== product._id);
+    recentlyViewed.unshift({
+      _id: product._id,
+      name: product.name,
+      image: product.images?.[0] || '',
+      price: product.price,
+    });
+    recentlyViewed = recentlyViewed.slice(0, maxRecentlyViewed);
+    localStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewed));
+  }, [product]);
 
   if (loading) {
     return (
@@ -291,10 +382,13 @@ const ProductReturns = () => {
 
             <div className={styles.productDetails}>
               <div className={styles.ratingFavoriteContainer}>
-                <RatingStars rating={product.averageRating || product.rating} size="large" />
+                <RatingStars 
+                  rating={reviewSummary.averageRating || product.rating} 
+                  size="large" 
+                />
                 <button
                   className={styles.favoriteButtonTop}
-                  onClick={() => setIsFavorite(!isFavorite)}
+                  onClick={handleWishlistToggle}
                 >
                   {isFavorite ? <FaHeart className={styles.filled} /> : <FaRegHeart />}
                 </button>
@@ -319,10 +413,12 @@ const ProductReturns = () => {
                       {product.colors.map((color) => (
                         <div
                           key={color}
-                          className={`${styles.colorOptionWrapper} ${selectedColor === color ? styles.selected : ''}`}
+                          className={`${styles.colorOptionWrapper} ${
+                            selectedColor === color ? styles.colorOptionWrapperSelected : ''
+                          }`}
                           onClick={() => setSelectedColor(color)}
                           style={{
-                            borderColor: selectedColor === color ? color.toLowerCase() : '#999'
+                            borderColor: selectedColor === color ? color.toLowerCase() : 'transparent'
                           }}
                         >
                           <div
@@ -360,9 +456,18 @@ const ProductReturns = () => {
 
               <div className={styles.quantityControl}>
                 <div className={styles.quantitySelector}>
-                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} disabled={quantity <= 1}>-</button>
+                  <button 
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))} 
+                    disabled={quantity <= 1}
+                  >
+                    -
+                  </button>
                   <span aria-live="polite">{quantity}</span>
-                  <button onClick={() => setQuantity(quantity + 1)}>+</button>
+                  <button 
+                    onClick={() => setQuantity(quantity + 1)}
+                  >
+                    +
+                  </button>
                 </div>
               </div>
 
@@ -429,12 +534,10 @@ const ProductReturns = () => {
               <div className={styles.productGrid}>
                 {recommendedProducts.length > 0 ? (
                   recommendedProducts.map((item) => {
-                    // Process recommended product images before rendering
                     const processedItem = {
                       ...item,
                       images: (item.images || []).map(fixImageUrl)
                     };
-                    
                     return (
                       <ProductCard
                         key={processedItem._id}
