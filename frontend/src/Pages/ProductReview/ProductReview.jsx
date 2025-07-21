@@ -23,6 +23,9 @@ import styles from './ProductReview.module.css';
 import axios from 'axios';
 import useRecommendedProducts from '../../hooks/useRecommendedProducts';
 
+const BASE_URL = 'http://localhost:5000/api';
+const WISHLIST_URL = `${BASE_URL}/wishlist`;
+
 const ProductReview = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -39,6 +42,7 @@ const ProductReview = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [wishlistIds, setWishlistIds] = useState([]);
   const [isImageLoading, setIsImageLoading] = useState(true);
 
   // State for reviews
@@ -57,25 +61,12 @@ const ProductReview = () => {
   const [isLoadingReviews, setIsLoadingReviews] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
 
-  // Fix image path helper - updated to match the Product page version
+  // Fix image path helper
   const fixImageUrl = (img) => {
-    if (typeof img !== 'string' || !img.trim()) {
-      return '/images/placeholder.jpg';
-    }
-
-    if (img.startsWith('http')) {
-      return img;
-    }
-
-    // If already starts with /images, use as is
-    if (img.startsWith('/images')) {
-      return img;
-    }
-
-    // Remove known wrong prefixes like /assets/
+    if (typeof img !== 'string' || !img.trim()) return '/images/placeholder.jpg';
+    if (img.startsWith('http')) return img;
+    if (img.startsWith('/images')) return img;
     img = img.replace(/^\/?assets\//, '');
-
-    // Serve from /images directory
     return `/images/${img}`;
   };
 
@@ -86,6 +77,29 @@ const ProductReview = () => {
     error: recommendedError 
   } = useRecommendedProducts(product?._id);
 
+  // Fetch user's wishlist IDs
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token || !product?._id) return;
+    fetch(`${WISHLIST_URL}/me`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+      .then(res => {
+        if (res.status === 401) {
+          alert('Session expired. Please log in again.');
+          window.location.href = '/signin';
+          return null;
+        }
+        return res.ok ? res.json() : null;
+      })
+      .then(data => {
+        if (!data) return;
+        const ids = data?.products?.map(p => p._id) || [];
+        setWishlistIds(ids);
+        setIsFavorite(ids.includes(product._id));
+      });
+  }, [product?._id]);
+
   // Fetch product when component mounts or ID changes
   useEffect(() => {
     const fetchProduct = async () => {
@@ -95,17 +109,18 @@ const ProductReview = () => {
         const response = await axios.get(`http://localhost:5000/api/products/${id}`);
         if (response.data.success && response.data.data) {
           const productData = response.data.data;
-          
-          // Process images using fixImageUrl before setting state
           const processedProduct = {
             ...productData,
             images: (productData.images || []).map(fixImageUrl),
             averageRating: productData.averageRating || 0
           };
-          
           setProduct(processedProduct);
           setSelectedSize(productData.sizes?.[0] || null);
           setSelectedColor(productData.colors?.[0] || null);
+          
+          // Fetch review summary
+          const summaryRes = await axios.get(`http://localhost:5000/api/reviews/summary/${productData._id}`);
+          setReviewSummary(summaryRes.data);
         } else {
           setError(response.data.message || 'Product not found');
         }
@@ -162,32 +177,93 @@ const ProductReview = () => {
     });
   };
 
+  // Updated Add to Cart function
   const handleAddToCart = () => {
     if (!product) return;
-    navigate('/cart', {
+    const size = selectedSize || product.selectedSize || product.size || (product.sizes && product.sizes[0]) || null;
+    const color = selectedColor || product.selectedColor || product.color || (product.colors && product.colors[0]) || null;
+    let cart;
+    try {
+      cart = JSON.parse(localStorage.getItem('cart'));
+      if (!Array.isArray(cart)) cart = [];
+    } catch {
+      cart = [];
+    }
+    const existingIndex = cart.findIndex(item => item._id === product._id && (item.selectedSize || item.size || null) === size && (item.selectedColor || item.color || null) === color);
+    if (existingIndex !== -1) {
+      cart[existingIndex].quantity += quantity;
+    } else {
+      cart.push({
+        ...product,
+        selectedSize: size,
+        selectedColor: color,
+        quantity
+      });
+    }
+    localStorage.setItem('cart', JSON.stringify(cart));
+    window.dispatchEvent(new Event('cartChanged'));
+    navigate('/cart');
+  };
+
+  // Updated Buy Now function
+  const handleBuyNow = () => {
+    if (!product) return;
+    const size = selectedSize || product.selectedSize || product.size || (product.sizes && product.sizes[0]) || null;
+    const color = selectedColor || product.selectedColor || product.color || (product.colors && product.colors[0]) || null;
+    
+    navigate('/checkout', {
       state: {
         product: {
           ...product,
-          selectedSize,
-          selectedColor,
+          selectedSize: size,
+          selectedColor: color,
           quantity
         }
       }
     });
   };
 
-  const handleBuyNow = () => {
-    if (!product) return;
-    navigate('/checkout', {
-      state: {
-        product: {
-          ...product,
-          selectedSize,
-          selectedColor,
-          quantity
-        }
+  const handleWishlistToggle = async () => {
+    if (!product?._id) return;
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Please log in first.');
+      window.location.href = '/signin';
+      return;
+    }
+    const isInWishlist = wishlistIds.includes(product._id);
+    const method = isInWishlist ? 'DELETE' : 'POST';
+    try {
+      const response = await fetch(`${WISHLIST_URL}/${product._id}`, {
+        method,
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.status === 401) {
+        alert('Session expired. Please log in again.');
+        window.location.href = '/signin';
+        return;
       }
-    });
+      if (!response.ok) {
+        const error = await response.json();
+        return alert(`Error: ${error.error || response.statusText}`);
+      }
+      const updated = await fetch(`${WISHLIST_URL}/me`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      }).then(res => {
+        if (res.status === 401) {
+          alert('Session expired. Please log in again.');
+          window.location.href = '/signin';
+          return null;
+        }
+        return res.json();
+      });
+      if (!updated) return;
+      const updatedIds = updated?.products?.map(p => p._id) || [];
+      setWishlistIds(updatedIds);
+      setIsFavorite(updatedIds.includes(product._id));
+    } catch (err) {
+      alert('Network error while updating wishlist.');
+    }
   };
 
   const navigateToTab = (tab) => {
@@ -196,12 +272,10 @@ const ProductReview = () => {
   };
 
   const handleProductClick = (clickedProduct) => {
-    // Ensure images are processed before navigation
     const processedProduct = {
       ...clickedProduct,
       images: (clickedProduct.images || []).map(fixImageUrl)
     };
-    
     navigate(`/product/${clickedProduct._id || clickedProduct.id}`, {
       state: { product: processedProduct }
     });
@@ -332,6 +406,22 @@ const ProductReview = () => {
     setShowAllReviews(!showAllReviews);
   };
 
+  // Save to recently viewed in localStorage
+  useEffect(() => {
+    if (!product?._id) return;
+    const maxRecentlyViewed = 8;
+    let recentlyViewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+    recentlyViewed = recentlyViewed.filter(p => p._id !== product._id);
+    recentlyViewed.unshift({
+      _id: product._id,
+      name: product.name,
+      image: product.images?.[0] || '',
+      price: product.price,
+    });
+    recentlyViewed = recentlyViewed.slice(0, maxRecentlyViewed);
+    localStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewed));
+  }, [product]);
+
   if (loading) {
     return (
       <div className={styles.loadingOverlay}>
@@ -436,12 +526,12 @@ const ProductReview = () => {
             <div className={styles.productDetails}>
               <div className={styles.ratingFavoriteContainer}>
                 <RatingStars 
-                  rating={product.averageRating} 
+                  rating={reviewSummary.averageRating || product.rating} 
                   size="large" 
                 />
                 <button
                   className={styles.favoriteButtonTop}
-                  onClick={() => setIsFavorite(!isFavorite)}
+                  onClick={handleWishlistToggle}
                 >
                   {isFavorite ? <FaHeart className={styles.filled} /> : <FaRegHeart />}
                 </button>
@@ -787,12 +877,10 @@ const ProductReview = () => {
             ) : recommendedProducts.length > 0 ? (
               <div className={styles.productGrid}>
                 {recommendedProducts.map((item) => {
-                  // Process recommended product images before rendering
                   const processedItem = {
                     ...item,
                     images: (item.images || []).map(fixImageUrl)
                   };
-                  
                   return (
                     <ProductCard
                       key={processedItem._id}
