@@ -5,7 +5,6 @@ import Header from '../../Components/Header/Header';
 import axios from 'axios';
 
 import eyeIcon from '../../Assets/eye.png';
-import googleIcon from '../../Assets/google.png';
 import signupImage from '../../Assets/signupImage.png';
 import './SignIn.css';
 
@@ -18,18 +17,37 @@ function SignIn() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.async = true;
-    script.defer = true;
-    document.body.appendChild(script);
+    const loadGoogleScript = () => {
+      const script = document.createElement('script');
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.defer = true;
+      
+      script.onload = () => {
+        if (window.google) {
+          window.google.accounts.id.initialize({
+            client_id: '27042630769-ho5qnivtl7dpvhi3sponoakicvfnhp70.apps.googleusercontent.com',
+            callback: handleGoogleResponse,
+            auto_select: false,
+            cancel_on_tap_outside: false
+          });
+          
+          // Render the Google Sign-In button
+          window.google.accounts.id.renderButton(
+            document.getElementById('googleSignInDiv'),
+            { theme: 'outline', size: 'large', width: '100%' }
+          );
+        }
+      };
+      
+      document.body.appendChild(script);
+      return script;
+    };
 
-    script.onload = () => {
-      if (window.google) {
-        window.google.accounts.id.initialize({
-          client_id: '27042630769-ho5qnivtl7dpvhi3sponoakicvfnhp70.apps.googleusercontent.com',
-          callback: handleGoogleResponse,
-        });
+    const script = loadGoogleScript();
+    return () => {
+      if (script && script.parentNode) {
+        script.parentNode.removeChild(script);
       }
     };
   }, []);
@@ -51,13 +69,6 @@ function SignIn() {
 
     if (!formData.password) {
       tempErrors.password = 'Password is required';
-    } else {
-      const passwordRegex =
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-      if (!passwordRegex.test(formData.password)) {
-        tempErrors.password =
-          'Password must be at least 8 characters long and include uppercase, lowercase, number, and special character';
-      }
     }
 
     setErrors(tempErrors);
@@ -89,39 +100,60 @@ function SignIn() {
 
   const handleGoogleSignIn = () => {
     if (window.google) {
-      window.google.accounts.id.prompt((notification) => {
-        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-          setMessageType('error');
-          setMessage('Google Sign-In was cancelled or failed.');
-          setTimeout(() => setMessage(null), 1500);
-        }
-      });
+      try {
+        window.google.accounts.id.prompt((notification) => {
+          if (notification.isNotDisplayed()) {
+            // Handle cases where the prompt couldn't be displayed
+            setMessageType('error');
+            setMessage('Please disable your pop-up blocker and try again.');
+          } else if (notification.isSkippedMoment()) {
+            // User hasn't clicked the Google Sign-In button
+            window.google.accounts.id.renderButton(
+              document.getElementById('googleSignInDiv'),
+              { theme: 'outline', size: 'large', width: '100%' }
+            );
+          }
+          setTimeout(() => setMessage(null), 3000);
+        });
+      } catch (error) {
+        setMessageType('error');
+        setMessage('An error occurred. Please try again.');
+        setTimeout(() => setMessage(null), 3000);
+      }
     } else {
       setMessageType('error');
-      setMessage('Google Sign-In not available. Try again later.');
-      setTimeout(() => setMessage(null), 1000);
+      setMessage('Google Sign-In is not available. Please try again later.');
+      setTimeout(() => setMessage(null), 3000);
     }
   };
 
   const handleGoogleResponse = async (response) => {
     try {
       const res = await axios.post('http://localhost:5000/api/auth/google', {
-        token: response.credential
+        token: response.credential,
       });
 
-      localStorage.setItem('token', res.data.token);
-      localStorage.setItem('username', res.data.user.username);
+      if (res.data.user) {
+        localStorage.setItem('token', res.data.token);
+        localStorage.setItem('username', res.data.user.username);
+        localStorage.setItem('userId', res.data.user._id);
+        localStorage.setItem('userEmail', res.data.user.email);
 
-      setMessageType('success');
-      setMessage('Signed in with Google! Redirecting...');
-      setTimeout(() => {
-        setMessage(null);
-        navigate('/home');
-      }, 1000);
+        setMessageType('success');
+        setMessage('Signed in with Google! Redirecting...');
+        setTimeout(() => {
+          setMessage(null);
+          navigate('/home');
+        }, 1500);
+      }
     } catch (err) {
+      console.error('Google sign-in error:', err);
       setMessageType('error');
-      setMessage(err.response?.data?.message || 'Google login failed');
-      setTimeout(() => setMessage(null), 1000);
+      setMessage(
+        err.response?.data?.message || 
+        'Google sign-in failed. Please try again.'
+      );
+      setTimeout(() => setMessage(null), 3000);
     }
   };
 
@@ -171,40 +203,36 @@ function SignIn() {
             </div>
             {errors.password && <p className="error-msg">{errors.password}</p>}
 
-            {/* 🔷 Forgot Password link */}
+            {/* Forgot Password link */}
             <div style={{ textAlign: 'right', marginBottom: '10px', marginTop: '-21px' }}>
-  <span
-    className="forgot-password-link"
-    style={{
-      color: '#007BFF',
-      cursor: 'pointer',
-      fontSize: '1.1rem'
-    }}
-    onClick={() => navigate('/forgot-password')}
-    onMouseEnter={(e) => e.target.style.color = '#0056b3'}  // darker blue on hover
-    onMouseLeave={(e) => e.target.style.color = '#007BFF'} // back to original
-  >
-    Forgot Password?
-  </span>
-</div>
-
+              <span
+                className="forgot-password-link"
+                style={{
+                  color: '#007BFF',
+                  cursor: 'pointer',
+                  fontSize: '1.1rem',
+                }}
+                onClick={() => navigate('/forgot-password')}
+                onMouseEnter={(e) => (e.target.style.color = '#0056b3')}
+                onMouseLeave={(e) => (e.target.style.color = '#007BFF')}
+              >
+                Forgot Password?
+              </span>
+            </div>
 
             <button type="submit" className="submit-btn">Sign In</button>
 
             <p className="continue-text">or continue with</p>
 
             <div className="social-icons">
-              <img
-                src={googleIcon}
-                alt="Google"
-                style={{ cursor: 'pointer' }}
-                onClick={handleGoogleSignIn}
-              />
+              <div id="googleSignInDiv"></div>
             </div>
 
             <p className="signup-text">
-              <span className="no-account">Already have an account? </span>
-              <span className="signup-link" onClick={() => navigate('/signup')}>Sign Up</span>
+              <span className="no-account">Don't have an account? </span>
+              <span className="signup-link" onClick={() => navigate('/signup')}>
+                Sign Up
+              </span>
             </p>
           </form>
         </div>
