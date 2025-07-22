@@ -1,0 +1,30 @@
+{
+  "files": {
+    "main.css": "/static/css/main.92df98cc.css",
+    "main.js": "/static/js/main.11607da0.js",
+    "static/media/person1.jpg": "/static/media/person1.5874bc40b0e8b155a6a6.jpg",
+    "static/media/heroImage.png": "/static/media/heroImage.632b5d619fabdbd109a4.png",
+    "static/media/signupImage.png": "/static/media/signupImage.258ea473f464c85b851d.png",
+    "static/media/ViewOrder.png": "/static/media/ViewOrder.769338b277a0243158d9.png",
+    "static/media/op1.png": "/static/media/op1.769338b277a0243158d9.png",
+    "static/media/R3.png": "/static/media/R3.a89fb7f894b864d24d5f.png",
+    "static/media/wilkysta.ttf": "/static/media/wilkysta.450a0b3b6f05850545d6.ttf",
+    "static/media/R1.png": "/static/media/R1.7226e35cf1cd60f10197.png",
+    "static/media/R4.png": "/static/media/R4.b39432601e9e0d32b7a0.png",
+    "static/media/black-pant.png": "/static/media/black-pant.f130c5eb14cb4d1734aa.png",
+    "static/media/person3.jpg": "/static/media/person3.33887bf27dec5a0d6ae2.jpg",
+    "static/media/person2.png": "/static/media/person2.173cc18acafe30b057cb.png",
+    "static/media/bag.png": "/static/media/bag.8baa9bdac2dc50b5879c.png",
+    "static/media/quality.PNG": "/static/media/quality.471b83f8ebe3ffd715f0.PNG",
+    "static/media/delivery.PNG": "/static/media/delivery.d79ee66bd01e171886e5.PNG",
+    "static/media/support.PNG": "/static/media/support.c691baff852dc801f35d.PNG",
+    "index.html": "/index.html",
+    "static/media/safe.PNG": "/static/media/safe.3d8f23f4ce18d21103a7.PNG",
+    "main.92df98cc.css.map": "/static/css/main.92df98cc.css.map",
+    "main.11607da0.js.map": "/static/js/main.11607da0.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.92df98cc.css",
+    "static/js/main.11607da0.js"
+  ]
+}
