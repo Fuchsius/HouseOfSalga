@@ -645,7 +645,7 @@ useEffect(() => {
                       <img src={item.product?.images || item.images || (item.images?.[0]) || '/images/placeholder.png'} alt={item.product?.name || item.name} style={{ width: 38, height: 38, objectFit: 'cover', borderRadius: 6, marginRight: 8 }} />
                       <div style={{ flex: 1 }}>
                         <div style={{ fontWeight: 600, fontSize: 14 }}>{item.product?.name || item.name}</div>
-                        <div style={{ fontSize: 12, color: '#555' }}>Rs. {(item.priceAtTime || item.price)?.toFixed(2)} {item.quantity ? `x${item.quantity}` : ''}</div>
+                        <div style={{ fontSize: 12, color: '#555' }}>Rs. {(item.priceAtTime || item.price)?.toFixed(2)} {item.quantity ? `X ${item.quantity}` : ''}</div>
                         <div style={{ fontSize: 12, color: '#555' }}>Size: {item.size || item.selectedSize}</div>
                         <div style={{ fontSize: 12, color: '#555' }}>Color: {item.color || item.selectedColor}</div>
                       </div>
