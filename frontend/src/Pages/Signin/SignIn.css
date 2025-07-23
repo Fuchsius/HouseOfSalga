@@ -282,3 +282,14 @@
     width: 100%;
   }
 }
+
+/* Below 355px it can wrap, but above stays inline */
+.signup-text {
+  white-space: nowrap;
+}
+
+@media (max-width: 355px) {
+  .signup-text {
+    white-space: normal;
+  }
+}
